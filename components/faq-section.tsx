@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useCallback, memo } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 
@@ -37,7 +37,8 @@ const faqs: FaqItem[] = [
   },
 ];
 
-function FaqItemComponent({
+// Memoized FAQ item component to prevent unnecessary re-renders
+const FaqItemComponent = memo(function FaqItemComponent({
   faq,
   index,
   isOpen,
@@ -58,7 +59,7 @@ function FaqItemComponent({
       animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
       transition={{ duration: 0.5, delay: 0.1 + index * 0.08 }}
       className={`
-        group relative overflow-hidden
+        group relative overflow-hidden rounded-xl
         bg-[#0a0a0a] border border-[#1a1a1a]
         transition-all duration-300 ease-out
         ${isOpen ? "border-[#C9FF64]/30" : "hover:border-[#2a2a2a]"}
@@ -137,12 +138,17 @@ function FaqItemComponent({
       </AnimatePresence>
     </motion.div>
   );
-}
+});
 
 export default function FaqSection() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+  // Memoized toggle handler to prevent new function creation on each render
+  const createToggleHandler = useCallback((index: number) => () => {
+    setOpenIndex((prev) => (prev === index ? null : index));
+  }, []);
 
   return (
     <section ref={ref} className="bg-[#050505] py-24 md:py-32 lg:py-40 px-6">
@@ -166,7 +172,7 @@ export default function FaqSection() {
               className="text-4xl md:text-5xl lg:text-6xl font-extralight text-white tracking-tight leading-[1.1]"
             >
               Questions &<br />
-              <span className="text-[#888888]">Answers</span>
+              <em className="italic text-[#888888]">Answers</em>
             </motion.h2>
           </div>
 
@@ -188,11 +194,11 @@ export default function FaqSection() {
         <div className="space-y-3">
           {faqs.map((faq, index) => (
             <FaqItemComponent
-              key={index}
+              key={faq.question}
               faq={faq}
               index={index}
               isOpen={openIndex === index}
-              onToggle={() => setOpenIndex(openIndex === index ? null : index)}
+              onToggle={createToggleHandler(index)}
               isInView={isInView}
             />
           ))}
@@ -209,30 +215,56 @@ export default function FaqSection() {
             <p className="text-[#555555] text-sm">
               Still have questions?
             </p>
-            <a
-              href="#contact"
-              className="
-                group inline-flex items-center gap-2
-                text-sm text-white font-medium
-                transition-colors duration-300
-                hover:text-[#C9FF64]
-              "
-            >
-              <span>Contact our team</span>
-              <svg
-                className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+            <div className="flex items-center gap-6">
+              <a
+                href="/resources"
+                className="
+                  group inline-flex items-center gap-2
+                  text-sm text-[#888888] font-medium
+                  transition-colors duration-300
+                  hover:text-white
+                "
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17 8l4 4m0 0l-4 4m4-4H3"
-                />
-              </svg>
-            </a>
+                <span>Learn more</span>
+                <svg
+                  className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17 8l4 4m0 0l-4 4m4-4H3"
+                  />
+                </svg>
+              </a>
+              <a
+                href="/contact"
+                className="
+                  group inline-flex items-center gap-2
+                  text-sm text-white font-medium
+                  transition-colors duration-300
+                  hover:text-[#C9FF64]
+                "
+              >
+                <span>Contact Us</span>
+                <svg
+                  className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17 8l4 4m0 0l-4 4m4-4H3"
+                  />
+                </svg>
+              </a>
+            </div>
           </div>
         </motion.div>
       </div>

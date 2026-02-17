@@ -68,57 +68,60 @@ body {
   background: #2a2a2a;
 }
 
-/* Film Grain Animation */
+/* ============================================
+   GPU-ACCELERATED ANIMATIONS
+   Using transform and opacity only for performance
+   ============================================ */
+
+/* Film Grain Animation - SLOWED DOWN from 0.5s to 3s for performance */
 @keyframes grain {
-  0%, 100% { transform: translate(0, 0); }
-  10% { transform: translate(-5%, -10%); }
-  20% { transform: translate(-15%, 5%); }
-  30% { transform: translate(7%, -25%); }
-  40% { transform: translate(-5%, 25%); }
-  50% { transform: translate(-15%, 10%); }
-  60% { transform: translate(15%, 0%); }
-  70% { transform: translate(0%, 15%); }
-  80% { transform: translate(3%, 35%); }
-  90% { transform: translate(-10%, 10%); }
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  25% { transform: translate3d(-5%, -10%, 0); }
+  50% { transform: translate3d(-15%, 5%, 0); }
+  75% { transform: translate3d(7%, -15%, 0); }
 }
 
 .animate-grain {
-  animation: grain 0.5s steps(10) infinite;
+  animation: grain 3s steps(4) infinite;
+  will-change: transform;
+  backface-visibility: hidden;
 }
 
 /* Mouse Scroll Indicator Animation */
 @keyframes mouse-scroll {
   0% {
     opacity: 1;
-    transform: translateX(-50%) translateY(0);
+    transform: translate3d(-50%, 0, 0);
   }
   100% {
     opacity: 0;
-    transform: translateX(-50%) translateY(16px);
+    transform: translate3d(-50%, 16px, 0);
   }
 }
 
 .animate-mouse-scroll {
   animation: mouse-scroll 1.5s ease-in-out infinite;
+  will-change: transform, opacity;
 }
 
 /* Subtle Bounce for Chevron */
 @keyframes bounce-subtle {
   0%, 100% {
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
     opacity: 0.6;
   }
   50% {
-    transform: translateY(3px);
+    transform: translate3d(0, 3px, 0);
     opacity: 1;
   }
 }
 
 .animate-bounce-subtle {
   animation: bounce-subtle 1.5s ease-in-out infinite;
+  will-change: transform, opacity;
 }
 
-/* Legacy Scroll Line Animation (kept for compatibility) */
+/* Legacy Scroll Line Animation */
 @keyframes scroll-line {
   0%, 100% { top: -32px; opacity: 0; }
   10% { opacity: 1; }
@@ -132,34 +135,37 @@ body {
 
 /* Scan Animation */
 @keyframes scan {
-  0% { top: 0; opacity: 0; }
+  0% { transform: translate3d(0, 0, 0); opacity: 0; }
   10% { opacity: 1; }
   90% { opacity: 1; }
-  100% { top: 100%; opacity: 0; }
+  100% { transform: translate3d(0, 100%, 0); opacity: 0; }
 }
 
 .animate-scan {
   animation: scan 3s ease-in-out infinite;
+  will-change: transform, opacity;
 }
 
 /* Float Animation */
 @keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-20px); }
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -20px, 0); }
 }
 
 .animate-float {
   animation: float 6s ease-in-out infinite;
+  will-change: transform;
 }
 
 /* Float Delayed Animation */
 @keyframes float-delayed {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-15px); }
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -15px, 0); }
 }
 
 .animate-float-delayed {
   animation: float-delayed 7s ease-in-out infinite;
+  will-change: transform;
 }
 
 /* Dash Animation */
@@ -171,28 +177,32 @@ body {
   animation: dash 1s linear infinite;
 }
 
-/* Marquee Left Animation */
+/* Marquee Left Animation - GPU accelerated */
 @keyframes marquee-left {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
 }
 
 .animate-marquee-left {
   animation: marquee-left 60s linear infinite;
+  will-change: transform;
+  backface-visibility: hidden;
 }
 
 .animate-marquee-left:hover {
   animation-play-state: paused;
 }
 
-/* Marquee Right Animation */
+/* Marquee Right Animation - GPU accelerated */
 @keyframes marquee-right {
-  0% { transform: translateX(-50%); }
-  100% { transform: translateX(0); }
+  0% { transform: translate3d(-50%, 0, 0); }
+  100% { transform: translate3d(0, 0, 0); }
 }
 
 .animate-marquee-right {
   animation: marquee-right 55s linear infinite;
+  will-change: transform;
+  backface-visibility: hidden;
 }
 
 .animate-marquee-right:hover {
@@ -201,44 +211,46 @@ body {
 
 /* COI Analysis Animations */
 @keyframes scan-document {
-  0% { transform: translateY(-100%); opacity: 0; }
+  0% { transform: translate3d(0, -100%, 0); opacity: 0; }
   5% { opacity: 1; }
   95% { opacity: 1; }
-  100% { transform: translateY(500%); opacity: 0; }
+  100% { transform: translate3d(0, 500%, 0); opacity: 0; }
 }
 
 .animate-scan-document {
   animation: scan-document 4s ease-in-out infinite;
+  will-change: transform, opacity;
 }
 
+/* Highlight Pulse - using opacity instead of box-shadow for performance */
 @keyframes highlight-pulse {
   0%, 100% {
     opacity: 0.3;
-    box-shadow: 0 0 0 0 rgba(201, 255, 100, 0);
   }
   50% {
     opacity: 1;
-    box-shadow: 0 0 20px 2px rgba(201, 255, 100, 0.3);
   }
 }
 
 .animate-highlight-pulse {
   animation: highlight-pulse 2s ease-in-out infinite;
+  will-change: opacity;
 }
 
 @keyframes data-reveal {
   0% {
     opacity: 0;
-    transform: translateX(20px);
+    transform: translate3d(20px, 0, 0);
   }
   100% {
     opacity: 1;
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
   }
 }
 
 .animate-data-reveal {
   animation: data-reveal 0.6s ease-out forwards;
+  will-change: transform, opacity;
 }
 
 @keyframes typing {
@@ -259,6 +271,7 @@ body {
 
 .animate-blink {
   animation: blink-cursor 1s infinite;
+  will-change: opacity;
 }
 
 @keyframes progress-fill {
@@ -280,36 +293,98 @@ body {
 
 /* Staggered Float Animations for Testimonial Cards */
 @keyframes float-gentle {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  33% { transform: translateY(-12px) rotate(0.5deg); }
-  66% { transform: translateY(-8px) rotate(-0.5deg); }
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+  33% { transform: translate3d(0, -12px, 0) rotate(0.5deg); }
+  66% { transform: translate3d(0, -8px, 0) rotate(-0.5deg); }
 }
 
 .animate-float-gentle {
   animation: float-gentle 8s ease-in-out infinite;
+  will-change: transform;
 }
 
-/* Vertical Marquee Animations for Testimonials (tripled content = 33.333% scroll) */
+/* Vertical Marquee Animations for Testimonials - GPU accelerated */
 @keyframes marquee-up {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(-33.333%); }
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(0, -33.333%, 0); }
 }
 
 @keyframes marquee-down {
-  0% { transform: translateY(-33.333%); }
-  100% { transform: translateY(0); }
+  0% { transform: translate3d(0, -33.333%, 0); }
+  100% { transform: translate3d(0, 0, 0); }
 }
 
 .animate-marquee-up {
   animation: marquee-up 35s linear infinite;
+  will-change: transform;
+  backface-visibility: hidden;
 }
 
 .animate-marquee-down {
   animation: marquee-down 40s linear infinite;
+  will-change: transform;
+  backface-visibility: hidden;
 }
 
 /* Pause vertical marquee on parent hover */
 .testimonial-column:hover .animate-marquee-up,
 .testimonial-column:hover .animate-marquee-down {
   animation-play-state: paused;
+}
+
+/* ============================================
+   REDUCED MOTION - Accessibility & Performance
+   Disables all animations for users who prefer reduced motion
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .animate-grain,
+  .animate-mouse-scroll,
+  .animate-bounce-subtle,
+  .animate-scroll-line,
+  .animate-scan,
+  .animate-float,
+  .animate-float-delayed,
+  .animate-dash,
+  .animate-marquee-left,
+  .animate-marquee-right,
+  .animate-scan-document,
+  .animate-highlight-pulse,
+  .animate-float-gentle,
+  .animate-marquee-up,
+  .animate-marquee-down,
+  .animate-blink {
+    animation: none !important;
+  }
+}
+
+/* ============================================
+   PERFORMANCE UTILITIES
+   ============================================ */
+
+/* GPU acceleration helper */
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Contain layout for better performance */
+.contain-layout {
+  contain: layout;
+}
+
+.contain-paint {
+  contain: paint;
+}
+
+.contain-strict {
+  contain: strict;
 }

@@ -1,8 +1,48 @@
 "use client";
 
-import React from "react";
+import React, { memo, useMemo } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
+
+// Memoized static styles defined OUTSIDE component
+const starsBackgroundStyle = {
+  backgroundImage: `radial-gradient(1px 1px at 20px 30px, rgba(255,255,255,0.4), transparent),
+                    radial-gradient(1px 1px at 40px 70px, rgba(255,255,255,0.3), transparent),
+                    radial-gradient(1px 1px at 50px 160px, rgba(255,255,255,0.4), transparent),
+                    radial-gradient(1px 1px at 90px 40px, rgba(255,255,255,0.3), transparent),
+                    radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.4), transparent),
+                    radial-gradient(1px 1px at 160px 120px, rgba(255,255,255,0.2), transparent),
+                    radial-gradient(1.5px 1.5px at 200px 50px, rgba(201,255,100,0.5), transparent),
+                    radial-gradient(1px 1px at 250px 90px, rgba(255,255,255,0.3), transparent),
+                    radial-gradient(1px 1px at 300px 150px, rgba(255,255,255,0.4), transparent),
+                    radial-gradient(1px 1px at 350px 30px, rgba(255,255,255,0.3), transparent),
+                    radial-gradient(1.5px 1.5px at 400px 100px, rgba(201,255,100,0.4), transparent),
+                    radial-gradient(1px 1px at 450px 70px, rgba(255,255,255,0.3), transparent),
+                    radial-gradient(1px 1px at 500px 140px, rgba(255,255,255,0.4), transparent),
+                    radial-gradient(1px 1px at 550px 50px, rgba(255,255,255,0.2), transparent),
+                    radial-gradient(1px 1px at 600px 120px, rgba(255,255,255,0.3), transparent),
+                    radial-gradient(1.5px 1.5px at 650px 80px, rgba(201,255,100,0.5), transparent),
+                    radial-gradient(1px 1px at 700px 40px, rgba(255,255,255,0.4), transparent),
+                    radial-gradient(1px 1px at 750px 160px, rgba(255,255,255,0.3), transparent),
+                    radial-gradient(1px 1px at 800px 90px, rgba(255,255,255,0.4), transparent),
+                    radial-gradient(1px 1px at 850px 130px, rgba(255,255,255,0.2), transparent)`,
+  backgroundSize: '900px 200px',
+};
+
+const earthHorizonStyle = {
+  background: `
+    radial-gradient(ellipse 120% 60% at 85% 120%, rgba(30, 80, 60, 0.4) 0%, transparent 50%),
+    radial-gradient(ellipse 100% 50% at 80% 115%, rgba(20, 60, 45, 0.5) 0%, transparent 45%),
+    radial-gradient(ellipse 80% 40% at 75% 110%, rgba(15, 45, 35, 0.6) 0%, transparent 40%)
+  `,
+};
+
+const atmosphereGlowStyle = {
+  background: `
+    radial-gradient(ellipse 150% 8% at 80% 95%, rgba(100, 200, 150, 0.15) 0%, transparent 70%),
+    radial-gradient(ellipse 120% 4% at 75% 98%, rgba(201, 255, 100, 0.2) 0%, transparent 60%)
+  `,
+};
 
 interface FooterLink {
   title: string;
@@ -18,27 +58,24 @@ const footerLinks: FooterSection[] = [
   {
     label: "Quick links",
     links: [
-      { title: "Pricing", href: "#pricing" },
-      { title: "Features", href: "#features" },
-      { title: "About us", href: "#about" },
+      { title: "Resources", href: "/resources" },
+      { title: "Contact us", href: "/contact" },
       { title: "FAQ", href: "#faq" },
-      { title: "Contact us", href: "#contact" },
     ],
   },
   {
-    label: "Social",
+    label: "Company",
     links: [
-      { title: "LinkedIn", href: "#linkedin" },
-      { title: "Twitter", href: "#twitter" },
-      { title: "GitHub", href: "#github" },
+      { title: "Blog", href: "/blog" },
+      { title: "Articles", href: "/articles" },
     ],
   },
   {
     label: "Legal",
     links: [
-      { title: "Terms of service", href: "#terms" },
-      { title: "Privacy policy", href: "#privacy" },
-      { title: "Cookie policy", href: "#cookies" },
+      { title: "Terms of service", href: "/terms-and-conditions" },
+      { title: "Privacy policy", href: "/terms-and-conditions" },
+      { title: "Cookie settings", href: "/terms-and-conditions" },
     ],
   },
 ];
@@ -49,7 +86,12 @@ type AnimatedContainerProps = {
   children: React.ReactNode;
 };
 
-function AnimatedContainer({ className, delay = 0.1, children }: AnimatedContainerProps) {
+// Memoized AnimatedContainer - uses transform/opacity instead of filter for GPU performance
+const AnimatedContainer = memo(function AnimatedContainer({
+  className,
+  delay = 0.1,
+  children
+}: AnimatedContainerProps) {
   const shouldReduceMotion = useReducedMotion();
 
   if (shouldReduceMotion) {
@@ -58,18 +100,19 @@ function AnimatedContainer({ className, delay = 0.1, children }: AnimatedContain
 
   return (
     <motion.div
-      initial={{ filter: "blur(4px)", translateY: -8, opacity: 0 }}
-      whileInView={{ filter: "blur(0px)", translateY: 0, opacity: 1 }}
+      initial={{ y: -8, opacity: 0 }}
+      whileInView={{ y: 0, opacity: 1 }}
       viewport={{ once: true }}
-      transition={{ delay, duration: 0.8 }}
+      transition={{ delay, duration: 0.6 }}
       className={className}
     >
       {children}
     </motion.div>
   );
-}
+});
 
-export default function Footer() {
+// Memoized Footer component
+const Footer = memo(function Footer() {
   return (
     <footer className="relative w-full bg-[#050505]">
       {/* Top Separator */}
@@ -82,58 +125,16 @@ export default function Footer() {
         <div className="max-w-6xl mx-auto">
           <AnimatedContainer delay={0.1}>
             <div className="relative overflow-hidden rounded-3xl bg-[#080808] border border-[#1a1a1a] p-8 md:p-12 lg:p-16 min-h-[320px]">
-              {/* Space/Earth Horizon Effect */}
+              {/* Space/Earth Horizon Effect - using memoized styles */}
               <div className="absolute inset-0 overflow-hidden">
                 {/* Stars background */}
-                <div
-                  className="absolute inset-0 opacity-40"
-                  style={{
-                    backgroundImage: `radial-gradient(1px 1px at 20px 30px, rgba(255,255,255,0.4), transparent),
-                                      radial-gradient(1px 1px at 40px 70px, rgba(255,255,255,0.3), transparent),
-                                      radial-gradient(1px 1px at 50px 160px, rgba(255,255,255,0.4), transparent),
-                                      radial-gradient(1px 1px at 90px 40px, rgba(255,255,255,0.3), transparent),
-                                      radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.4), transparent),
-                                      radial-gradient(1px 1px at 160px 120px, rgba(255,255,255,0.2), transparent),
-                                      radial-gradient(1.5px 1.5px at 200px 50px, rgba(201,255,100,0.5), transparent),
-                                      radial-gradient(1px 1px at 250px 90px, rgba(255,255,255,0.3), transparent),
-                                      radial-gradient(1px 1px at 300px 150px, rgba(255,255,255,0.4), transparent),
-                                      radial-gradient(1px 1px at 350px 30px, rgba(255,255,255,0.3), transparent),
-                                      radial-gradient(1.5px 1.5px at 400px 100px, rgba(201,255,100,0.4), transparent),
-                                      radial-gradient(1px 1px at 450px 70px, rgba(255,255,255,0.3), transparent),
-                                      radial-gradient(1px 1px at 500px 140px, rgba(255,255,255,0.4), transparent),
-                                      radial-gradient(1px 1px at 550px 50px, rgba(255,255,255,0.2), transparent),
-                                      radial-gradient(1px 1px at 600px 120px, rgba(255,255,255,0.3), transparent),
-                                      radial-gradient(1.5px 1.5px at 650px 80px, rgba(201,255,100,0.5), transparent),
-                                      radial-gradient(1px 1px at 700px 40px, rgba(255,255,255,0.4), transparent),
-                                      radial-gradient(1px 1px at 750px 160px, rgba(255,255,255,0.3), transparent),
-                                      radial-gradient(1px 1px at 800px 90px, rgba(255,255,255,0.4), transparent),
-                                      radial-gradient(1px 1px at 850px 130px, rgba(255,255,255,0.2), transparent)`,
-                    backgroundSize: '900px 200px',
-                  }}
-                />
+                <div className="absolute inset-0 opacity-40" style={starsBackgroundStyle} />
 
                 {/* Earth horizon glow - atmospheric effect */}
-                <div
-                  className="absolute bottom-0 right-0 w-full h-full"
-                  style={{
-                    background: `
-                      radial-gradient(ellipse 120% 60% at 85% 120%, rgba(30, 80, 60, 0.4) 0%, transparent 50%),
-                      radial-gradient(ellipse 100% 50% at 80% 115%, rgba(20, 60, 45, 0.5) 0%, transparent 45%),
-                      radial-gradient(ellipse 80% 40% at 75% 110%, rgba(15, 45, 35, 0.6) 0%, transparent 40%)
-                    `,
-                  }}
-                />
+                <div className="absolute bottom-0 right-0 w-full h-full" style={earthHorizonStyle} />
 
                 {/* Atmosphere glow line */}
-                <div
-                  className="absolute bottom-0 right-0 w-full h-full"
-                  style={{
-                    background: `
-                      radial-gradient(ellipse 150% 8% at 80% 95%, rgba(100, 200, 150, 0.15) 0%, transparent 70%),
-                      radial-gradient(ellipse 120% 4% at 75% 98%, rgba(201, 255, 100, 0.2) 0%, transparent 60%)
-                    `,
-                  }}
-                />
+                <div className="absolute bottom-0 right-0 w-full h-full" style={atmosphereGlowStyle} />
               </div>
 
               {/* Curved horizon line SVG */}
@@ -213,8 +214,7 @@ export default function Footer() {
                   transition={{ duration: 0.6, delay: 0.2 }}
                   className="text-3xl md:text-4xl lg:text-5xl font-semibold text-white leading-tight"
                 >
-                  Experience effortless
-                  <br />
+                  Experience <em className="italic">effortless</em>{" "}
                   <span className="text-[#C9FF64]">compliance</span>
                 </motion.h2>
 
@@ -236,10 +236,10 @@ export default function Footer() {
                   className="mt-8"
                 >
                   <a
-                    href="#get-started"
-                    className="inline-flex items-center px-6 py-3 bg-white text-[#0a0a0a] text-sm font-medium rounded-lg hover:bg-[#C9FF64] transition-colors duration-200"
+                    href="/contact"
+                    className="inline-flex items-center px-6 py-3 bg-white text-[#0a0a0a] text-sm font-medium rounded-xl hover:bg-[#C9FF64] transition-colors duration-200"
                   >
-                    Get started
+                    Contact Us
                   </a>
                 </motion.div>
               </div>
@@ -323,4 +323,6 @@ export default function Footer() {
       </div>
     </footer>
   );
-}
+});
+
+export default Footer;

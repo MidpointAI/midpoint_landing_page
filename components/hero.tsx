@@ -1,24 +1,59 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { GrainGradient } from "@paper-design/shaders-react";
+import dynamic from "next/dynamic";
+import { memo, Suspense } from "react";
+
+// Dynamically import the shader component to reduce initial bundle size
+const GrainGradient = dynamic(
+  () => import("@paper-design/shaders-react").then((mod) => mod.GrainGradient),
+  {
+    ssr: false,
+    loading: () => (
+      <div
+        className="w-full h-full"
+        style={{
+          background: "radial-gradient(ellipse at center, #122e1a 0%, #050505 70%)",
+        }}
+      />
+    ),
+  }
+);
+
+// Memoized shader background to prevent unnecessary re-renders
+const ShaderBackground = memo(function ShaderBackground() {
+  return (
+    <GrainGradient
+      style={{ width: "100%", height: "100%" }}
+      colors={["#030806", "#0a1f12", "#122e1a", "#1a4525", "#256035", "#3d8050"]}
+      colorBack="#050505"
+      softness={0.3}
+      intensity={0.9}
+      noise={0.15}
+      shape="corners"
+      speed={0.55}
+      scale={1.2}
+    />
+  );
+});
 
 export default function Hero() {
   return (
     <section className="min-h-screen flex flex-col items-center justify-center bg-[#050505] px-6 py-24 md:py-32 lg:py-40 relative overflow-hidden">
-      {/* Cinematic Shader Background */}
+      {/* Cinematic Shader Background - dynamically loaded */}
       <div className="absolute inset-0 z-0">
-        <GrainGradient
-          style={{ width: "100%", height: "100%" }}
-          colors={["#030806", "#0a1f12", "#122e1a", "#1a4525", "#256035", "#3d8050"]}
-          colorBack="#050505"
-          softness={0.25}
-          intensity={0.9}
-          noise={0.55}
-          shape="corners"
-          speed={0.25}
-          scale={1.6}
-        />
+        <Suspense
+          fallback={
+            <div
+              className="w-full h-full"
+              style={{
+                background: "radial-gradient(ellipse at center, #122e1a 0%, #050505 70%)",
+              }}
+            />
+          }
+        >
+          <ShaderBackground />
+        </Suspense>
       </div>
 
       {/* Dark overlay for text readability */}
@@ -33,7 +68,7 @@ export default function Hero() {
         transition={{ duration: 0.8, delay: 0.2 }}
         className="text-sm tracking-[0.3em] uppercase text-[#555555] mb-8"
       >
-        Insurance Compliance, Reimagined
+        Insurance Compliance, <em className="italic">Reimagined</em>
       </motion.p>
 
       {/* Main Headline */}
@@ -76,10 +111,10 @@ export default function Hero() {
       >
         {/* Primary Button */}
         <a
-          href="#get-started"
-          className="relative px-8 sm:px-12 py-5 bg-[#C9FF64] text-[#050505] text-sm tracking-[0.15em] uppercase font-medium overflow-hidden group"
+          href="/contact"
+          className="relative px-8 sm:px-12 py-5 bg-[#C9FF64] text-[#050505] text-sm tracking-[0.15em] uppercase font-medium overflow-hidden group rounded-xl"
         >
-          <span className="relative z-10">Start Free</span>
+          <span className="relative z-10">Sign Up</span>
           <div
             className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-[200%] group-hover:translate-x-[200%] transition-transform duration-700"
           />
@@ -87,10 +122,10 @@ export default function Hero() {
 
         {/* Secondary Button */}
         <a
-          href="#demo"
-          className="px-8 sm:px-12 py-5 border border-[#2a2a2a] text-white text-sm tracking-[0.15em] uppercase font-light hover:border-[#C9FF64] hover:text-[#C9FF64] transition-colors duration-300"
+          href="/resources"
+          className="px-8 sm:px-12 py-5 border border-[#2a2a2a] text-white text-sm tracking-[0.15em] uppercase font-light hover:border-[#C9FF64] hover:text-[#C9FF64] transition-colors duration-300 rounded-xl"
         >
-          Watch Demo
+          Learn More
         </a>
       </motion.div>
       </div>

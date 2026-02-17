@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, memo, useMemo } from "react";
 import { motion, useInView } from "framer-motion";
 
 interface Testimonial {
@@ -86,15 +86,24 @@ const testimonials: Testimonial[] = [
   },
 ];
 
-// Testimonial Card with hover effect
-function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
-  const initials = testimonial.name
-    .split(" ")
-    .map((n) => n[0])
-    .join("");
+// MEMOIZED Testimonial Card - prevents unnecessary re-renders
+const TestimonialCard = memo(function TestimonialCard({
+  testimonial,
+}: {
+  testimonial: Testimonial;
+}) {
+  // Memoize initials calculation
+  const initials = useMemo(
+    () =>
+      testimonial.name
+        .split(" ")
+        .map((n) => n[0])
+        .join(""),
+    [testimonial.name]
+  );
 
   return (
-    <div className="p-4 mx-2 my-2 rounded-xl bg-[#0a0a0a]/80 border border-[#1a1a1a] hover:border-[#C9FF64]/40 hover:shadow-[0_0_30px_rgba(201,255,100,0.08)] transition-all duration-300 cursor-default group">
+    <div className="p-4 mx-2 my-2 rounded-xl bg-[#0a0a0a]/80 border border-[#1a1a1a] hover:border-[#C9FF64]/40 transition-colors duration-300 cursor-default group">
       {/* Quote */}
       <p className="text-sm text-[#777777] leading-relaxed mb-4 group-hover:text-[#999999] transition-colors duration-300">
         &ldquo;{testimonial.quote}&rdquo;
@@ -106,18 +115,18 @@ function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
           <span className="text-xs font-medium text-[#C9FF64]">{initials}</span>
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-medium text-white truncate">{testimonial.name}</p>
-          <p className="text-xs text-[#555555] truncate">
-            {testimonial.title}
+          <p className="text-sm font-medium text-white truncate">
+            {testimonial.name}
           </p>
+          <p className="text-xs text-[#555555] truncate">{testimonial.title}</p>
         </div>
       </div>
     </div>
   );
-}
+});
 
-// Single column of scrolling testimonials
-function TestimonialColumn({
+// MEMOIZED column component
+const TestimonialColumn = memo(function TestimonialColumn({
   testimonials,
   direction,
   speed,
@@ -126,8 +135,17 @@ function TestimonialColumn({
   direction: "up" | "down";
   speed?: string;
 }) {
-  // Triple the testimonials for truly seamless infinite loop
-  const tripled = [...testimonials, ...testimonials, ...testimonials];
+  // Memoize tripled array to prevent recreation
+  const tripled = useMemo(
+    () => [...testimonials, ...testimonials, ...testimonials],
+    [testimonials]
+  );
+
+  // Memoize style object
+  const animationStyle = useMemo(
+    () => (speed ? { animationDuration: speed } : undefined),
+    [speed]
+  );
 
   return (
     <div className="testimonial-column relative h-full overflow-hidden">
@@ -135,69 +153,142 @@ function TestimonialColumn({
         className={`flex flex-col ${
           direction === "up" ? "animate-marquee-up" : "animate-marquee-down"
         }`}
-        style={speed ? { animationDuration: speed } : undefined}
+        style={animationStyle}
       >
         {tripled.map((testimonial, index) => (
-          <TestimonialCard key={`${testimonial.name}-${index}`} testimonial={testimonial} />
+          <TestimonialCard
+            key={`${testimonial.name}-${index}`}
+            testimonial={testimonial}
+          />
         ))}
       </div>
     </div>
   );
-}
+});
+
+// Memoize gradient style objects outside component
+const topGradientClass =
+  "absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-[#050505] via-[#050505]/90 to-transparent z-10 pointer-events-none";
+const bottomGradientClass =
+  "absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#050505] via-[#050505]/90 to-transparent z-10 pointer-events-none";
 
 export default function Testimonials() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
-  // Split testimonials into 5 columns with 6 cards each for better coverage
-  const columns = [
-    [testimonials[0], testimonials[5], testimonials[10], testimonials[2], testimonials[7], testimonials[4]],
-    [testimonials[1], testimonials[6], testimonials[11], testimonials[3], testimonials[8], testimonials[0]],
-    [testimonials[2], testimonials[7], testimonials[4], testimonials[9], testimonials[1], testimonials[6]],
-    [testimonials[3], testimonials[8], testimonials[5], testimonials[10], testimonials[0], testimonials[7]],
-    [testimonials[4], testimonials[9], testimonials[1], testimonials[6], testimonials[11], testimonials[2]],
-  ];
+  // Memoize columns to prevent recreation
+  const columns = useMemo(
+    () => [
+      [
+        testimonials[0],
+        testimonials[5],
+        testimonials[10],
+        testimonials[2],
+        testimonials[7],
+        testimonials[4],
+      ],
+      [
+        testimonials[1],
+        testimonials[6],
+        testimonials[11],
+        testimonials[3],
+        testimonials[8],
+        testimonials[0],
+      ],
+      [
+        testimonials[2],
+        testimonials[7],
+        testimonials[4],
+        testimonials[9],
+        testimonials[1],
+        testimonials[6],
+      ],
+      [
+        testimonials[3],
+        testimonials[8],
+        testimonials[5],
+        testimonials[10],
+        testimonials[0],
+        testimonials[7],
+      ],
+      [
+        testimonials[4],
+        testimonials[9],
+        testimonials[1],
+        testimonials[6],
+        testimonials[11],
+        testimonials[2],
+      ],
+    ],
+    []
+  );
+
+  // Memoize backdrop styles - SIMPLIFIED to reduce blur overhead
+  const backdropStyle = useMemo(
+    () => ({
+      background:
+        "radial-gradient(ellipse 100% 100% at 50% 50%, rgba(5, 5, 5, 0.98) 0%, rgba(5, 5, 5, 0.9) 30%, rgba(5, 5, 5, 0.7) 50%, rgba(5, 5, 5, 0.4) 70%, transparent 100%)",
+    }),
+    []
+  );
 
   return (
-    <section
-      ref={ref}
-      className="relative h-screen bg-[#050505] overflow-hidden"
-    >
-      {/* Testimonial Columns Grid */}
-      <div className="absolute inset-0 grid grid-cols-3 md:grid-cols-5 gap-2 md:gap-4 px-2 md:px-4">
+    <section ref={ref} className="relative h-screen bg-[#050505] overflow-hidden">
+      {/* Testimonial Columns Grid - GPU accelerated */}
+      <div className="absolute inset-0 grid grid-cols-3 md:grid-cols-5 gap-2 md:gap-4 px-2 md:px-4 gpu-accelerated">
         {/* Column 1 - UP */}
         <div className="hidden md:block h-full">
-          <TestimonialColumn testimonials={columns[0]} direction="up" speed="45s" />
+          <TestimonialColumn
+            testimonials={columns[0]}
+            direction="up"
+            speed="45s"
+          />
         </div>
 
         {/* Column 2 - DOWN */}
         <div className="h-full">
-          <TestimonialColumn testimonials={columns[1]} direction="down" speed="50s" />
+          <TestimonialColumn
+            testimonials={columns[1]}
+            direction="down"
+            speed="50s"
+          />
         </div>
 
         {/* Column 3 - UP */}
         <div className="h-full">
-          <TestimonialColumn testimonials={columns[2]} direction="up" speed="42s" />
+          <TestimonialColumn
+            testimonials={columns[2]}
+            direction="up"
+            speed="42s"
+          />
         </div>
 
         {/* Column 4 - DOWN */}
         <div className="h-full">
-          <TestimonialColumn testimonials={columns[3]} direction="down" speed="48s" />
+          <TestimonialColumn
+            testimonials={columns[3]}
+            direction="down"
+            speed="48s"
+          />
         </div>
 
         {/* Column 5 - UP */}
         <div className="hidden md:block h-full">
-          <TestimonialColumn testimonials={columns[4]} direction="up" speed="46s" />
+          <TestimonialColumn
+            testimonials={columns[4]}
+            direction="up"
+            speed="46s"
+          />
         </div>
       </div>
 
       {/* Top Gradient Fade */}
-      <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-[#050505] via-[#050505]/90 to-transparent z-10 pointer-events-none" />
+      <div className={topGradientClass} />
 
       {/* Bottom Gradient Fade */}
-      <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#050505] via-[#050505]/90 to-transparent z-10 pointer-events-none" />
+      <div className={bottomGradientClass} />
 
-      {/* Center Text Overlay - NO visible card, just blurred backdrop */}
+      {/* Center Text Overlay - OPTIMIZED: removed expensive backdrop-blur */}
       <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
@@ -205,20 +296,10 @@ export default function Testimonials() {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="relative text-center px-12 py-16 pointer-events-auto"
         >
-          {/* Seamless radial blur backdrop - no visible edges */}
+          {/* OPTIMIZED: Solid radial gradient instead of backdrop-blur */}
           <div
             className="absolute inset-0 pointer-events-none"
-            style={{
-              background: "radial-gradient(ellipse 100% 100% at 50% 50%, rgba(5, 5, 5, 0.95) 0%, rgba(5, 5, 5, 0.85) 30%, rgba(5, 5, 5, 0.6) 50%, rgba(5, 5, 5, 0.3) 70%, transparent 100%)",
-            }}
-          />
-          {/* Additional blur layer for text readability */}
-          <div
-            className="absolute inset-[-50%] backdrop-blur-md pointer-events-none"
-            style={{
-              maskImage: "radial-gradient(ellipse 40% 40% at 50% 50%, black 0%, transparent 100%)",
-              WebkitMaskImage: "radial-gradient(ellipse 40% 40% at 50% 50%, black 0%, transparent 100%)",
-            }}
+            style={backdropStyle}
           />
 
           {/* Content */}
@@ -240,7 +321,7 @@ export default function Testimonials() {
               transition={{ duration: 0.6, delay: 0.5 }}
               className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-4"
             >
-              Trusted by
+              <em className="italic">Trusted</em> by
               <br />
               <span className="text-[#C9FF64]">Builders</span> Nationwide
             </motion.h2>
@@ -252,7 +333,8 @@ export default function Testimonials() {
               transition={{ duration: 0.5, delay: 0.7 }}
               className="text-[#888888] text-base md:text-lg max-w-md mx-auto"
             >
-              Join thousands of construction companies who&apos;ve transformed their compliance workflow
+              Join thousands of construction companies who&apos;ve transformed
+              their compliance workflow
             </motion.p>
 
             {/* Stats row */}
@@ -263,18 +345,26 @@ export default function Testimonials() {
               className="flex items-center justify-center gap-8 mt-8"
             >
               <div className="text-center">
-                <p className="text-2xl md:text-3xl font-bold text-white">2,500+</p>
-                <p className="text-xs text-[#555555] uppercase tracking-wider">Companies</p>
+                <p className="text-2xl md:text-3xl font-bold text-white">
+                  2,500+
+                </p>
+                <p className="text-xs text-[#555555] uppercase tracking-wider">
+                  Companies
+                </p>
               </div>
               <div className="w-px h-10 bg-[#333333]" />
               <div className="text-center">
                 <p className="text-2xl md:text-3xl font-bold text-white">98%</p>
-                <p className="text-xs text-[#555555] uppercase tracking-wider">Satisfaction</p>
+                <p className="text-xs text-[#555555] uppercase tracking-wider">
+                  Satisfaction
+                </p>
               </div>
               <div className="w-px h-10 bg-[#333333]" />
               <div className="text-center">
                 <p className="text-2xl md:text-3xl font-bold text-white">4.9</p>
-                <p className="text-xs text-[#555555] uppercase tracking-wider">Rating</p>
+                <p className="text-xs text-[#555555] uppercase tracking-wider">
+                  Rating
+                </p>
               </div>
             </motion.div>
           </div>

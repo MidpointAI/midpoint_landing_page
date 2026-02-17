@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState, useEffect, useCallback, memo } from "react";
 import { motion, useInView } from "framer-motion";
 
 interface AnimatedStatProps {
@@ -12,7 +12,8 @@ interface AnimatedStatProps {
   duration?: number;
 }
 
-function AnimatedStat({
+// Memoized AnimatedStat to prevent unnecessary re-renders
+const AnimatedStat = memo(function AnimatedStat({
   target,
   suffix = "",
   prefix = "",
@@ -117,7 +118,7 @@ function AnimatedStat({
       </p>
     </motion.div>
   );
-}
+});
 
 export default function StatsSection() {
   return (

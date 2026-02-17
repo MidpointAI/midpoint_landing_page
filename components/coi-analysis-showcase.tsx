@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, memo, useMemo, useCallback } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 
@@ -48,15 +48,17 @@ const highlightZones = [
   },
 ];
 
-function CheckIcon({ className }: { className?: string }) {
+// Memoized CheckIcon to prevent unnecessary re-renders
+const CheckIcon = memo(function CheckIcon({ className }: { className?: string }) {
   return (
     <svg className={className || "w-3 h-3"} fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
     </svg>
   );
-}
+});
 
-function ExtractedCard({
+// Memoized ExtractedCard component
+const ExtractedCard = memo(function ExtractedCard({
   zone,
   isActive,
   isComplete
@@ -108,7 +110,7 @@ function ExtractedCard({
       </div>
     </motion.div>
   );
-}
+});
 
 export default function CoiAnalysisShowcase() {
   const ref = useRef(null);
@@ -136,21 +138,25 @@ export default function CoiAnalysisShowcase() {
       // Start flying animation
       setFlyingData(highlightZones[currentStep].id);
 
-      const timer = setTimeout(() => {
+      const timer1 = setTimeout(() => {
         setExtractedZones(prev => [...prev, highlightZones[currentStep].id]);
         setFlyingData(null);
-
-        // Move to next step after extraction
-        setTimeout(() => {
-          if (currentStep < highlightZones.length - 1) {
-            setCurrentStep(prev => prev + 1);
-          } else {
-            setCurrentStep(highlightZones.length); // Complete state
-          }
-        }, 600);
       }, 700);
 
-      return () => clearTimeout(timer);
+      // Move to next step after extraction - separate timeout for proper cleanup
+      const timer2 = setTimeout(() => {
+        if (currentStep < highlightZones.length - 1) {
+          setCurrentStep(prev => prev + 1);
+        } else {
+          setCurrentStep(highlightZones.length); // Complete state
+        }
+      }, 1300); // 700 + 600
+
+      // Clean up both timers
+      return () => {
+        clearTimeout(timer1);
+        clearTimeout(timer2);
+      };
     }
   }, [currentStep]);
 
@@ -179,7 +185,7 @@ export default function CoiAnalysisShowcase() {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="text-3xl md:text-4xl lg:text-5xl font-extralight text-white tracking-tight"
           >
-            See AI in Action
+            See AI in <em className="italic">Action</em>
           </motion.h2>
         </div>
 
@@ -193,10 +199,10 @@ export default function CoiAnalysisShowcase() {
             className="relative w-full lg:w-[55%] max-w-[500px] mx-auto lg:mx-0"
           >
             {/* Document Container */}
-            <div className="relative bg-[#0a0a0a] border border-[#1a1a1a] p-2">
+            <div className="relative bg-[#0a0a0a] border border-[#1a1a1a] p-2 rounded-xl">
               {/* Processing Indicator */}
-              <div className="absolute -top-3 left-4 z-20 flex items-center gap-2 bg-[#0a0a0a] px-2">
-                <div className={`w-2 h-2 ${isComplete ? "bg-[#22C55E]" : "bg-[#22C55E] animate-pulse"}`} />
+              <div className="absolute -top-3 left-4 z-20 flex items-center gap-2 bg-[#0a0a0a] px-3 py-1 rounded-full">
+                <div className={`w-2 h-2 rounded-full ${isComplete ? "bg-[#22C55E]" : "bg-[#22C55E] animate-pulse"}`} />
                 <span className="text-[10px] tracking-[0.15em] uppercase text-[#555555]">
                   {isComplete ? "Analysis Complete" : "Processing..."}
                 </span>
@@ -259,7 +265,7 @@ export default function CoiAnalysisShowcase() {
                         <motion.div
                           initial={{ opacity: 0, y: -10 }}
                           animate={{ opacity: 1, y: 0 }}
-                          className="absolute -top-6 left-0 bg-[#22C55E] text-white px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider shadow-lg"
+                          className="absolute -top-6 left-0 bg-[#22C55E] text-white px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider shadow-lg rounded-md"
                         >
                           {zone.label}
                         </motion.div>
@@ -281,7 +287,7 @@ export default function CoiAnalysisShowcase() {
                             ease: "easeInOut"
                           }}
                         >
-                          <span className="bg-[#22C55E] text-white px-2 py-1 text-[10px] font-mono font-medium shadow-lg whitespace-nowrap">
+                          <span className="bg-[#22C55E] text-white px-2 py-1 text-[10px] font-mono font-medium shadow-lg whitespace-nowrap rounded-full">
                             {zone.coverage}
                           </span>
                         </motion.div>
@@ -321,7 +327,7 @@ export default function CoiAnalysisShowcase() {
           >
             {/* Header */}
             <div className="flex items-center gap-2 mb-6">
-              <div className={`w-2 h-2 ${extractedZones.length > 0 ? "bg-[#C9FF64]" : "bg-[#555555]"}`} />
+              <div className={`w-2 h-2 rounded-full ${extractedZones.length > 0 ? "bg-[#C9FF64]" : "bg-[#555555]"}`} />
               <span className="text-xs tracking-[0.2em] uppercase text-[#888888]">
                 Extracted Data
               </span>
@@ -354,7 +360,7 @@ export default function CoiAnalysisShowcase() {
 
               {/* Empty State */}
               {extractedZones.length === 0 && (
-                <div className="flex items-center justify-center h-[200px] border border-dashed border-[#1a1a1a] text-[#555555] text-sm">
+                <div className="flex items-center justify-center h-[200px] border border-dashed border-[#1a1a1a] text-[#555555] text-sm rounded-xl">
                   <span className="animate-pulse">Analyzing document...</span>
                 </div>
               )}
