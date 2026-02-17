@@ -61,12 +61,19 @@ const CheckIcon = memo(function CheckIcon({ className }: { className?: string })
 const ExtractedCard = memo(function ExtractedCard({
   zone,
   isActive,
-  isComplete
+  isComplete,
+  isHovered,
+  onHover,
+  onHoverEnd
 }: {
   zone: typeof highlightZones[0];
   isActive: boolean;
   isComplete: boolean;
+  isHovered: boolean;
+  onHover: () => void;
+  onHoverEnd: () => void;
 }) {
+  const highlighted = isActive || isHovered;
   return (
     <motion.div
       initial={{ opacity: 0, x: -40, scale: 0.95 }}
@@ -80,15 +87,17 @@ const ExtractedCard = memo(function ExtractedCard({
         duration: 0.5,
         ease: [0.25, 0.46, 0.45, 0.94]
       }}
+      onMouseEnter={onHover}
+      onMouseLeave={onHoverEnd}
       className={`
-        border-l-2 pl-4 py-2
-        ${isActive ? "border-[#C9FF64]" : "border-[#1a1a1a]"}
+        border-l-2 pl-4 py-2 cursor-pointer transition-colors duration-200
+        ${highlighted ? "border-[#C9FF64]" : "border-[#1a1a1a]"}
       `}
     >
       <div className="flex items-center justify-between gap-4">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <span className={`text-sm font-medium ${isActive ? "text-white" : "text-[#888888]"}`}>
+            <span className={`text-sm font-medium transition-colors duration-200 ${highlighted ? "text-white" : "text-[#888888]"}`}>
               {zone.label}
             </span>
             {isComplete && (
@@ -103,7 +112,7 @@ const ExtractedCard = memo(function ExtractedCard({
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.2, duration: 0.3 }}
-          className={`text-lg font-mono tabular-nums whitespace-nowrap ${isActive ? "text-[#C9FF64]" : "text-white"}`}
+          className={`text-lg font-mono tabular-nums whitespace-nowrap transition-colors duration-200 ${highlighted ? "text-[#C9FF64]" : "text-white"}`}
         >
           {zone.coverage}
         </motion.span>
@@ -118,6 +127,7 @@ export default function CoiAnalysisShowcase() {
   const [currentStep, setCurrentStep] = useState(-1);
   const [extractedZones, setExtractedZones] = useState<string[]>([]);
   const [flyingData, setFlyingData] = useState<string | null>(null);
+  const [hoveredZone, setHoveredZone] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isInView) return;
@@ -223,6 +233,8 @@ export default function CoiAnalysisShowcase() {
                   const isActiveZone = currentStep === idx;
                   const isExtracted = extractedZones.includes(zone.id);
                   const isFlying = flyingData === zone.id;
+                  const isHovered = hoveredZone === zone.id;
+                  const shouldHighlight = isActiveZone || isHovered;
 
                   return (
                     <motion.div
@@ -236,32 +248,32 @@ export default function CoiAnalysisShowcase() {
                       }}
                       initial={{ opacity: 0 }}
                       animate={{
-                        opacity: isActiveZone ? 1 : isExtracted ? 0.5 : 0,
+                        opacity: shouldHighlight ? 1 : isExtracted ? 0.5 : 0,
                       }}
-                      transition={{ duration: 0.3 }}
+                      transition={{ duration: 0.2 }}
                     >
                       {/* Highlight Box - with visible background fill */}
                       <div
-                        className="absolute inset-0"
+                        className="absolute inset-0 transition-all duration-200"
                         style={{
-                          backgroundColor: isActiveZone
+                          backgroundColor: shouldHighlight
                             ? "rgba(34, 197, 94, 0.18)"
                             : isExtracted
                             ? "rgba(34, 197, 94, 0.06)"
                             : "transparent",
-                          border: isActiveZone
+                          border: shouldHighlight
                             ? "2px solid #22C55E"
                             : isExtracted
                             ? "1px solid rgba(34, 197, 94, 0.4)"
                             : "none",
-                          boxShadow: isActiveZone
+                          boxShadow: shouldHighlight
                             ? "0 0 12px rgba(34, 197, 94, 0.3), inset 0 0 8px rgba(34, 197, 94, 0.1)"
                             : "none",
                         }}
                       />
 
                       {/* Zone Label */}
-                      {isActiveZone && (
+                      {shouldHighlight && (
                         <motion.div
                           initial={{ opacity: 0, y: -10 }}
                           animate={{ opacity: 1, y: 0 }}
@@ -294,7 +306,7 @@ export default function CoiAnalysisShowcase() {
                       )}
 
                       {/* Small extracted indicator */}
-                      {isExtracted && !isActiveZone && (
+                      {isExtracted && !shouldHighlight && (
                         <motion.div
                           initial={{ scale: 0, opacity: 0 }}
                           animate={{ scale: 1, opacity: 1 }}
@@ -353,6 +365,9 @@ export default function CoiAnalysisShowcase() {
                       zone={zone}
                       isActive={isActive}
                       isComplete={!isActive}
+                      isHovered={hoveredZone === zone.id}
+                      onHover={() => setHoveredZone(zone.id)}
+                      onHoverEnd={() => setHoveredZone(null)}
                     />
                   );
                 })}
