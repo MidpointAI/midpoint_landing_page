@@ -13,11 +13,12 @@ const GrainGradient = dynamic(
       <div
         className="w-full h-full"
         style={{
-          background: "radial-gradient(ellipse at center, #122e1a 0%, #050505 70%)",
+          background:
+            "radial-gradient(ellipse at center, #122e1a 0%, #050505 70%)",
         }}
       />
     ),
-  }
+  },
 );
 
 // Memoized shader background to prevent unnecessary re-renders
@@ -25,14 +26,21 @@ const ShaderBackground = memo(function ShaderBackground() {
   return (
     <GrainGradient
       style={{ width: "100%", height: "100%" }}
-      colors={["#030806", "#0a1f12", "#122e1a", "#1a4525", "#256035", "#3d8050"]}
-      colorBack="#050505"
-      softness={0.3}
-      intensity={0.9}
-      noise={0.15}
+      colors={[
+        "#020a08",
+        "#0d2818",
+        "#1a4525",
+        "#2d6b3f",
+        "#4a9960",
+        "#C9FF64",
+      ]}
+      colorBack="#020504"
+      softness={0.4}
+      intensity={1}
+      noise={0.08}
       shape="corners"
-      speed={0.55}
-      scale={1.2}
+      speed={0.3}
+      scale={1.5}
     />
   );
 });
@@ -47,7 +55,8 @@ export default function Hero() {
             <div
               className="w-full h-full"
               style={{
-                background: "radial-gradient(ellipse at center, #122e1a 0%, #050505 70%)",
+                background:
+                  "radial-gradient(ellipse at center, #122e1a 0%, #050505 70%)",
               }}
             />
           }
@@ -62,72 +71,70 @@ export default function Hero() {
       {/* Content wrapper */}
       <div className="relative z-10 flex flex-col items-center">
         {/* Tagline */}
-      <motion.p
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.2 }}
-        className="text-sm tracking-[0.3em] uppercase text-[#555555] mb-8"
-      >
-        Insurance Compliance, <em className="italic">Reimagined</em>
-      </motion.p>
-
-      {/* Main Headline */}
-      <motion.h1
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.4 }}
-        className="font-display text-[15vw] md:text-[12vw] lg:text-[9vw] leading-[0.85] tracking-[0.02em] text-white uppercase text-center"
-        style={{ fontFamily: "var(--font-bebas)" }}
-      >
-        Eliminate
-      </motion.h1>
-      <motion.h1
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.6 }}
-        className="font-display text-[15vw] md:text-[12vw] lg:text-[9vw] leading-[0.85] tracking-[0.02em] text-[#C9FF64] uppercase text-center mt-[-1vw]"
-        style={{ fontFamily: "var(--font-bebas)" }}
-      >
-        Paperwork
-      </motion.h1>
-
-      {/* Subtitle */}
-      <motion.p
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.8 }}
-        className="text-lg md:text-xl text-[#888888] max-w-xl mt-16 leading-relaxed tracking-wide text-center"
-      >
-        AI-powered verification that catches what humans miss. Coverage gaps.
-        Expired certificates. Hidden exposures.
-      </motion.p>
-
-      {/* CTA Buttons */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 1.0 }}
-        className="flex flex-col sm:flex-row gap-6 mt-12 md:mt-16 lg:mt-20"
-      >
-        {/* Primary Button */}
-        <a
-          href="/contact"
-          className="relative px-8 sm:px-12 py-5 bg-[#C9FF64] text-[#050505] text-sm tracking-[0.15em] uppercase font-medium overflow-hidden group rounded-xl"
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="text-sm tracking-[0.3em] uppercase text-[#555555] mb-8"
         >
-          <span className="relative z-10">Sign Up</span>
-          <div
-            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-[200%] group-hover:translate-x-[200%] transition-transform duration-700"
-          />
-        </a>
+          Insurance Compliance, <em className="italic">Reimagined</em>
+        </motion.p>
 
-        {/* Secondary Button */}
-        <a
-          href="/resources"
-          className="px-8 sm:px-12 py-5 border border-[#2a2a2a] text-white text-sm tracking-[0.15em] uppercase font-light hover:border-[#C9FF64] hover:text-[#C9FF64] transition-colors duration-300 rounded-xl"
+        {/* Main Headline */}
+        <motion.h1
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+          className="font-display text-[15vw] md:text-[12vw] lg:text-[9vw] leading-[0.85] tracking-[0.02em] text-white uppercase text-center"
+          style={{ fontFamily: "var(--font-bebas)" }}
         >
-          Learn More
-        </a>
-      </motion.div>
+          Eliminate
+        </motion.h1>
+        <motion.h1
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.6 }}
+          className="font-display text-[15vw] md:text-[12vw] lg:text-[9vw] leading-[0.85] tracking-[0.02em] text-[#C9FF64] uppercase text-center mt-[-1vw]"
+          style={{ fontFamily: "var(--font-bebas)" }}
+        >
+          Paperwork
+        </motion.h1>
+
+        {/* Subtitle */}
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.8 }}
+          className="text-lg md:text-xl text-[#888888] max-w-xl mt-16 leading-relaxed tracking-wide text-center"
+        >
+          AI-powered verification that catches what humans miss. Coverage gaps.
+          Expired certificates. Hidden exposures.
+        </motion.p>
+
+        {/* CTA Buttons */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 1.0 }}
+          className="flex flex-col sm:flex-row gap-6 mt-12 md:mt-16 lg:mt-20"
+        >
+          {/* Primary Button */}
+          <a
+            href="/contact"
+            className="relative px-8 sm:px-12 py-5 bg-[#C9FF64] text-[#050505] text-sm tracking-[0.15em] uppercase font-medium overflow-hidden group rounded-xl"
+          >
+            <span className="relative z-10">Sign Up</span>
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-[200%] group-hover:translate-x-[200%] transition-transform duration-700" />
+          </a>
+
+          {/* Secondary Button */}
+          <a
+            href="/resources"
+            className="px-8 sm:px-12 py-5 border border-[#2a2a2a] text-white text-sm tracking-[0.15em] uppercase font-light hover:border-[#C9FF64] hover:text-[#C9FF64] transition-colors duration-300 rounded-xl"
+          >
+            Learn More
+          </a>
+        </motion.div>
       </div>
 
       {/* Professional Mouse Scroll Indicator */}
@@ -147,7 +154,12 @@ export default function Hero() {
             viewBox="0 0 24 24"
             stroke="currentColor"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 14l-7 7m0 0l-7-7"
+            />
           </svg>
         </div>
       </motion.div>
