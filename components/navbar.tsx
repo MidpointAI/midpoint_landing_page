@@ -49,13 +49,13 @@ export default function Navbar() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-[100] h-[72px]">
       {/* Glass background layer - OPTIMIZED: reduced blur from 2xl to lg */}
-      <div className="absolute inset-0 bg-[#050505]/80 backdrop-blur-lg" />
+      <div className="absolute inset-0 bg-background/80 backdrop-blur-lg" />
 
       {/* Top edge light refraction shine */}
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent" />
 
       {/* Secondary subtle shine for depth */}
-      <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-[#C9FF64]/10 to-transparent" />
+      <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-primary/10 to-transparent" />
 
       {/* Bottom border with subtle glow */}
       <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
@@ -78,13 +78,13 @@ export default function Navbar() {
         <div className="hidden md:flex items-center gap-4">
           <a
             href="/resources"
-            className="text-sm tracking-[0.1em] uppercase px-5 py-2.5 border border-white/20 text-white/90 font-medium hover:border-[#C9FF64] hover:text-[#C9FF64] transition-all duration-300 rounded-xl"
+            className="text-sm tracking-[0.1em] uppercase px-5 py-2.5 border border-foreground/20 text-foreground/90 font-medium hover:border-primary hover:text-primary transition-all duration-300 rounded-xl"
           >
             Resources
           </a>
           <a
             href="/contact"
-            className="text-sm tracking-[0.1em] uppercase px-5 py-2.5 bg-[#C9FF64] text-[#050505] font-medium hover:bg-white transition-colors duration-300 rounded-xl"
+            className="text-sm tracking-[0.1em] uppercase px-5 py-2.5 bg-primary text-primary-foreground font-medium hover:bg-foreground transition-colors duration-300 rounded-xl"
           >
             Contact Us
           </a>
@@ -98,19 +98,19 @@ export default function Navbar() {
           aria-expanded={isOpen}
         >
           <motion.span
-            className="h-px w-6 bg-white block"
+            className="h-px w-6 bg-foreground block"
             variants={hamburgerTopVariants}
             animate={animationState}
             transition={hamburgerTransition}
           />
           <motion.span
-            className="h-px w-6 bg-white block"
+            className="h-px w-6 bg-foreground block"
             variants={hamburgerMiddleVariants}
             animate={animationState}
             transition={hamburgerTransition}
           />
           <motion.span
-            className="h-px w-6 bg-white block"
+            className="h-px w-6 bg-foreground block"
             variants={hamburgerBottomVariants}
             animate={animationState}
             transition={hamburgerTransition}
@@ -130,7 +130,7 @@ export default function Navbar() {
             className="absolute left-0 right-0 top-[72px] md:hidden overflow-hidden"
           >
             {/* Glass background for mobile menu - OPTIMIZED: reduced blur */}
-            <div className="absolute inset-0 bg-[#050505]/90 backdrop-blur-lg" />
+            <div className="absolute inset-0 bg-background/90 backdrop-blur-lg" />
 
             {/* Top shine on mobile menu */}
             <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
@@ -142,14 +142,14 @@ export default function Navbar() {
             <div className="relative flex flex-col items-center py-8 gap-4">
               <a
                 href="/resources"
-                className="text-sm tracking-[0.1em] uppercase px-6 py-3 border border-white/20 text-white/90 font-medium hover:border-[#C9FF64] hover:text-[#C9FF64] transition-all duration-300 rounded-xl w-48 text-center"
+                className="text-sm tracking-[0.1em] uppercase px-6 py-3 border border-foreground/20 text-foreground/90 font-medium hover:border-primary hover:text-primary transition-all duration-300 rounded-xl w-48 text-center"
                 onClick={closeMenu}
               >
                 Resources
               </a>
               <a
                 href="/contact"
-                className="text-sm tracking-[0.1em] uppercase px-6 py-3 bg-[#C9FF64] text-[#050505] font-medium hover:bg-white transition-colors duration-300 rounded-xl w-48 text-center"
+                className="text-sm tracking-[0.1em] uppercase px-6 py-3 bg-primary text-primary-foreground font-medium hover:bg-foreground transition-colors duration-300 rounded-xl w-48 text-center"
                 onClick={closeMenu}
               >
                 Contact Us

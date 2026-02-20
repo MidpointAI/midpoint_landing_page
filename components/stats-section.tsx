@@ -94,26 +94,26 @@ const AnimatedStat = memo(function AnimatedStat({
     >
       <div className="flex items-baseline justify-center">
         {prefix && (
-          <span className="text-[2.5rem] sm:text-[4rem] text-[#C9FF64]">
+          <span className="text-[2.5rem] sm:text-[4rem] text-primary">
             {prefix}
           </span>
         )}
         <span
           className={`text-[5rem] sm:text-[8rem] md:text-[10rem] font-extralight leading-none tracking-tighter font-mono tabular-nums ${
-            accentNumber ? "text-[#C9FF64]" : "text-white"
+            accentNumber ? "text-primary" : "text-foreground"
           }`}
         >
           {displayValue}
         </span>
         <span
           className={`text-[2.5rem] sm:text-[4rem] ${
-            accentNumber ? "text-white" : "text-[#C9FF64]"
+            accentNumber ? "text-foreground" : "text-primary"
           }`}
         >
           {suffix}
         </span>
       </div>
-      <p className="text-sm tracking-[0.3em] uppercase text-[#555555] mt-6">
+      <p className="text-sm tracking-[0.3em] uppercase text-muted mt-6">
         {label}
       </p>
     </motion.div>
@@ -122,7 +122,7 @@ const AnimatedStat = memo(function AnimatedStat({
 
 export default function StatsSection() {
   return (
-    <section className="bg-[#050505] py-24 md:py-32 lg:py-[200px] px-6 border-t border-b border-[#1a1a1a]">
+    <section className="bg-background py-24 md:py-32 lg:py-[200px] px-6 border-t border-b border-border">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-16 max-w-6xl mx-auto">
         <AnimatedStat target={98} suffix="%" label="Compliance Rate" duration={1200} />
         <AnimatedStat target={48} suffix="h" label="Average Verification" duration={1000} />

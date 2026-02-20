@@ -60,9 +60,9 @@ const FaqItemComponent = memo(function FaqItemComponent({
       transition={{ duration: 0.5, delay: 0.1 + index * 0.08 }}
       className={`
         group relative overflow-hidden rounded-xl
-        bg-[#0a0a0a] border border-[#1a1a1a]
+        bg-card border border-border
         transition-all duration-300 ease-out
-        ${isOpen ? "border-[#C9FF64]/30" : "hover:border-[#2a2a2a]"}
+        ${isOpen ? "border-primary/30" : "hover:border-border"}
       `}
     >
       {/* Accent line indicator */}
@@ -70,7 +70,7 @@ const FaqItemComponent = memo(function FaqItemComponent({
         className={`
           absolute left-0 top-0 bottom-0 w-[2px]
           transition-all duration-300
-          ${isOpen ? "bg-[#C9FF64]" : "bg-transparent group-hover:bg-[#2a2a2a]"}
+          ${isOpen ? "bg-primary" : "bg-transparent group-hover:bg-border"}
         `}
       />
 
@@ -83,7 +83,7 @@ const FaqItemComponent = memo(function FaqItemComponent({
           className={`
             font-mono text-sm tracking-wider
             transition-colors duration-300
-            ${isOpen ? "text-[#C9FF64]" : "text-[#444444] group-hover:text-[#666666]"}
+            ${isOpen ? "text-primary" : "text-muted group-hover:text-muted-foreground"}
           `}
         >
           {formattedIndex}
@@ -94,7 +94,7 @@ const FaqItemComponent = memo(function FaqItemComponent({
           className={`
             flex-1 text-lg md:text-xl font-normal tracking-tight
             transition-colors duration-300
-            ${isOpen ? "text-white" : "text-[#cccccc] group-hover:text-white"}
+            ${isOpen ? "text-foreground" : "text-secondary-foreground group-hover:text-foreground"}
           `}
         >
           {faq.question}
@@ -109,8 +109,8 @@ const FaqItemComponent = memo(function FaqItemComponent({
             rounded-full border transition-all duration-300
             ${
               isOpen
-                ? "border-[#C9FF64]/40 text-[#C9FF64]"
-                : "border-[#333333] text-[#555555] group-hover:border-[#444444] group-hover:text-[#888888]"
+                ? "border-primary/40 text-primary"
+                : "border-border text-muted group-hover:border-muted-foreground group-hover:text-muted-foreground"
             }
           `}
         >
@@ -129,7 +129,7 @@ const FaqItemComponent = memo(function FaqItemComponent({
             className="overflow-hidden"
           >
             <div className="px-6 md:px-8 pb-6 md:pb-7 pl-[4.5rem] md:pl-[5.5rem]">
-              <p className="text-[#999999] leading-relaxed text-base max-w-2xl">
+              <p className="text-muted-foreground leading-relaxed text-base max-w-2xl">
                 {faq.answer}
               </p>
             </div>
@@ -151,7 +151,7 @@ export default function FaqSection() {
   }, []);
 
   return (
-    <section ref={ref} className="bg-[#050505] py-24 md:py-32 lg:py-40 px-6">
+    <section ref={ref} className="bg-background py-24 md:py-32 lg:py-40 px-6">
       <div className="max-w-5xl mx-auto">
         {/* Two-column header layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 mb-16 md:mb-20">
@@ -161,7 +161,7 @@ export default function FaqSection() {
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
               transition={{ duration: 0.6 }}
-              className="text-xs tracking-[0.4em] uppercase text-[#C9FF64] mb-6 block font-mono"
+              className="text-xs tracking-[0.4em] uppercase text-primary mb-6 block font-mono"
             >
               FAQ
             </motion.span>
@@ -169,10 +169,10 @@ export default function FaqSection() {
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-4xl md:text-5xl lg:text-6xl font-extralight text-white tracking-tight leading-[1.1]"
+              className="text-4xl md:text-5xl lg:text-6xl font-extralight text-foreground tracking-tight leading-[1.1]"
             >
               Questions &<br />
-              <em className="italic text-[#888888]">Answers</em>
+              <em className="italic text-muted-foreground">Answers</em>
             </motion.h2>
           </div>
 
@@ -182,7 +182,7 @@ export default function FaqSection() {
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-[#666666] text-lg leading-relaxed max-w-md"
+              className="text-muted-foreground text-lg leading-relaxed max-w-md"
             >
               Everything you need to know about Midpoint. Can&apos;t find what
               you&apos;re looking for? Reach out to our team.
@@ -209,10 +209,10 @@ export default function FaqSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.6, delay: 0.6 }}
-          className="mt-12 md:mt-16 pt-12 border-t border-[#1a1a1a]"
+          className="mt-12 md:mt-16 pt-12 border-t border-border"
         >
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <p className="text-[#555555] text-sm">
+            <p className="text-muted text-sm">
               Still have questions?
             </p>
             <div className="flex items-center gap-6">
@@ -220,9 +220,9 @@ export default function FaqSection() {
                 href="/resources"
                 className="
                   group inline-flex items-center gap-2
-                  text-sm text-[#888888] font-medium
+                  text-sm text-muted-foreground font-medium
                   transition-colors duration-300
-                  hover:text-white
+                  hover:text-foreground
                 "
               >
                 <span>Learn more</span>
@@ -244,9 +244,9 @@ export default function FaqSection() {
                 href="/contact"
                 className="
                   group inline-flex items-center gap-2
-                  text-sm text-white font-medium
+                  text-sm text-foreground font-medium
                   transition-colors duration-300
-                  hover:text-[#C9FF64]
+                  hover:text-primary
                 "
               >
                 <span>Contact Us</span>

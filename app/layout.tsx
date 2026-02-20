@@ -20,7 +20,8 @@ const bebasNeue = Bebas_Neue({
 
 export const metadata: Metadata = {
   title: "Midpoint - AI-Powered Insurance Compliance for Builders",
-  description: "Eliminate subcontractor paperwork with AI that reviews certificates and endorsements to uncover missing coverage, outdated limits, and hidden exposures.",
+  description:
+    "Eliminate subcontractor paperwork with AI that reviews certificates and endorsements to uncover missing coverage, outdated limits, and hidden exposures.",
 };
 
 export const viewport: Viewport = {
@@ -34,8 +35,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <script
+          async
+          crossOrigin="anonymous"
+          src="https://tweakcn.com/live-preview.min.js"
+        />
+      </head>
       <body
-        className={`${inter.variable} ${jetbrainsMono.variable} ${bebasNeue.variable} font-sans antialiased bg-[#050505] text-white`}
+        className={`${inter.variable} ${jetbrainsMono.variable} ${bebasNeue.variable} font-sans antialiased bg-background text-foreground`}
       >
         {children}
       </body>

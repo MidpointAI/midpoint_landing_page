@@ -91,28 +91,28 @@ const ExtractedCard = memo(function ExtractedCard({
       onMouseLeave={onHoverEnd}
       className={`
         border-l-2 pl-4 py-2 cursor-pointer transition-colors duration-200
-        ${highlighted ? "border-[#C9FF64]" : "border-[#1a1a1a]"}
+        ${highlighted ? "border-primary" : "border-border"}
       `}
     >
       <div className="flex items-center justify-between gap-4">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <span className={`text-sm font-medium transition-colors duration-200 ${highlighted ? "text-white" : "text-[#888888]"}`}>
+            <span className={`text-sm font-medium transition-colors duration-200 ${highlighted ? "text-foreground" : "text-muted-foreground"}`}>
               {zone.label}
             </span>
             {isComplete && (
-              <span className="text-[#C9FF64]">
+              <span className="text-primary">
                 <CheckIcon className="w-3 h-3" />
               </span>
             )}
           </div>
-          <p className="text-xs text-[#555555] mt-0.5">{zone.sublabel}</p>
+          <p className="text-xs text-muted mt-0.5">{zone.sublabel}</p>
         </div>
         <motion.span
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.2, duration: 0.3 }}
-          className={`text-lg font-mono tabular-nums whitespace-nowrap transition-colors duration-200 ${highlighted ? "text-[#C9FF64]" : "text-white"}`}
+          className={`text-lg font-mono tabular-nums whitespace-nowrap transition-colors duration-200 ${highlighted ? "text-primary" : "text-foreground"}`}
         >
           {zone.coverage}
         </motion.span>
@@ -175,7 +175,7 @@ export default function CoiAnalysisShowcase() {
   return (
     <section
       ref={ref}
-      className="relative bg-[#050505] py-16 md:py-24 lg:py-32 px-6 overflow-hidden"
+      className="relative bg-background py-16 md:py-24 lg:py-32 px-6 overflow-hidden"
     >
       {/* Content */}
       <div className="relative z-10 max-w-6xl mx-auto">
@@ -185,7 +185,7 @@ export default function CoiAnalysisShowcase() {
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
             transition={{ duration: 0.6 }}
-            className="text-xs tracking-[0.4em] uppercase text-[#C9FF64] mb-4 block"
+            className="text-xs tracking-[0.4em] uppercase text-primary mb-4 block"
           >
             Intelligent Analysis
           </motion.span>
@@ -193,7 +193,7 @@ export default function CoiAnalysisShowcase() {
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-3xl md:text-4xl lg:text-5xl font-extralight text-white tracking-tight"
+            className="text-3xl md:text-4xl lg:text-5xl font-extralight text-foreground tracking-tight"
           >
             See AI in <em className="italic">Action</em>
           </motion.h2>
@@ -209,11 +209,11 @@ export default function CoiAnalysisShowcase() {
             className="relative w-full lg:w-[55%] max-w-[500px] mx-auto lg:mx-0"
           >
             {/* Document Container */}
-            <div className="relative bg-[#0a0a0a] border border-[#1a1a1a] p-2 rounded-xl">
+            <div className="relative bg-card border border-border p-2 rounded-xl">
               {/* Processing Indicator */}
-              <div className="absolute -top-3 left-4 z-20 flex items-center gap-2 bg-[#0a0a0a] px-3 py-1 rounded-full">
+              <div className="absolute -top-3 left-4 z-20 flex items-center gap-2 bg-card px-3 py-1 rounded-full">
                 <div className={`w-2 h-2 rounded-full ${isComplete ? "bg-[#22C55E]" : "bg-[#22C55E] animate-pulse"}`} />
-                <span className="text-[10px] tracking-[0.15em] uppercase text-[#555555]">
+                <span className="text-[10px] tracking-[0.15em] uppercase text-muted">
                   {isComplete ? "Analysis Complete" : "Processing..."}
                 </span>
               </div>
@@ -323,7 +323,7 @@ export default function CoiAnalysisShowcase() {
 
               {/* File Name */}
               <div className="mt-2 text-center">
-                <span className="text-[10px] tracking-[0.15em] uppercase text-[#555555]">
+                <span className="text-[10px] tracking-[0.15em] uppercase text-muted">
                   test_coi.pdf
                 </span>
               </div>
@@ -339,12 +339,12 @@ export default function CoiAnalysisShowcase() {
           >
             {/* Header */}
             <div className="flex items-center gap-2 mb-6">
-              <div className={`w-2 h-2 rounded-full ${extractedZones.length > 0 ? "bg-[#C9FF64]" : "bg-[#555555]"}`} />
-              <span className="text-xs tracking-[0.2em] uppercase text-[#888888]">
+              <div className={`w-2 h-2 rounded-full ${extractedZones.length > 0 ? "bg-primary" : "bg-muted"}`} />
+              <span className="text-xs tracking-[0.2em] uppercase text-muted-foreground">
                 Extracted Data
               </span>
               {extractedZones.length > 0 && (
-                <span className="text-xs text-[#555555] ml-auto">
+                <span className="text-xs text-muted ml-auto">
                   {extractedZones.length}/{highlightZones.length}
                 </span>
               )}
@@ -375,7 +375,7 @@ export default function CoiAnalysisShowcase() {
 
               {/* Empty State */}
               {extractedZones.length === 0 && (
-                <div className="flex items-center justify-center h-[200px] border border-dashed border-[#1a1a1a] text-[#555555] text-sm rounded-xl">
+                <div className="flex items-center justify-center h-[200px] border border-dashed border-border text-muted text-sm rounded-xl">
                   <span className="animate-pulse">Analyzing document...</span>
                 </div>
               )}
@@ -388,19 +388,19 @@ export default function CoiAnalysisShowcase() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.3 }}
-                  className="mt-6 pt-4 border-t border-[#1a1a1a]"
+                  className="mt-6 pt-4 border-t border-border"
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <span className="text-xs tracking-[0.2em] uppercase text-[#555555] block mb-1">
+                      <span className="text-xs tracking-[0.2em] uppercase text-muted block mb-1">
                         Compliance Score
                       </span>
-                      <span className="text-sm text-[#888888]">
+                      <span className="text-sm text-muted-foreground">
                         All requirements met
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-3xl font-light text-[#C9FF64] font-mono">98%</span>
+                      <span className="text-3xl font-light text-primary font-mono">98%</span>
                     </div>
                   </div>
                 </motion.div>
@@ -423,10 +423,10 @@ export default function CoiAnalysisShowcase() {
             { value: "24/7", label: "Monitoring" },
           ].map((stat, idx) => (
             <div key={idx} className="text-center">
-              <p className="text-xl md:text-2xl font-light text-white font-mono mb-1">
+              <p className="text-xl md:text-2xl font-light text-foreground font-mono mb-1">
                 {stat.value}
               </p>
-              <p className="text-[10px] tracking-[0.2em] uppercase text-[#555555]">
+              <p className="text-[10px] tracking-[0.2em] uppercase text-muted">
                 {stat.label}
               </p>
             </div>

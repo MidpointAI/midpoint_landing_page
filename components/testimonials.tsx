@@ -103,22 +103,22 @@ const TestimonialCard = memo(function TestimonialCard({
   );
 
   return (
-    <div className="p-4 mx-2 my-2 rounded-xl bg-[#0a0a0a]/80 border border-[#1a1a1a] hover:border-[#C9FF64]/40 transition-colors duration-300 cursor-default group">
+    <div className="p-4 mx-2 my-2 rounded-xl bg-card/80 border border-border hover:border-primary/40 transition-colors duration-300 cursor-default group">
       {/* Quote */}
-      <p className="text-sm text-[#777777] leading-relaxed mb-4 group-hover:text-[#999999] transition-colors duration-300">
+      <p className="text-sm text-muted-foreground leading-relaxed mb-4 group-hover:text-secondary-foreground transition-colors duration-300">
         &ldquo;{testimonial.quote}&rdquo;
       </p>
 
       {/* Author */}
       <div className="flex items-center gap-3">
-        <div className="w-8 h-8 rounded-full bg-[#1a1a1a] flex items-center justify-center border border-[#2a2a2a] group-hover:border-[#C9FF64]/30 transition-colors duration-300">
-          <span className="text-xs font-medium text-[#C9FF64]">{initials}</span>
+        <div className="w-8 h-8 rounded-full bg-border flex items-center justify-center border border-border group-hover:border-primary/30 transition-colors duration-300">
+          <span className="text-xs font-medium text-primary">{initials}</span>
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-medium text-white truncate">
+          <p className="text-sm font-medium text-foreground truncate">
             {testimonial.name}
           </p>
-          <p className="text-xs text-[#555555] truncate">{testimonial.title}</p>
+          <p className="text-xs text-muted truncate">{testimonial.title}</p>
         </div>
       </div>
     </div>
@@ -168,9 +168,9 @@ const TestimonialColumn = memo(function TestimonialColumn({
 
 // Memoize gradient style objects outside component
 const topGradientClass =
-  "absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-[#050505] via-[#050505]/90 to-transparent z-10 pointer-events-none";
+  "absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-background via-background/90 to-transparent z-10 pointer-events-none";
 const bottomGradientClass =
-  "absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#050505] via-[#050505]/90 to-transparent z-10 pointer-events-none";
+  "absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-background via-background/90 to-transparent z-10 pointer-events-none";
 
 export default function Testimonials() {
   const ref = useRef(null);
@@ -233,7 +233,7 @@ export default function Testimonials() {
   );
 
   return (
-    <section ref={ref} className="relative h-screen bg-[#050505] overflow-hidden">
+    <section ref={ref} className="relative h-screen bg-background overflow-hidden">
       {/* Testimonial Columns Grid - GPU accelerated */}
       <div className="absolute inset-0 grid grid-cols-3 md:grid-cols-5 gap-2 md:gap-4 px-2 md:px-4 gpu-accelerated">
         {/* Column 1 - UP */}
@@ -309,7 +309,7 @@ export default function Testimonials() {
               initial={{ opacity: 0, y: 10 }}
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
               transition={{ duration: 0.5, delay: 0.4 }}
-              className="text-xs tracking-[0.3em] uppercase text-[#C9FF64] mb-4 block"
+              className="text-xs tracking-[0.3em] uppercase text-primary mb-4 block"
             >
               Testimonials
             </motion.span>
@@ -319,11 +319,11 @@ export default function Testimonials() {
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
               transition={{ duration: 0.6, delay: 0.5 }}
-              className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-4"
+              className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight mb-4"
             >
               <em className="italic">Trusted</em> by
               <br />
-              <span className="text-[#C9FF64]">Builders</span> Nationwide
+              <span className="text-primary">Builders</span> Nationwide
             </motion.h2>
 
             {/* Subtitle */}
@@ -331,7 +331,7 @@ export default function Testimonials() {
               initial={{ opacity: 0, y: 10 }}
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
               transition={{ duration: 0.5, delay: 0.7 }}
-              className="text-[#888888] text-base md:text-lg max-w-md mx-auto"
+              className="text-muted-foreground text-base md:text-lg max-w-md mx-auto"
             >
               Join thousands of construction companies who&apos;ve transformed
               their compliance workflow
@@ -345,24 +345,24 @@ export default function Testimonials() {
               className="flex items-center justify-center gap-8 mt-8"
             >
               <div className="text-center">
-                <p className="text-2xl md:text-3xl font-bold text-white">
+                <p className="text-2xl md:text-3xl font-bold text-foreground">
                   2,500+
                 </p>
-                <p className="text-xs text-[#555555] uppercase tracking-wider">
+                <p className="text-xs text-muted uppercase tracking-wider">
                   Companies
                 </p>
               </div>
-              <div className="w-px h-10 bg-[#333333]" />
+              <div className="w-px h-10 bg-border" />
               <div className="text-center">
-                <p className="text-2xl md:text-3xl font-bold text-white">98%</p>
-                <p className="text-xs text-[#555555] uppercase tracking-wider">
+                <p className="text-2xl md:text-3xl font-bold text-foreground">98%</p>
+                <p className="text-xs text-muted uppercase tracking-wider">
                   Satisfaction
                 </p>
               </div>
-              <div className="w-px h-10 bg-[#333333]" />
+              <div className="w-px h-10 bg-border" />
               <div className="text-center">
-                <p className="text-2xl md:text-3xl font-bold text-white">4.9</p>
-                <p className="text-xs text-[#555555] uppercase tracking-wider">
+                <p className="text-2xl md:text-3xl font-bold text-foreground">4.9</p>
+                <p className="text-xs text-muted uppercase tracking-wider">
                   Rating
                 </p>
               </div>

@@ -27,10 +27,10 @@ export default function StatementSection() {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section className="bg-[#050505] py-24 md:py-32 lg:py-[200px] px-6">
+    <section className="bg-background py-24 md:py-32 lg:py-[200px] px-6">
       <p
         ref={ref}
-        className="text-4xl md:text-5xl lg:text-6xl font-extralight text-white leading-[1.3] tracking-tight max-w-5xl mx-auto text-center"
+        className="text-4xl md:text-5xl lg:text-6xl font-extralight text-foreground leading-[1.3] tracking-tight max-w-5xl mx-auto text-center"
       >
         {WORDS.map((word, i) => (
           <motion.span
@@ -38,7 +38,7 @@ export default function StatementSection() {
             initial={{ opacity: 0, y: 10 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
             transition={{ duration: 0.5, delay: i * 0.06 }}
-            className={word.accent ? "text-[#C9FF64] italic" : "text-white"}
+            className={word.accent ? "text-primary italic" : "text-foreground"}
           >
             {word.text}{" "}
           </motion.span>

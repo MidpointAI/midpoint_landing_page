@@ -114,17 +114,17 @@ const AnimatedContainer = memo(function AnimatedContainer({
 // Memoized Footer component
 const Footer = memo(function Footer() {
   return (
-    <footer className="relative w-full bg-[#050505]">
+    <footer className="relative w-full bg-background">
       {/* Top Separator */}
       <div className="relative">
-        <div className="h-px bg-gradient-to-r from-transparent via-[#1a1a1a] to-transparent" />
+        <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
       </div>
 
       {/* CTA Section with Space Horizon */}
       <div className="px-6 py-16 md:py-20">
         <div className="max-w-6xl mx-auto">
           <AnimatedContainer delay={0.1}>
-            <div className="relative overflow-hidden rounded-3xl bg-[#080808] border border-[#1a1a1a] p-8 md:p-12 lg:p-16 min-h-[320px]">
+            <div className="relative overflow-hidden rounded-3xl bg-card border border-border p-8 md:p-12 lg:p-16 min-h-[320px]">
               {/* Space/Earth Horizon Effect - using memoized styles */}
               <div className="absolute inset-0 overflow-hidden">
                 {/* Stars background */}
@@ -203,7 +203,7 @@ const Footer = memo(function Footer() {
               </div>
 
               {/* Gradient overlay for text readability */}
-              <div className="absolute inset-0 bg-gradient-to-r from-[#080808] via-[#080808]/90 to-transparent z-10" />
+              <div className="absolute inset-0 bg-gradient-to-r from-card via-card/90 to-transparent z-10" />
 
               {/* Content */}
               <div className="relative z-20 max-w-xl">
@@ -212,10 +212,10 @@ const Footer = memo(function Footer() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.6, delay: 0.2 }}
-                  className="text-3xl md:text-4xl lg:text-5xl font-semibold text-white leading-tight"
+                  className="text-3xl md:text-4xl lg:text-5xl font-semibold text-foreground leading-tight"
                 >
                   Experience <em className="italic">effortless</em>{" "}
-                  <span className="text-[#C9FF64]">compliance</span>
+                  <span className="text-primary">compliance</span>
                 </motion.h2>
 
                 <motion.p
@@ -223,7 +223,7 @@ const Footer = memo(function Footer() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.6, delay: 0.3 }}
-                  className="mt-4 text-[#888888] text-base md:text-lg"
+                  className="mt-4 text-muted-foreground text-base md:text-lg"
                 >
                   AI-powered verification that catches what humans miss. Join thousands of companies worldwide.
                 </motion.p>
@@ -237,7 +237,7 @@ const Footer = memo(function Footer() {
                 >
                   <a
                     href="/contact"
-                    className="inline-flex items-center px-6 py-3 bg-white text-[#0a0a0a] text-sm font-medium rounded-xl hover:bg-[#C9FF64] transition-colors duration-200"
+                    className="inline-flex items-center px-6 py-3 bg-foreground text-background text-sm font-medium rounded-xl hover:bg-primary transition-colors duration-200"
                   >
                     Contact Us
                   </a>
@@ -263,7 +263,7 @@ const Footer = memo(function Footer() {
               />
             </a>
 
-            <div className="space-y-1 text-sm text-[#666666]">
+            <div className="space-y-1 text-sm text-muted-foreground">
               <p>548 Market Street</p>
               <p>Suite 95673</p>
               <p>San Francisco, CA 94104</p>
@@ -272,14 +272,14 @@ const Footer = memo(function Footer() {
 
             <div className="grid grid-cols-2 gap-8 pt-4">
               <div>
-                <p className="text-xs text-[#555555] uppercase tracking-wider mb-2">Phone number</p>
-                <a href="tel:1-800-123-4567" className="text-sm text-[#888888] hover:text-[#C9FF64] transition-colors">
+                <p className="text-xs text-muted uppercase tracking-wider mb-2">Phone number</p>
+                <a href="tel:1-800-123-4567" className="text-sm text-muted-foreground hover:text-primary transition-colors">
                   1-800-123-4567
                 </a>
               </div>
               <div>
-                <p className="text-xs text-[#555555] uppercase tracking-wider mb-2">Email</p>
-                <a href="mailto:hello@midpoint.com" className="text-sm text-[#888888] hover:text-[#C9FF64] transition-colors">
+                <p className="text-xs text-muted uppercase tracking-wider mb-2">Email</p>
+                <a href="mailto:hello@midpoint.com" className="text-sm text-muted-foreground hover:text-primary transition-colors">
                   hello@midpoint.com
                 </a>
               </div>
@@ -291,7 +291,7 @@ const Footer = memo(function Footer() {
             {footerLinks.map((section, index) => (
               <AnimatedContainer key={section.label} delay={0.3 + index * 0.1}>
                 <div>
-                  <h3 className="text-sm font-medium text-[#888888] mb-4">
+                  <h3 className="text-sm font-medium text-muted-foreground mb-4">
                     {section.label}
                   </h3>
                   <ul className="space-y-3">
@@ -299,7 +299,7 @@ const Footer = memo(function Footer() {
                       <li key={link.title}>
                         <a
                           href={link.href}
-                          className="text-sm text-[#555555] hover:text-[#C9FF64] transition-colors duration-200"
+                          className="text-sm text-muted hover:text-primary transition-colors duration-200"
                         >
                           {link.title}
                         </a>
@@ -314,8 +314,8 @@ const Footer = memo(function Footer() {
 
         {/* Copyright */}
         <AnimatedContainer delay={0.6}>
-          <div className="mt-12 pt-8 border-t border-[#1a1a1a] text-center">
-            <p className="text-sm text-[#555555]">
+          <div className="mt-12 pt-8 border-t border-border text-center">
+            <p className="text-sm text-muted">
               © {new Date().getFullYear()} Midpoint. All rights reserved.
             </p>
           </div>
