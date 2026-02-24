@@ -57,7 +57,7 @@ export default function Hero() {
             />
           }
         >
-          <ShaderBackground />
+          {/* <ShaderBackground /> */}
         </Suspense>
       </div>
 
@@ -129,6 +129,14 @@ export default function Hero() {
             className="px-8 sm:px-12 py-5 border border-border text-foreground text-sm tracking-[0.15em] uppercase font-light hover:border-primary hover:text-primary transition-colors duration-300 rounded-xl"
           >
             Learn More
+          </a>
+
+          {/* One Pager Button */}
+          <a
+            href="/one-pager"
+            className="px-8 sm:px-12 py-5 bg-[#1a1a19] text-[#c9ff64] text-sm tracking-[0.15em] uppercase font-medium hover:bg-[#2a2a29] transition-colors duration-300 rounded-xl"
+          >
+            View One Pager
           </a>
         </motion.div>
       </div>

@@ -212,7 +212,7 @@ export default function CoiAnalysisShowcase() {
             <div className="relative bg-card border border-border p-2 rounded-xl">
               {/* Processing Indicator */}
               <div className="absolute -top-3 left-4 z-20 flex items-center gap-2 bg-card px-3 py-1 rounded-full">
-                <div className={`w-2 h-2 rounded-full ${isComplete ? "bg-[#22C55E]" : "bg-[#22C55E] animate-pulse"}`} />
+                <div className={`w-2 h-2 rounded-full ${isComplete ? "bg-primary" : "bg-primary animate-pulse"}`} />
                 <span className="text-[10px] tracking-[0.15em] uppercase text-muted">
                   {isComplete ? "Analysis Complete" : "Processing..."}
                 </span>
@@ -277,7 +277,7 @@ export default function CoiAnalysisShowcase() {
                         <motion.div
                           initial={{ opacity: 0, y: -10 }}
                           animate={{ opacity: 1, y: 0 }}
-                          className="absolute -top-6 left-0 bg-[#22C55E] text-white px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider shadow-lg rounded-md"
+                          className="absolute -top-6 left-0 bg-primary text-primary-foreground px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider shadow-lg rounded-md"
                         >
                           {zone.label}
                         </motion.div>
@@ -299,7 +299,7 @@ export default function CoiAnalysisShowcase() {
                             ease: "easeInOut"
                           }}
                         >
-                          <span className="bg-[#22C55E] text-white px-2 py-1 text-[10px] font-mono font-medium shadow-lg whitespace-nowrap rounded-full">
+                          <span className="bg-primary text-primary-foreground px-2 py-1 text-[10px] font-mono font-medium shadow-lg whitespace-nowrap rounded-full">
                             {zone.coverage}
                           </span>
                         </motion.div>
@@ -311,7 +311,7 @@ export default function CoiAnalysisShowcase() {
                           initial={{ scale: 0, opacity: 0 }}
                           animate={{ scale: 1, opacity: 1 }}
                           transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                          className="absolute -top-1 -right-1 w-4 h-4 bg-[#22C55E] flex items-center justify-center rounded-full shadow-sm"
+                          className="absolute -top-1 -right-1 w-4 h-4 bg-primary flex items-center justify-center rounded-full shadow-sm"
                         >
                           <CheckIcon className="w-2.5 h-2.5 text-white" />
                         </motion.div>

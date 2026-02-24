@@ -223,15 +223,6 @@ export default function Testimonials() {
     []
   );
 
-  // Memoize backdrop styles - SIMPLIFIED to reduce blur overhead
-  const backdropStyle = useMemo(
-    () => ({
-      background:
-        "radial-gradient(ellipse 100% 100% at 50% 50%, rgba(5, 5, 5, 0.98) 0%, rgba(5, 5, 5, 0.9) 30%, rgba(5, 5, 5, 0.7) 50%, rgba(5, 5, 5, 0.4) 70%, transparent 100%)",
-    }),
-    []
-  );
-
   return (
     <section ref={ref} className="relative h-screen bg-background overflow-hidden">
       {/* Testimonial Columns Grid - GPU accelerated */}
@@ -294,12 +285,14 @@ export default function Testimonials() {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="relative text-center px-12 py-16 pointer-events-auto"
+          className="relative text-center px-12 py-16 pointer-events-auto overflow-visible"
         >
-          {/* OPTIMIZED: Solid radial gradient instead of backdrop-blur */}
+          {/* OPTIMIZED: Large oval radial gradient that extends beyond content for seamless fade */}
           <div
-            className="absolute inset-0 pointer-events-none"
-            style={backdropStyle}
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[250%] h-[250%] pointer-events-none"
+            style={{
+              background: "radial-gradient(ellipse 50% 50% at 50% 50%, var(--background) 0%, color-mix(in oklch, var(--background) 95%, transparent) 20%, color-mix(in oklch, var(--background) 80%, transparent) 35%, color-mix(in oklch, var(--background) 50%, transparent) 50%, color-mix(in oklch, var(--background) 20%, transparent) 70%, transparent 100%)"
+            }}
           />
 
           {/* Content */}

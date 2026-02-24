@@ -3,6 +3,7 @@
 import { useState, useCallback, useMemo } from "react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import Image from "next/image";
+import { ThemeToggle } from "./theme-toggle";
 
 // Animation variants defined OUTSIDE component to prevent recreation
 const hamburgerTopVariants: Variants = {
@@ -47,18 +48,18 @@ export default function Navbar() {
   const animationState = useMemo(() => (isOpen ? "open" : "closed"), [isOpen]);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-[100] h-[72px]">
+    <nav className="fixed top-0 left-0 right-0 z-[50] h-[72px]">
       {/* Glass background layer - OPTIMIZED: reduced blur from 2xl to lg */}
       <div className="absolute inset-0 bg-background/80 backdrop-blur-lg" />
 
-      {/* Top edge light refraction shine */}
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent" />
+      {/* Top edge light refraction shine - theme aware */}
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-foreground/20 to-transparent" />
 
       {/* Secondary subtle shine for depth */}
       <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-primary/10 to-transparent" />
 
-      {/* Bottom border with subtle glow */}
-      <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
+      {/* Bottom border with subtle glow - theme aware */}
+      <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-foreground/[0.08] to-transparent" />
 
       {/* Content */}
       <div className="relative max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
@@ -69,13 +70,14 @@ export default function Navbar() {
             alt="Midpoint"
             width={140}
             height={20}
-            className="h-5 w-auto brightness-0 invert transition-[filter] duration-300 group-hover:invert-0 group-hover:brightness-100 group-hover:sepia group-hover:saturate-[10] group-hover:hue-rotate-[30deg]"
+            className="h-5 w-auto dark:brightness-0 dark:invert transition-[filter] duration-300 group-hover:brightness-100 group-hover:sepia group-hover:saturate-[10] group-hover:hue-rotate-[30deg]"
             priority
           />
         </a>
 
         {/* Desktop Nav Buttons */}
         <div className="hidden md:flex items-center gap-4">
+          <ThemeToggle />
           <a
             href="/resources"
             className="text-sm tracking-[0.1em] uppercase px-5 py-2.5 border border-foreground/20 text-foreground/90 font-medium hover:border-primary hover:text-primary transition-all duration-300 rounded-xl"
@@ -132,14 +134,17 @@ export default function Navbar() {
             {/* Glass background for mobile menu - OPTIMIZED: reduced blur */}
             <div className="absolute inset-0 bg-background/90 backdrop-blur-lg" />
 
-            {/* Top shine on mobile menu */}
-            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+            {/* Top shine on mobile menu - theme aware */}
+            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-foreground/10 to-transparent" />
 
-            {/* Bottom border */}
-            <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
+            {/* Bottom border - theme aware */}
+            <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-foreground/[0.06] to-transparent" />
 
             {/* Content */}
             <div className="relative flex flex-col items-center py-8 gap-4">
+              <div className="mb-2">
+                <ThemeToggle />
+              </div>
               <a
                 href="/resources"
                 className="text-sm tracking-[0.1em] uppercase px-6 py-3 border border-foreground/20 text-foreground/90 font-medium hover:border-primary hover:text-primary transition-all duration-300 rounded-xl w-48 text-center"

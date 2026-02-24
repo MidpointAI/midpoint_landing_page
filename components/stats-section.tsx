@@ -122,7 +122,7 @@ const AnimatedStat = memo(function AnimatedStat({
 
 export default function StatsSection() {
   return (
-    <section className="bg-background py-24 md:py-32 lg:py-[200px] px-6 border-t border-b border-border">
+    <section className="bg-background py-24 md:py-32 lg:py-[200px] px-6 border-t border-b border-border ">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-16 max-w-6xl mx-auto">
         <AnimatedStat target={98} suffix="%" label="Compliance Rate" duration={1200} />
         <AnimatedStat target={48} suffix="h" label="Average Verification" duration={1000} />

@@ -125,8 +125,8 @@ const Footer = memo(function Footer() {
         <div className="max-w-6xl mx-auto">
           <AnimatedContainer delay={0.1}>
             <div className="relative overflow-hidden rounded-3xl bg-card border border-border p-8 md:p-12 lg:p-16 min-h-[320px]">
-              {/* Space/Earth Horizon Effect - using memoized styles */}
-              <div className="absolute inset-0 overflow-hidden">
+              {/* Space/Earth Horizon Effect - dark mode only */}
+              <div className="absolute inset-0 overflow-hidden hidden dark:block">
                 {/* Stars background */}
                 <div className="absolute inset-0 opacity-40" style={starsBackgroundStyle} />
 
@@ -137,8 +137,8 @@ const Footer = memo(function Footer() {
                 <div className="absolute bottom-0 right-0 w-full h-full" style={atmosphereGlowStyle} />
               </div>
 
-              {/* Curved horizon line SVG */}
-              <div className="absolute bottom-0 right-0 w-full h-full overflow-hidden pointer-events-none">
+              {/* Curved horizon line SVG - dark mode only */}
+              <div className="absolute bottom-0 right-0 w-full h-full overflow-hidden pointer-events-none hidden dark:block">
                 <svg
                   className="absolute bottom-0 right-0 w-full h-full"
                   viewBox="0 0 1200 400"
@@ -259,7 +259,7 @@ const Footer = memo(function Footer() {
                 alt="Midpoint"
                 width={140}
                 height={28}
-                className="h-7 w-auto brightness-0 invert"
+                className="h-7 w-auto dark:brightness-0 dark:invert"
               />
             </a>
 

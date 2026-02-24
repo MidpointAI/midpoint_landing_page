@@ -1,7 +1,14 @@
 @import "tailwindcss";
 
-:root {
-  /* shadcn/ui variables in OKLCH format for tweakcn compatibility */
+/* Enable class-based dark mode for Tailwind v4 */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* =============================================
+   DARK MODE (Default) - tweakcn compatible
+   All colors in OKLCH format for proper theming
+   ============================================= */
+:root,
+.dark {
   --background: oklch(0.08 0 0);
   --foreground: oklch(1 0 0);
   --card: oklch(0.17 0 0);
@@ -22,67 +29,120 @@
   --input: oklch(0.21 0 0);
   --ring: oklch(0.87 0.19 115);
   --radius: 0.75rem;
-  --chart-1: oklch(0.87 0.19 115);
+
+  /* Chart colors */
+  --chart-1: var(--primary);
   --chart-2: oklch(0.64 0.17 152);
   --chart-3: oklch(0.62 0.21 255);
   --chart-4: oklch(0.75 0.18 70);
-  --chart-5: oklch(0.63 0.24 27);
+  --chart-5: var(--destructive);
 
-  /* Custom project variables */
-  --background-secondary: oklch(0.12 0 0);
-  --surface: oklch(0.17 0 0);
-  --border-hover: oklch(0.28 0 0);
-  --text-primary: oklch(1 0 0);
-  --text-secondary: oklch(0.59 0 0);
-  --text-muted: oklch(0.42 0 0);
+  /* Sidebar variables */
+  --sidebar-background: var(--background);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: var(--accent);
+  --sidebar-accent-foreground: var(--accent-foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
 
-  /* Shader gradient colors - theme responsive */
-  --shader-bg: oklch(0.03 0.01 145);
-  --shader-1: oklch(0.05 0.02 150);
-  --shader-2: oklch(0.12 0.04 145);
-  --shader-3: oklch(0.22 0.06 140);
-  --shader-4: oklch(0.35 0.08 135);
-  --shader-5: oklch(0.50 0.12 140);
+  /* Derived variables - auto-adapt via color-mix */
+  --background-secondary: color-mix(in oklch, var(--background), var(--card));
+  --surface: var(--card);
+  --border-hover: color-mix(in oklch, var(--border) 60%, var(--foreground) 40%);
+
+  /* Shader gradient colors - blend from background toward primary */
+  --shader-bg: color-mix(in oklch, var(--background) 98%, var(--primary) 2%);
+  --shader-1: color-mix(in oklch, var(--background) 92%, var(--primary) 8%);
+  --shader-2: color-mix(in oklch, var(--background) 82%, var(--primary) 18%);
+  --shader-3: color-mix(in oklch, var(--background) 68%, var(--primary) 32%);
+  --shader-4: color-mix(in oklch, var(--background) 50%, var(--primary) 50%);
+  --shader-5: color-mix(in oklch, var(--background) 30%, var(--primary) 70%);
   --shader-6: var(--primary);
 }
 
-/* Selection highlight color */
+/* =============================================
+   LIGHT MODE - Clean professional light theme
+   ============================================= */
+.light {
+  --background: oklch(0.98 0 0);
+  --foreground: oklch(0.13 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.13 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.13 0 0);
+  --primary: oklch(0.55 0.19 135);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.94 0.01 115);
+  --secondary-foreground: oklch(0.13 0 0);
+  --muted: oklch(0.94 0.005 115);
+  --muted-foreground: oklch(0.45 0 0);
+  --accent: oklch(0.55 0.19 135);
+  --accent-foreground: oklch(1 0 0);
+  --destructive: oklch(0.55 0.24 27);
+  --destructive-foreground: oklch(1 0 0);
+  --border: oklch(0.88 0.01 115);
+  --input: oklch(0.88 0.01 115);
+  --ring: oklch(0.55 0.19 135);
+
+  /* Light mode chart colors - slightly adjusted for visibility */
+  --chart-2: oklch(0.50 0.17 152);
+  --chart-3: oklch(0.48 0.21 255);
+  --chart-4: oklch(0.60 0.18 70);
+}
+
+/* Selection highlight - theme responsive */
 ::selection {
-  background: rgba(201, 255, 100, 0.3);
-  color: #ffffff;
+  background: color-mix(in oklch, var(--primary) 35%, transparent);
+  color: var(--foreground);
 }
 
 ::-moz-selection {
-  background: rgba(201, 255, 100, 0.3);
-  color: #ffffff;
+  background: color-mix(in oklch, var(--primary) 35%, transparent);
+  color: var(--foreground);
 }
 
 @theme inline {
+  /* Core colors */
   --color-background: var(--background);
-  --color-background-secondary: var(--background-secondary);
-  --color-surface: var(--surface);
-  --color-card: var(--card);
-  --color-primary: var(--primary);
-  --color-accent: var(--accent);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-border: var(--border);
-  --color-border-hover: var(--border-hover);
-  --color-text-primary: var(--text-primary);
-  --color-text-secondary: var(--text-secondary);
-  --color-text-muted: var(--text-muted);
   --color-foreground: var(--foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
-  --color-ring: var(--ring);
+
+  /* UI elements */
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
-  --color-card-foreground: var(--card-foreground);
-  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
   --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Extended/derived colors */
+  --color-background-secondary: var(--background-secondary);
+  --color-surface: var(--surface);
+  --color-border-hover: var(--border-hover);
+
+  /* Sidebar colors */
+  --color-sidebar-background: var(--sidebar-background);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Design tokens */
   --radius: var(--radius);
   --font-sans: 'Inter', 'Inter Fallback', sans-serif;
   --font-mono: 'JetBrains Mono', 'JetBrains Mono Fallback', monospace;
@@ -91,7 +151,7 @@
 
 body {
   background: var(--background);
-  color: var(--text-primary);
+  color: var(--foreground);
 }
 
 /* Custom Scrollbar */
@@ -430,4 +490,30 @@ body {
 
 .contain-strict {
   contain: strict;
+}
+
+/* Scrollbar hide utility */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Slide-in animation for mobile sidebar */
+@keyframes slide-in-from-left {
+  0% {
+    transform: translate3d(-100%, 0, 0);
+    opacity: 0;
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in-left {
+  animation: slide-in-from-left 0.2s ease-out forwards;
+  will-change: transform, opacity;
 }

@@ -8,23 +8,58 @@ interface ShaderColors {
 }
 
 /**
- * Converts an OKLCH color string to hex format
- * OKLCH format: oklch(L C H) where L is lightness (0-1), C is chroma (0-0.4), H is hue (0-360)
+ * Converts any CSS color string to hex format
+ * Supports: oklch(), rgb(), rgba(), color(srgb), hex
  */
-function oklchToHex(oklchStr: string): string {
-  // Parse oklch(L C H) format
-  const match = oklchStr.match(/oklch\(\s*([\d.]+)\s+([\d.]+)\s+([\d.]+)\s*\)/);
-  if (!match) {
-    // If it's already a hex color, return it
-    if (oklchStr.startsWith("#")) return oklchStr;
-    // Fallback to black
-    return "#000000";
+function colorToHex(colorStr: string): string {
+  const trimmed = colorStr.trim();
+
+  // Already hex
+  if (trimmed.startsWith("#")) {
+    return trimmed.length === 4
+      ? `#${trimmed[1]}${trimmed[1]}${trimmed[2]}${trimmed[2]}${trimmed[3]}${trimmed[3]}`
+      : trimmed;
   }
 
-  const L = parseFloat(match[1]);
-  const C = parseFloat(match[2]);
-  const H = parseFloat(match[3]);
+  // RGB/RGBA format: rgb(r, g, b) or rgba(r, g, b, a)
+  const rgbMatch = trimmed.match(/rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)/);
+  if (rgbMatch) {
+    const r = Math.round(parseFloat(rgbMatch[1]));
+    const g = Math.round(parseFloat(rgbMatch[2]));
+    const b = Math.round(parseFloat(rgbMatch[3]));
+    const toHex = (n: number) => Math.max(0, Math.min(255, n)).toString(16).padStart(2, "0");
+    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+  }
 
+  // color(srgb r g b) format (values 0-1)
+  const srgbMatch = trimmed.match(/color\(srgb\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)/);
+  if (srgbMatch) {
+    const r = Math.round(parseFloat(srgbMatch[1]) * 255);
+    const g = Math.round(parseFloat(srgbMatch[2]) * 255);
+    const b = Math.round(parseFloat(srgbMatch[3]) * 255);
+    const toHex = (n: number) => Math.max(0, Math.min(255, n)).toString(16).padStart(2, "0");
+    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+  }
+
+  // OKLCH format: oklch(L C H) or oklch(L C H / alpha)
+  const oklchMatch = trimmed.match(/oklch\(\s*([\d.]+)\s+([\d.]+)\s+([\d.]+)/);
+  if (oklchMatch) {
+    return oklchToHex(
+      parseFloat(oklchMatch[1]),
+      parseFloat(oklchMatch[2]),
+      parseFloat(oklchMatch[3])
+    );
+  }
+
+  // Fallback to black
+  console.warn("Unknown color format:", trimmed);
+  return "#000000";
+}
+
+/**
+ * Converts OKLCH values to hex format
+ */
+function oklchToHex(L: number, C: number, H: number): string {
   // Convert OKLCH to OKLab
   const a = C * Math.cos((H * Math.PI) / 180);
   const b = C * Math.sin((H * Math.PI) / 180);
@@ -56,13 +91,8 @@ function oklchToHex(oklchStr: string): string {
   g = Math.round(gammaCorrect(g) * 255);
   bVal = Math.round(gammaCorrect(bVal) * 255);
 
-  // Clamp values
-  r = Math.max(0, Math.min(255, r));
-  g = Math.max(0, Math.min(255, g));
-  bVal = Math.max(0, Math.min(255, bVal));
-
-  // Convert to hex
-  const toHex = (n: number) => n.toString(16).padStart(2, "0");
+  // Clamp and convert to hex
+  const toHex = (n: number) => Math.max(0, Math.min(255, n)).toString(16).padStart(2, "0");
   return `#${toHex(r)}${toHex(g)}${toHex(bVal)}`;
 }
 
@@ -76,7 +106,9 @@ function getCSSVariableAsHex(variableName: string): string {
     .getPropertyValue(variableName)
     .trim();
 
-  return oklchToHex(value);
+  if (!value) return "#000000";
+
+  return colorToHex(value);
 }
 
 /**
