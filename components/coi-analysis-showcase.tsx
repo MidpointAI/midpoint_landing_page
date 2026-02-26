@@ -106,7 +106,7 @@ const ExtractedCard = memo(function ExtractedCard({
               </span>
             )}
           </div>
-          <p className="text-xs text-muted mt-0.5">{zone.sublabel}</p>
+          <p className="text-xs text-muted-foreground mt-0.5">{zone.sublabel}</p>
         </div>
         <motion.span
           initial={{ opacity: 0, scale: 0.8 }}
@@ -213,7 +213,7 @@ export default function CoiAnalysisShowcase() {
               {/* Processing Indicator */}
               <div className="absolute -top-3 left-4 z-20 flex items-center gap-2 bg-card px-3 py-1 rounded-full">
                 <div className={`w-2 h-2 rounded-full ${isComplete ? "bg-primary" : "bg-primary animate-pulse"}`} />
-                <span className="text-[10px] tracking-[0.15em] uppercase text-muted">
+                <span className="text-[10px] tracking-[0.15em] uppercase text-muted-foreground">
                   {isComplete ? "Analysis Complete" : "Processing..."}
                 </span>
               </div>
@@ -323,7 +323,7 @@ export default function CoiAnalysisShowcase() {
 
               {/* File Name */}
               <div className="mt-2 text-center">
-                <span className="text-[10px] tracking-[0.15em] uppercase text-muted">
+                <span className="text-[10px] tracking-[0.15em] uppercase text-muted-foreground">
                   test_coi.pdf
                 </span>
               </div>
@@ -344,7 +344,7 @@ export default function CoiAnalysisShowcase() {
                 Extracted Data
               </span>
               {extractedZones.length > 0 && (
-                <span className="text-xs text-muted ml-auto">
+                <span className="text-xs text-muted-foreground ml-auto">
                   {extractedZones.length}/{highlightZones.length}
                 </span>
               )}
@@ -375,7 +375,7 @@ export default function CoiAnalysisShowcase() {
 
               {/* Empty State */}
               {extractedZones.length === 0 && (
-                <div className="flex items-center justify-center h-[200px] border border-dashed border-border text-muted text-sm rounded-xl">
+                <div className="flex items-center justify-center h-[200px] border border-dashed border-border text-muted-foreground text-sm rounded-xl">
                   <span className="animate-pulse">Analyzing document...</span>
                 </div>
               )}
@@ -392,7 +392,7 @@ export default function CoiAnalysisShowcase() {
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <span className="text-xs tracking-[0.2em] uppercase text-muted block mb-1">
+                      <span className="text-xs tracking-[0.2em] uppercase text-muted-foreground block mb-1">
                         Compliance Score
                       </span>
                       <span className="text-sm text-muted-foreground">
@@ -426,7 +426,7 @@ export default function CoiAnalysisShowcase() {
               <p className="text-xl md:text-2xl font-light text-foreground font-mono mb-1">
                 {stat.value}
               </p>
-              <p className="text-[10px] tracking-[0.2em] uppercase text-muted">
+              <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground">
                 {stat.label}
               </p>
             </div>

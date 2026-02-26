@@ -4,6 +4,19 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* =============================================
+   GLOBAL SCROLLBAR HIDING & SMOOTH SCROLL
+   ============================================= */
+html {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-behavior: smooth;
+}
+
+html::-webkit-scrollbar {
+  display: none;
+}
+
+/* =============================================
    DARK MODE (Default) - tweakcn compatible
    All colors in OKLCH format for proper theming
    ============================================= */
@@ -20,7 +33,7 @@
   --secondary: oklch(0.21 0 0);
   --secondary-foreground: oklch(1 0 0);
   --muted: oklch(0.21 0 0);
-  --muted-foreground: oklch(0.59 0 0);
+  --muted-foreground: oklch(0.68 0 0);
   --accent: oklch(0.87 0.19 115);
   --accent-foreground: oklch(0.08 0 0);
   --destructive: oklch(0.63 0.24 27);
@@ -77,7 +90,7 @@
   --secondary: oklch(0.94 0.01 115);
   --secondary-foreground: oklch(0.13 0 0);
   --muted: oklch(0.94 0.005 115);
-  --muted-foreground: oklch(0.45 0 0);
+  --muted-foreground: oklch(0.38 0 0);
   --accent: oklch(0.55 0.19 135);
   --accent-foreground: oklch(1 0 0);
   --destructive: oklch(0.55 0.24 27);
@@ -146,7 +159,7 @@
   --radius: var(--radius);
   --font-sans: 'Inter', 'Inter Fallback', sans-serif;
   --font-mono: 'JetBrains Mono', 'JetBrains Mono Fallback', monospace;
-  --font-display: 'Bebas Neue', 'Bebas Neue Fallback', sans-serif;
+  --font-display: 'Instrument Sans', 'Instrument Sans Fallback', sans-serif;
 }
 
 body {
@@ -154,22 +167,7 @@ body {
   color: var(--foreground);
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 4px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--background);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--border);
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--border-hover);
-}
+/* Custom Scrollbar - Hidden globally, see html rule above */
 
 /* ============================================
    GPU-ACCELERATED ANIMATIONS

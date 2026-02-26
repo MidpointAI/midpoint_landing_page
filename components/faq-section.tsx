@@ -83,7 +83,7 @@ const FaqItemComponent = memo(function FaqItemComponent({
           className={`
             font-mono text-sm tracking-wider
             transition-colors duration-300
-            ${isOpen ? "text-primary" : "text-muted group-hover:text-muted-foreground"}
+            ${isOpen ? "text-primary" : "text-muted-foreground group-hover:text-foreground"}
           `}
         >
           {formattedIndex}
@@ -110,7 +110,7 @@ const FaqItemComponent = memo(function FaqItemComponent({
             ${
               isOpen
                 ? "border-primary/40 text-primary"
-                : "border-border text-muted group-hover:border-muted-foreground group-hover:text-muted-foreground"
+                : "border-border text-muted-foreground group-hover:border-foreground/50 group-hover:text-foreground"
             }
           `}
         >
@@ -212,7 +212,7 @@ export default function FaqSection() {
           className="mt-12 md:mt-16 pt-12 border-t border-border"
         >
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <p className="text-muted text-sm">
+            <p className="text-muted-foreground text-sm">
               Still have questions?
             </p>
             <div className="flex items-center gap-6">

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useMemo } from "react";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import Image from "next/image";
 import { ThemeToggle } from "./theme-toggle";
@@ -33,6 +34,11 @@ const menuTransition = { duration: 0.25, ease: "easeOut" as const };
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
+
+  // Determine which nav links to show based on current page
+  const isHomePage = pathname === "/";
+  const isResourcesPage = pathname === "/resources";
 
   // Memoize toggle handler
   const toggleMenu = useCallback(() => {
@@ -62,7 +68,7 @@ export default function Navbar() {
       <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-foreground/[0.08] to-transparent" />
 
       {/* Content */}
-      <div className="relative max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
+      <div className="relative max-w-[1400px] mx-auto px-6 lg:px-8 xl:px-12 h-full flex items-center justify-between">
         {/* Logo */}
         <a href="/" className="block group">
           <Image
@@ -78,12 +84,23 @@ export default function Navbar() {
         {/* Desktop Nav Buttons */}
         <div className="hidden md:flex items-center gap-4">
           <ThemeToggle />
-          <a
-            href="/resources"
-            className="text-sm tracking-[0.1em] uppercase px-5 py-2.5 border border-foreground/20 text-foreground/90 font-medium hover:border-primary hover:text-primary transition-all duration-300 rounded-xl"
-          >
-            Resources
-          </a>
+          {/* Show Home on resources page, Resources on home page, both on other pages */}
+          {!isHomePage && (
+            <a
+              href="/"
+              className="text-sm tracking-[0.1em] uppercase px-5 py-2.5 border border-foreground/20 text-foreground/90 font-medium hover:border-primary hover:text-primary transition-all duration-300 rounded-xl"
+            >
+              Home
+            </a>
+          )}
+          {!isResourcesPage && (
+            <a
+              href="/resources"
+              className="text-sm tracking-[0.1em] uppercase px-5 py-2.5 border border-foreground/20 text-foreground/90 font-medium hover:border-primary hover:text-primary transition-all duration-300 rounded-xl"
+            >
+              Resources
+            </a>
+          )}
           <a
             href="/contact"
             className="text-sm tracking-[0.1em] uppercase px-5 py-2.5 bg-primary text-primary-foreground font-medium hover:bg-foreground transition-colors duration-300 rounded-xl"
@@ -145,13 +162,25 @@ export default function Navbar() {
               <div className="mb-2">
                 <ThemeToggle />
               </div>
-              <a
-                href="/resources"
-                className="text-sm tracking-[0.1em] uppercase px-6 py-3 border border-foreground/20 text-foreground/90 font-medium hover:border-primary hover:text-primary transition-all duration-300 rounded-xl w-48 text-center"
-                onClick={closeMenu}
-              >
-                Resources
-              </a>
+              {/* Show Home on resources page, Resources on home page, both on other pages */}
+              {!isHomePage && (
+                <a
+                  href="/"
+                  className="text-sm tracking-[0.1em] uppercase px-6 py-3 border border-foreground/20 text-foreground/90 font-medium hover:border-primary hover:text-primary transition-all duration-300 rounded-xl w-48 text-center"
+                  onClick={closeMenu}
+                >
+                  Home
+                </a>
+              )}
+              {!isResourcesPage && (
+                <a
+                  href="/resources"
+                  className="text-sm tracking-[0.1em] uppercase px-6 py-3 border border-foreground/20 text-foreground/90 font-medium hover:border-primary hover:text-primary transition-all duration-300 rounded-xl w-48 text-center"
+                  onClick={closeMenu}
+                >
+                  Resources
+                </a>
+              )}
               <a
                 href="/contact"
                 className="text-sm tracking-[0.1em] uppercase px-6 py-3 bg-primary text-primary-foreground font-medium hover:bg-foreground transition-colors duration-300 rounded-xl w-48 text-center"

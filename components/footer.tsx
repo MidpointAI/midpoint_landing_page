@@ -272,13 +272,13 @@ const Footer = memo(function Footer() {
 
             <div className="grid grid-cols-2 gap-8 pt-4">
               <div>
-                <p className="text-xs text-muted uppercase tracking-wider mb-2">Phone number</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2">Phone number</p>
                 <a href="tel:1-800-123-4567" className="text-sm text-muted-foreground hover:text-primary transition-colors">
                   1-800-123-4567
                 </a>
               </div>
               <div>
-                <p className="text-xs text-muted uppercase tracking-wider mb-2">Email</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2">Email</p>
                 <a href="mailto:hello@midpoint.com" className="text-sm text-muted-foreground hover:text-primary transition-colors">
                   hello@midpoint.com
                 </a>
@@ -299,7 +299,7 @@ const Footer = memo(function Footer() {
                       <li key={link.title}>
                         <a
                           href={link.href}
-                          className="text-sm text-muted hover:text-primary transition-colors duration-200"
+                          className="text-sm text-muted-foreground hover:text-primary transition-colors duration-200"
                         >
                           {link.title}
                         </a>
@@ -315,7 +315,7 @@ const Footer = memo(function Footer() {
         {/* Copyright */}
         <AnimatedContainer delay={0.6}>
           <div className="mt-12 pt-8 border-t border-border text-center">
-            <p className="text-sm text-muted">
+            <p className="text-sm text-muted-foreground">
               © {new Date().getFullYear()} Midpoint. All rights reserved.
             </p>
           </div>

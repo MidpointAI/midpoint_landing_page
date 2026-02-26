@@ -118,7 +118,7 @@ const TestimonialCard = memo(function TestimonialCard({
           <p className="text-sm font-medium text-foreground truncate">
             {testimonial.name}
           </p>
-          <p className="text-xs text-muted truncate">{testimonial.title}</p>
+          <p className="text-xs text-muted-foreground truncate">{testimonial.title}</p>
         </div>
       </div>
     </div>
@@ -341,21 +341,21 @@ export default function Testimonials() {
                 <p className="text-2xl md:text-3xl font-bold text-foreground">
                   2,500+
                 </p>
-                <p className="text-xs text-muted uppercase tracking-wider">
+                <p className="text-xs text-muted-foreground uppercase tracking-wider">
                   Companies
                 </p>
               </div>
               <div className="w-px h-10 bg-border" />
               <div className="text-center">
                 <p className="text-2xl md:text-3xl font-bold text-foreground">98%</p>
-                <p className="text-xs text-muted uppercase tracking-wider">
+                <p className="text-xs text-muted-foreground uppercase tracking-wider">
                   Satisfaction
                 </p>
               </div>
               <div className="w-px h-10 bg-border" />
               <div className="text-center">
                 <p className="text-2xl md:text-3xl font-bold text-foreground">4.9</p>
-                <p className="text-xs text-muted uppercase tracking-wider">
+                <p className="text-xs text-muted-foreground uppercase tracking-wider">
                   Rating
                 </p>
               </div>

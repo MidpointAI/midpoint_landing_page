@@ -1,0 +1,17 @@
+
+# Midpoint - AI-Powered Insurance Compliance
+# https://usemidpoint.com
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://usemidpoint.com/sitemap.xml
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 1
+
+# Disallow admin/api routes if any
+Disallow: /api/
+Disallow: /_next/
+Disallow: /static/

@@ -113,7 +113,7 @@ const AnimatedStat = memo(function AnimatedStat({
           {suffix}
         </span>
       </div>
-      <p className="text-sm tracking-[0.3em] uppercase text-muted mt-6">
+      <p className="text-sm tracking-[0.3em] uppercase text-muted-foreground mt-6">
         {label}
       </p>
     </motion.div>
