@@ -1,7 +1,119 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { X, FileText, CreditCard, CheckCircle2, ArrowRight } from "lucide-react";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import {
+  X,
+  FileText,
+  CreditCard,
+  CheckCircle2,
+  ArrowRight,
+  ArrowLeft,
+  Pencil,
+  Loader2,
+} from "lucide-react";
+import { loadStripe } from "@stripe/stripe-js";
+import {
+  CheckoutProvider,
+  PaymentElement,
+  useCheckout,
+} from "@stripe/react-stripe-js/checkout";
+
+// ============================================================================
+// STRIPE SETUP
+// ============================================================================
+
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
+);
+
+// Custom appearance for Stripe Elements to match modal theme
+const stripeAppearance = {
+  theme: "flat" as const,
+  variables: {
+    colorPrimary: "#22251e",
+    colorBackground: "#f4ffe0",
+    colorText: "#22251e",
+    colorTextSecondary: "rgba(34, 37, 30, 0.6)",
+    colorTextPlaceholder: "rgba(34, 37, 30, 0.35)",
+    colorDanger: "#dc2626",
+    fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+    fontSizeBase: "14px",
+    fontWeightNormal: "400",
+    fontWeightMedium: "500",
+    fontWeightBold: "600",
+    borderRadius: "10px",
+    spacingUnit: "4px",
+    spacingGridRow: "16px",
+    spacingGridColumn: "16px",
+  },
+  rules: {
+    ".Label": {
+      color: "rgba(34, 37, 30, 0.7)",
+      fontWeight: "500",
+      fontSize: "13px",
+      marginBottom: "6px",
+    },
+    ".Input": {
+      backgroundColor: "#f4ffe0",
+      border: "1px solid rgba(34, 37, 30, 0.12)",
+      boxShadow: "none",
+      padding: "12px 14px",
+      transition: "border-color 0.15s ease, box-shadow 0.15s ease",
+    },
+    ".Input:focus": {
+      border: "1px solid rgba(34, 37, 30, 0.3)",
+      boxShadow: "0 0 0 3px rgba(34, 37, 30, 0.06)",
+    },
+    ".Input:hover": {
+      border: "1px solid rgba(34, 37, 30, 0.2)",
+    },
+    ".Input--invalid": {
+      border: "1px solid #dc2626",
+    },
+    ".Tab": {
+      backgroundColor: "transparent",
+      border: "1px solid rgba(34, 37, 30, 0.12)",
+      boxShadow: "none",
+      color: "rgba(34, 37, 30, 0.7)",
+      fontWeight: "500",
+    },
+    ".Tab:hover": {
+      backgroundColor: "rgba(34, 37, 30, 0.03)",
+      border: "1px solid rgba(34, 37, 30, 0.2)",
+      color: "#22251e",
+    },
+    ".Tab--selected": {
+      backgroundColor: "#22251e",
+      border: "1px solid #22251e",
+      color: "#f4ffe0",
+      boxShadow: "none",
+    },
+    ".Tab--selected:hover": {
+      backgroundColor: "#22251e",
+      border: "1px solid #22251e",
+      color: "#f4ffe0",
+    },
+    ".TabIcon--selected": {
+      fill: "#f4ffe0",
+    },
+    ".TabLabel--selected": {
+      color: "#f4ffe0",
+    },
+    ".Block": {
+      backgroundColor: "transparent",
+      border: "none",
+      boxShadow: "none",
+    },
+    ".CheckboxInput": {
+      backgroundColor: "#f4ffe0",
+      border: "1px solid rgba(34, 37, 30, 0.2)",
+    },
+    ".CheckboxInput--checked": {
+      backgroundColor: "#22251e",
+      borderColor: "#22251e",
+    },
+  },
+};
 
 // ============================================================================
 // TYPES
@@ -12,50 +124,72 @@ interface SignupModalProps {
   onClose: () => void;
 }
 
+interface FormData {
+  companyName: string;
+  yourName: string;
+  email: string;
+  phone: string;
+  address: string;
+  city: string;
+  state: string;
+  zip: string;
+  activeSubs: string;
+  activeProjects: string;
+  tosAccepted: boolean;
+}
+
 // ============================================================================
 // HELPER COMPONENTS
 // ============================================================================
-
-function Separator() {
-  return <div className="mx-8 lg:mx-12 h-px bg-[#22251e]/8" />;
-}
 
 interface FormFieldProps {
   label: string;
   placeholder: string;
   value?: string;
   onChange?: (value: string) => void;
+  type?: string;
+  required?: boolean;
 }
 
-function FormField({ label, placeholder, value, onChange }: FormFieldProps) {
+function FormField({
+  label,
+  placeholder,
+  value,
+  onChange,
+  type = "text",
+  required = false,
+}: FormFieldProps) {
   return (
     <div>
-      <label className="block text-[12px] font-medium text-[#22251e]/60 mb-1.5">
+      <label className="block text-[13px] font-medium text-[#22251e]/70 mb-2">
         {label}
+        {required && <span className="text-red-500 ml-0.5">*</span>}
       </label>
-      <InputBox
+      <input
+        type={type}
         placeholder={placeholder}
         value={value}
-        onChange={onChange}
+        onChange={(e) => onChange?.(e.target.value)}
+        className="w-full px-4 py-3 rounded-lg border border-[#22251e]/10 bg-[#f4ffe0] text-[14px] text-[#22251e] placeholder:text-[#22251e]/30 focus:border-[#22251e]/25 focus:outline-none transition-all duration-150"
       />
     </div>
   );
 }
 
-interface InputBoxProps {
+interface SmallInputProps {
   placeholder: string;
   value?: string;
   onChange?: (value: string) => void;
 }
 
-function InputBox({ placeholder, value, onChange }: InputBoxProps) {
+function SmallInput({ placeholder, value, onChange }: SmallInputProps) {
   return (
     <input
       type="text"
       placeholder={placeholder}
       value={value}
       onChange={(e) => onChange?.(e.target.value)}
-      className="w-full px-3.5 py-2.5 rounded-lg border border-[#22251e]/12 bg-white text-[13px] text-[#22251e] placeholder:text-[#22251e]/25 focus:border-[#22251e]/30 focus:ring-2 focus:ring-[#22251e]/5 outline-none transition-all duration-150"
+      className="w-full px-4 py-3 rounded-lg border border-[#22251e]/10 bg-[#f4ffe0] text-[14px] text-[#22251e] placeholder:text-[#22251e]/30 focus:border-[#22251e]/25 focus:outline-none transition-all duration-150"
     />
   );
 }
@@ -68,7 +202,7 @@ interface SummaryRowProps {
 function SummaryRow({ label, value }: SummaryRowProps) {
   return (
     <div className="flex items-center justify-between">
-      <span className="text-[13px] text-[#22251e]/45">{label}</span>
+      <span className="text-[13px] text-[#22251e]/50">{label}</span>
       <span className="text-[15px] font-semibold text-[#22251e] tabular-nums">
         {value}
       </span>
@@ -89,31 +223,39 @@ const steps = [
 interface StepIndicatorProps {
   activeStep: number;
   onStepClick: (index: number) => void;
+  completedSteps: number[];
 }
 
-function StepIndicator({ activeStep, onStepClick }: StepIndicatorProps) {
+function StepIndicator({
+  activeStep,
+  onStepClick,
+  completedSteps,
+}: StepIndicatorProps) {
   return (
-    <div className="sticky top-0 z-10 flex items-center justify-center gap-1 px-6 py-4 bg-[#f4ffe0]/95 backdrop-blur-sm">
+    <div className="sticky top-0 z-10 flex items-center justify-center gap-1 px-6 py-4 bg-[#f4ffe0]/95 backdrop-blur-sm border-b border-[#22251e]/5">
       {steps.map((step, index) => {
         const Icon = step.icon;
         const isActive = index === activeStep;
-        const isCompleted = index < activeStep;
-        const isFuture = index > activeStep;
+        const isCompleted = completedSteps.includes(index);
+        const canClick = isCompleted || index <= Math.max(...completedSteps, 0);
 
         let colorClass = "";
         if (isActive) {
           colorClass = "bg-[#22251e] text-[#f4ffe0]";
         } else if (isCompleted) {
           colorClass = "text-[#22251e]/70 hover:text-[#22251e]";
-        } else if (isFuture) {
-          colorClass = "text-[#22251e]/30 hover:text-[#22251e]/50";
+        } else {
+          colorClass = "text-[#22251e]/30";
         }
 
         return (
           <button
             key={step.label}
-            onClick={() => onStepClick(index)}
-            className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[12px] font-medium cursor-pointer transition-all duration-200 ${colorClass}`}
+            onClick={() => canClick && onStepClick(index)}
+            disabled={!canClick}
+            className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[12px] font-medium transition-all duration-200 ${colorClass} ${
+              canClick ? "cursor-pointer" : "cursor-not-allowed"
+            }`}
           >
             <Icon className="w-3.5 h-3.5" />
             {step.label}
@@ -125,6 +267,177 @@ function StepIndicator({ activeStep, onStepClick }: StepIndicatorProps) {
 }
 
 // ============================================================================
+// PAYMENT FORM COMPONENT (inside CheckoutProvider)
+// ============================================================================
+
+interface PaymentFormProps {
+  annualPrice: string;
+  formData: FormData;
+  onBack: () => void;
+  onSuccess: () => void;
+}
+
+function PaymentForm({
+  annualPrice,
+  formData,
+  onBack,
+  onSuccess,
+}: PaymentFormProps) {
+  const checkout = useCheckout();
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const isLoading = checkout.type === "loading";
+  const isReady = checkout.type === "success";
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!isReady) {
+      setErrorMessage("Payment form is not ready. Please wait.");
+      return;
+    }
+
+    setIsProcessing(true);
+    setErrorMessage(null);
+
+    try {
+      if (checkout.type !== "success") {
+        setErrorMessage("Payment form is not ready.");
+        setIsProcessing(false);
+        return;
+      }
+
+      const result = await checkout.checkout.confirm();
+
+      if (result.type === "error") {
+        setErrorMessage(
+          result.error.message || "An error occurred during payment."
+        );
+        setIsProcessing(false);
+      } else {
+        onSuccess();
+      }
+    } catch {
+      setErrorMessage("An unexpected error occurred. Please try again.");
+      setIsProcessing(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex-1 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="w-8 h-8 animate-spin text-[#22251e]/40" />
+          <p className="text-[13px] text-[#22251e]/50">Loading payment form...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="flex-1 flex flex-col">
+      {/* Content */}
+      <div className="flex-1 px-5 sm:px-8 lg:px-12 pt-6 sm:pt-8 pb-4">
+        {/* Centered container for cleaner look */}
+        <div className="max-w-[520px] mx-auto">
+          {/* Header */}
+          <div className="text-center mb-5 sm:mb-6">
+            <p className="text-[10px] uppercase tracking-[0.2em] text-[#22251e]/40 font-mono mb-2">
+              SECURE CHECKOUT
+            </p>
+            <h2 className="text-[20px] sm:text-[22px] font-semibold text-[#22251e] tracking-tight">
+              Complete Your Purchase
+            </h2>
+          </div>
+
+          {/* Order Summary - Compact layout */}
+          <div className="rounded-xl border border-[#22251e]/10 bg-[#22251e]/[0.03] p-3 sm:p-4 mb-4 sm:mb-5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4 sm:gap-6">
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <span className="text-[10px] sm:text-[11px] uppercase tracking-wide text-[#22251e]/40">Subs</span>
+                  <span className="text-[13px] sm:text-[14px] font-semibold text-[#22251e] tabular-nums">
+                    {formData.activeSubs || "0"}
+                  </span>
+                </div>
+                <div className="w-px h-4 bg-[#22251e]/10" />
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <span className="text-[10px] sm:text-[11px] uppercase tracking-wide text-[#22251e]/40">Projects</span>
+                  <span className="text-[13px] sm:text-[14px] font-semibold text-[#22251e] tabular-nums">
+                    {formData.activeProjects || "0"}
+                  </span>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-[9px] sm:text-[10px] uppercase tracking-wide text-[#22251e]/40 mb-0.5">Total</p>
+                <p className="text-[16px] sm:text-[18px] font-bold text-[#22251e] tabular-nums">${annualPrice}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Stripe Payment Element - Clean container */}
+          <div className="mb-4">
+            <PaymentElement
+              options={{
+                layout: "tabs",
+              }}
+            />
+          </div>
+
+          {/* Error Message */}
+          {errorMessage && (
+            <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-[12px] sm:text-[13px]">
+              {errorMessage}
+            </div>
+          )}
+
+          {/* Security badge */}
+          <p className="text-center text-[10px] sm:text-[11px] text-[#22251e]/40 flex items-center justify-center gap-1.5">
+            <svg className="w-3 sm:w-3.5 h-3 sm:h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+            Secured by Stripe · 256-bit SSL
+          </p>
+        </div>
+      </div>
+
+      {/* Navigation - Pinned to bottom */}
+      <div className="px-5 sm:px-8 lg:px-12 pb-6 sm:pb-8 pt-4 border-t border-[#22251e]/5">
+        <div className="max-w-[520px] mx-auto flex items-center gap-3">
+          <button
+            type="button"
+            onClick={onBack}
+            className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl border border-[#22251e]/15 bg-transparent text-[#22251e]/70 text-[13px] sm:text-[14px] font-medium cursor-pointer hover:bg-[#22251e]/[0.03] hover:border-[#22251e]/25 hover:text-[#22251e] transition-all flex items-center justify-center gap-2"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back
+          </button>
+          <button
+            type="submit"
+            disabled={isProcessing}
+            className="flex-[2] px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl bg-[#22251e] text-[#f4ffe0] text-[13px] sm:text-[14px] font-medium cursor-pointer hover:bg-[#22251e]/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isProcessing ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Processing...
+              </>
+            ) : (
+              <>
+                Pay ${annualPrice}
+                <ArrowRight className="w-4 h-4" />
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+    </form>
+  );
+}
+
+// ============================================================================
 // MAIN MODAL COMPONENT
 // ============================================================================
 
@@ -132,22 +445,147 @@ export default function SignupModal({ open, onClose }: SignupModalProps) {
   // State
   const [isVisible, setIsVisible] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
-  const [activeSubs, setActiveSubs] = useState("59");
-  const [activeProjects, setActiveProjects] = useState("3");
-  const [estimatedProjects, setEstimatedProjects] = useState("7");
-  const [tosAccepted, setTosAccepted] = useState(false);
+  const [accountSubStep, setAccountSubStep] = useState(0); // 0 = Business Info, 1 = Quote
+  const [completedSteps, setCompletedSteps] = useState<number[]>([]);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [isCreatingSession, setIsCreatingSession] = useState(false);
 
-  // Calculate total cost
-  const calculateTotal = useCallback(() => {
-    const subs = parseInt(activeSubs) || 0;
-    const projects = parseInt(activeProjects) || 0;
-    const estimated = parseInt(estimatedProjects) || 0;
-    const total = subs * 150 + projects * 500 + estimated * 200;
-    return total.toLocaleString("en-US", {
+  // Form data state
+  const [formData, setFormData] = useState<FormData>({
+    companyName: "",
+    yourName: "",
+    email: "",
+    phone: "",
+    address: "",
+    city: "",
+    state: "",
+    zip: "",
+    activeSubs: "",
+    activeProjects: "",
+    tosAccepted: false,
+  });
+
+  // Payment details for confirmation step
+  const [paymentDetails, setPaymentDetails] = useState({
+    cardType: "Visa",
+    last4: "4242",
+    billingAddress: "",
+  });
+
+  // Update form data helper
+  const updateFormData = useCallback(
+    (field: keyof FormData, value: string | boolean) => {
+      setFormData((prev) => ({ ...prev, [field]: value }));
+    },
+    []
+  );
+
+  // Calculate load factor
+  const loadFactor = useMemo(() => {
+    const projects = parseInt(formData.activeProjects) || 0;
+    return 1 + projects * 0.05;
+  }, [formData.activeProjects]);
+
+  // Calculate annual price
+  const annualPrice = useMemo(() => {
+    const subs = parseInt(formData.activeSubs) || 0;
+    const calculatedFee = 100 * subs * loadFactor;
+    return Math.max(6000, calculatedFee).toLocaleString("en-US", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });
-  }, [activeSubs, activeProjects, estimatedProjects]);
+  }, [formData.activeSubs, loadFactor]);
+
+  // Get annual price in cents
+  const annualPriceCents = useMemo(() => {
+    const subs = parseInt(formData.activeSubs) || 0;
+    const calculatedFee = 100 * subs * loadFactor;
+    return Math.max(6000, calculatedFee) * 100;
+  }, [formData.activeSubs, loadFactor]);
+
+  // Determine tier
+  const tier = useMemo(() => {
+    const subs = parseInt(formData.activeSubs) || 0;
+    if (subs > 75) return { name: "Premier", subtitle: "100+ SUBS" };
+    if (subs > 25) return { name: "Professional", subtitle: "25-75 TRADES/SUBS" };
+    return { name: "Essential", subtitle: "UP TO 25 ACTIVE SUBS" };
+  }, [formData.activeSubs]);
+
+  // Create checkout session
+  const createCheckoutSession = useCallback(async () => {
+    setIsCreatingSession(true);
+    try {
+      const response = await fetch("/api/create-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount: annualPriceCents,
+          customerEmail: formData.email,
+          customerName: formData.yourName,
+          companyName: formData.companyName,
+          activeSubs: formData.activeSubs,
+          activeProjects: formData.activeProjects,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.clientSecret) {
+        setClientSecret(data.clientSecret);
+        setActiveStep(1);
+        setCompletedSteps((prev) => [...new Set([...prev, 0])]);
+      } else {
+        console.error("Failed to create checkout session:", data.error);
+      }
+    } catch (error) {
+      console.error("Error creating checkout session:", error);
+    } finally {
+      setIsCreatingSession(false);
+    }
+  }, [annualPriceCents, formData]);
+
+  // Handle Business Info continue (to Quote sub-page)
+  const handleBusinessInfoContinue = useCallback(() => {
+    if (
+      !formData.companyName ||
+      !formData.yourName ||
+      !formData.email ||
+      !formData.tosAccepted
+    ) {
+      alert("Please fill in all required fields and accept the Terms of Service.");
+      return;
+    }
+    setAccountSubStep(1);
+  }, [formData]);
+
+  // Handle Quote continue (to Payment step)
+  const handleQuoteContinue = useCallback(() => {
+    createCheckoutSession();
+  }, [createCheckoutSession]);
+
+  // Handle payment success
+  const handlePaymentSuccess = useCallback(() => {
+    setPaymentDetails({
+      cardType: "Visa",
+      last4: "4242",
+      billingAddress: `${formData.address}, ${formData.city}, ${formData.state} ${formData.zip}`,
+    });
+    setCompletedSteps((prev) => [...new Set([...prev, 1])]);
+    setActiveStep(2);
+  }, [formData]);
+
+  // Handle step navigation
+  const handleStepClick = useCallback(
+    (index: number) => {
+      if (completedSteps.includes(index) || index === 0) {
+        setActiveStep(index);
+        if (index === 0) {
+          setAccountSubStep(0); // Reset to first sub-page when clicking Account
+        }
+      }
+    },
+    [completedSteps]
+  );
 
   // Handle open/close transitions
   useEffect(() => {
@@ -176,10 +614,22 @@ export default function SignupModal({ open, onClose }: SignupModalProps) {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [open, onClose]);
 
+  // Reset state when modal closes
+  useEffect(() => {
+    if (!open) {
+      setTimeout(() => {
+        setActiveStep(0);
+        setAccountSubStep(0);
+        setCompletedSteps([]);
+        setClientSecret(null);
+      }, 300);
+    }
+  }, [open]);
+
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
       {/* Backdrop */}
       <div
         aria-hidden="true"
@@ -194,8 +644,8 @@ export default function SignupModal({ open, onClose }: SignupModalProps) {
         role="dialog"
         aria-modal="true"
         aria-label="Sign up"
-        className={`relative z-10 w-full max-w-[780px] mx-4 my-6 lg:my-10 max-h-[calc(100svh-3rem)] overflow-y-auto scroll-smooth rounded-2xl bg-[#f4ffe0] shadow-2xl shadow-black/30 scrollbar-hide transition-all duration-300 ${
-          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+        className={`relative z-10 w-full max-w-[780px] max-h-[calc(100svh-2rem)] sm:max-h-[90svh] overflow-y-auto scroll-smooth rounded-2xl bg-[#f4ffe0] shadow-2xl shadow-black/30 scrollbar-hide transition-all duration-300 ${
+          isVisible ? "opacity-100 scale-100" : "opacity-0 scale-[0.98]"
         }`}
       >
         {/* Close Button */}
@@ -207,201 +657,499 @@ export default function SignupModal({ open, onClose }: SignupModalProps) {
         </button>
 
         {/* Step Indicator */}
-        <StepIndicator activeStep={activeStep} onStepClick={setActiveStep} />
+        <StepIndicator
+          activeStep={activeStep}
+          onStepClick={handleStepClick}
+          completedSteps={completedSteps}
+        />
 
-        {/* Section 1: Business Info */}
-        <div className="px-8 lg:px-12 pt-10 pb-10">
-          <div className="flex flex-col lg:flex-row gap-8 lg:gap-16">
-            {/* Left column */}
-            <div className="lg:w-[220px] flex-shrink-0">
-              <p className="text-[10px] uppercase tracking-[0.2em] text-[#22251e]/40 font-mono mb-2">
-                SIGN UP &rarr;
-              </p>
-              <h2 className="text-xl font-semibold text-[#22251e] tracking-tight leading-tight mb-1.5">
-                Business Info
-              </h2>
-              <p className="text-[13px] text-[#22251e]/40 leading-relaxed">
-                Please provide the required details.
-              </p>
-            </div>
-
-            {/* Right column */}
-            <div className="flex-1 flex flex-col gap-4">
-              <FormField label="Company Name" placeholder="Builder Inc." />
-              <FormField label="Your Name" placeholder="Full name" />
-              <FormField label="Email" placeholder="you@company.com" />
-              <FormField label="Phone #" placeholder="+1 (555) 000-0000" />
-              <FormField
-                label="Business Address"
-                placeholder="Number, Street, Unit"
-              />
-
-              {/* City/State/Zip row */}
-              <div className="grid grid-cols-3 gap-3">
-                <InputBox placeholder="City" />
-                <InputBox placeholder="State" />
-                <InputBox placeholder="Zip" />
-              </div>
-
-              {/* Footer row */}
-              <div className="pt-4 flex items-center justify-between">
-                {/* Terms of Service checkbox */}
-                <label className="flex items-center gap-2.5 cursor-pointer group">
-                  <input
-                    type="checkbox"
-                    checked={tosAccepted}
-                    onChange={(e) => setTosAccepted(e.target.checked)}
-                    className="sr-only peer"
-                  />
-                  <div className="w-4 h-4 rounded border border-[#22251e]/20 bg-white flex items-center justify-center peer-checked:bg-[#22251e] peer-checked:border-[#22251e] transition-colors">
-                    {tosAccepted && (
-                      <svg
-                        width="10"
-                        height="8"
-                        viewBox="0 0 10 8"
-                        fill="none"
-                      >
-                        <path
-                          d="M1 4L3.5 6.5L9 1"
-                          stroke="#f4ffe0"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    )}
+        {/* Content Container - Responsive Height */}
+        <div className="min-h-[460px] sm:min-h-[520px] lg:min-h-[560px] flex flex-col">
+          {/* ================================================================ */}
+          {/* ACCOUNT STEP - SUB-PAGE 1: BUSINESS INFO */}
+          {/* ================================================================ */}
+          {activeStep === 0 && accountSubStep === 0 && (
+            <div className="flex-1 flex flex-col">
+              {/* Content */}
+              <div className="flex-1 px-5 sm:px-8 lg:px-12 pt-8 sm:pt-10 pb-4 sm:pb-6">
+                <div className="flex flex-col lg:flex-row gap-8 lg:gap-16">
+                  {/* Left column */}
+                  <div className="lg:w-[180px] flex-shrink-0">
+                    <p className="text-[10px] uppercase tracking-[0.2em] text-[#22251e]/40 font-mono mb-3">
+                      SIGN UP &rarr;
+                    </p>
+                    <h2 className="text-[22px] font-semibold text-[#22251e] tracking-tight leading-tight mb-2">
+                      Business Info
+                    </h2>
+                    <p className="text-[13px] text-[#22251e]/50 leading-relaxed">
+                      Tell us about your company.
+                    </p>
                   </div>
-                  <span className="text-[12px] text-[#22251e]/50 underline underline-offset-2 decoration-[#22251e]/15 font-mono group-hover:text-[#22251e]/70 transition-colors">
-                    Terms of Service
-                  </span>
-                </label>
 
-                {/* Continue button */}
-                <button className="px-6 py-2 rounded-lg bg-[#22251e] text-[#f4ffe0] text-[13px] font-medium cursor-pointer hover:bg-[#22251e]/85 transition-colors">
-                  Continue
-                </button>
+                  {/* Right column */}
+                  <div className="flex-1 max-w-[460px]">
+                    <div className="flex flex-col gap-4">
+                      <FormField
+                        label="Company Name"
+                        placeholder="Builder Inc."
+                        value={formData.companyName}
+                        onChange={(v) => updateFormData("companyName", v)}
+                        required
+                      />
+                      <FormField
+                        label="Your Name"
+                        placeholder="Full name"
+                        value={formData.yourName}
+                        onChange={(v) => updateFormData("yourName", v)}
+                        required
+                      />
+                      <FormField
+                        label="Email"
+                        placeholder="you@company.com"
+                        value={formData.email}
+                        onChange={(v) => updateFormData("email", v)}
+                        type="email"
+                        required
+                      />
+                      <FormField
+                        label="Phone"
+                        placeholder="+1 (555) 000-0000"
+                        value={formData.phone}
+                        onChange={(v) => updateFormData("phone", v)}
+                        type="tel"
+                      />
+                      <FormField
+                        label="Business Address"
+                        placeholder="Number, Street, Unit"
+                        value={formData.address}
+                        onChange={(v) => updateFormData("address", v)}
+                      />
+
+                      {/* City/State/Zip row */}
+                      <div className="grid grid-cols-3 gap-3">
+                        <SmallInput
+                          placeholder="City"
+                          value={formData.city}
+                          onChange={(v) => updateFormData("city", v)}
+                        />
+                        <SmallInput
+                          placeholder="State"
+                          value={formData.state}
+                          onChange={(v) => updateFormData("state", v)}
+                        />
+                        <SmallInput
+                          placeholder="Zip"
+                          value={formData.zip}
+                          onChange={(v) => updateFormData("zip", v)}
+                        />
+                      </div>
+
+                      {/* Terms of Service */}
+                      <label className="flex items-center gap-3 cursor-pointer group mt-1">
+                        <input
+                          type="checkbox"
+                          checked={formData.tosAccepted}
+                          onChange={(e) =>
+                            updateFormData("tosAccepted", e.target.checked)
+                          }
+                          className="sr-only peer"
+                        />
+                        <div className="w-5 h-5 rounded border border-[#22251e]/20 bg-[#f4ffe0] flex items-center justify-center peer-checked:bg-[#22251e] peer-checked:border-[#22251e] transition-colors">
+                          {formData.tosAccepted && (
+                            <svg width="12" height="10" viewBox="0 0 12 10" fill="none">
+                              <path
+                                d="M1 5L4 8L11 1"
+                                stroke="#f4ffe0"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          )}
+                        </div>
+                        <span className="text-[13px] text-[#22251e]/60 group-hover:text-[#22251e]/80 transition-colors">
+                          I agree to the{" "}
+                          <span className="underline underline-offset-2">Terms of Service</span>
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Navigation - Pinned to bottom */}
+              <div className="px-5 sm:px-8 lg:px-12 pb-6 sm:pb-8 pt-4 border-t border-[#22251e]/5">
+                <div className="flex justify-end">
+                  <button
+                    onClick={handleBusinessInfoContinue}
+                    className="px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl bg-[#22251e] text-[#f4ffe0] text-[13px] sm:text-[14px] font-medium cursor-pointer hover:bg-[#22251e]/90 transition-colors flex items-center gap-2"
+                  >
+                    Continue
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
+          )}
 
-        <Separator />
+          {/* ================================================================ */}
+          {/* ACCOUNT STEP - SUB-PAGE 2: QUOTE */}
+          {/* ================================================================ */}
+          {activeStep === 0 && accountSubStep === 1 && (
+            <div className="flex-1 flex flex-col">
+              {/* Content */}
+              <div className="flex-1 px-5 sm:px-8 lg:px-12 pt-8 sm:pt-10 pb-4 sm:pb-6">
+                {/* Section 1: Current active subs */}
+                <div className="flex flex-col lg:flex-row gap-6 lg:gap-16">
+                  {/* Left column */}
+                  <div className="lg:w-[180px] flex-shrink-0">
+                    <h2 className="text-[20px] font-semibold text-[#22251e] tracking-tight leading-tight mb-2">
+                      Current active subs
+                    </h2>
+                    <p className="text-[12px] text-[#22251e]/50 leading-relaxed">
+                      Estimate of active subs you&apos;re currently working with.
+                    </p>
+                  </div>
 
-        {/* Section 2: Current Active Subs */}
-        <div className="px-8 lg:px-12 py-10">
-          <div className="flex flex-col lg:flex-row gap-8 lg:gap-16">
-            {/* Left column */}
-            <div className="lg:w-[220px] flex-shrink-0">
-              <h2 className="text-xl font-semibold text-[#22251e] tracking-tight leading-tight mb-1.5">
-                Current active subs
-              </h2>
-              <p className="text-[13px] text-[#22251e]/40 leading-relaxed">
-                Please provide your estimate for # of active subs you are
-                currently working with.
-              </p>
-            </div>
-
-            {/* Right column */}
-            <div className="flex-1">
-              <FormField
-                label="# of Currently Active Subs"
-                placeholder="e.g. 59"
-                value={activeSubs}
-                onChange={setActiveSubs}
-              />
-            </div>
-          </div>
-        </div>
-
-        <Separator />
-
-        {/* Section 3: Operations */}
-        <div className="px-8 lg:px-12 py-10">
-          <div className="flex flex-col lg:flex-row gap-8 lg:gap-16">
-            {/* Left column */}
-            <div className="lg:w-[220px] flex-shrink-0">
-              <h2 className="text-xl font-semibold text-[#22251e] tracking-tight leading-tight mb-1.5">
-                Operations
-              </h2>
-              <p className="text-[13px] text-[#22251e]/40 leading-relaxed">
-                Please answer the following questions about your business
-                operations.
-              </p>
-            </div>
-
-            {/* Right column */}
-            <div className="flex-1 flex flex-col gap-4">
-              <FormField
-                label="Current Active Projects"
-                placeholder="e.g. 3"
-                value={activeProjects}
-                onChange={setActiveProjects}
-              />
-              <FormField
-                label="Estimated Projects per Year"
-                placeholder="e.g. 7"
-                value={estimatedProjects}
-                onChange={setEstimatedProjects}
-              />
-            </div>
-          </div>
-        </div>
-
-        <Separator />
-
-        {/* Section 4: Monthly Cost */}
-        <div className="px-8 lg:px-12 pt-10 pb-12">
-          <div className="flex flex-col lg:flex-row gap-8 lg:gap-16">
-            {/* Left column */}
-            <div className="lg:w-[220px] flex-shrink-0">
-              <h2 className="text-xl font-semibold text-[#22251e] tracking-tight leading-tight mb-1.5">
-                Monthly cost
-              </h2>
-              <p className="text-[13px] text-[#22251e]/40 leading-relaxed">
-                Based on your current projects and vendors
-              </p>
-            </div>
-
-            {/* Right column */}
-            <div className="flex-1">
-              {/* Summary card */}
-              <div className="rounded-xl border border-[#22251e]/8 bg-[#eaf6d4] p-6">
-                <div className="flex flex-col gap-3.5">
-                  <SummaryRow
-                    label="Currenty active subs"
-                    value={activeSubs || "0"}
-                  />
-                  <SummaryRow
-                    label="Active projects"
-                    value={activeProjects || "0"}
-                  />
-                  <SummaryRow
-                    label="Avg. Projects/Year"
-                    value={estimatedProjects || "0"}
-                  />
+                  {/* Right column */}
+                  <div className="flex-1 max-w-[460px]">
+                    <FormField
+                      label="# of Currently Active Subs"
+                      placeholder="e.g. 150"
+                      value={formData.activeSubs}
+                      onChange={(v) => updateFormData("activeSubs", v)}
+                    />
+                  </div>
                 </div>
 
                 {/* Divider */}
-                <div className="h-px bg-[#22251e]/8 my-5" />
+                <div className="h-px bg-[#22251e]/8 my-6" />
 
-                {/* Total row */}
-                <div className="flex items-center justify-between">
-                  <span className="text-[14px] font-semibold text-[#22251e]">
-                    Total Today
-                  </span>
-                  <span className="text-[14px] font-semibold text-[#22251e] tabular-nums">
-                    ${calculateTotal()}
-                  </span>
+                {/* Section 2: Operations */}
+                <div className="flex flex-col lg:flex-row gap-6 lg:gap-16">
+                  {/* Left column */}
+                  <div className="lg:w-[180px] flex-shrink-0">
+                    <h2 className="text-[20px] font-semibold text-[#22251e] tracking-tight leading-tight mb-2">
+                      Operations
+                    </h2>
+                    <p className="text-[12px] text-[#22251e]/50 leading-relaxed">
+                      Questions about your business operations.
+                    </p>
+                  </div>
+
+                  {/* Right column */}
+                  <div className="flex-1 max-w-[460px]">
+                    <FormField
+                      label="Current Active Projects"
+                      placeholder="e.g. 10"
+                      value={formData.activeProjects}
+                      onChange={(v) => updateFormData("activeProjects", v)}
+                    />
+                  </div>
+                </div>
+
+                {/* Divider */}
+                <div className="h-px bg-[#22251e]/8 my-6" />
+
+                {/* Section 3: Annual cost */}
+                <div className="flex flex-col lg:flex-row gap-6 lg:gap-16">
+                  {/* Left column */}
+                  <div className="lg:w-[180px] flex-shrink-0">
+                    <h2 className="text-[20px] font-semibold text-[#22251e] tracking-tight leading-tight mb-2">
+                      Annual cost
+                    </h2>
+                    <p className="text-[12px] text-[#22251e]/50 leading-relaxed">
+                      Based on your current projects and vendors
+                    </p>
+                  </div>
+
+                  {/* Right column - Summary Card */}
+                  <div className="flex-1 max-w-[460px]">
+                    <div className="rounded-xl border border-[#22251e]/8 bg-[#eef5dc] p-5">
+                      <div className="flex flex-col gap-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[13px] text-[#22251e]/60">Currently active subs</span>
+                          <span className="text-[15px] font-semibold text-[#22251e] tabular-nums">
+                            {formData.activeSubs || "0"}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-[13px] text-[#22251e]/60">Active projects</span>
+                          <span className="text-[15px] font-semibold text-[#22251e] tabular-nums">
+                            {formData.activeProjects || "0"}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-[13px] text-[#22251e]/60">Load Factor</span>
+                          <span className="text-[15px] font-semibold text-[#22251e] tabular-nums">
+                            {loadFactor.toFixed(2)}x
+                          </span>
+                        </div>
+
+                        <div className="h-px bg-[#22251e]/10 my-1" />
+
+                        <div className="flex items-center justify-between">
+                          <span className="text-[14px] font-semibold text-[#22251e]">Total Today</span>
+                          <span className="text-[18px] font-bold text-[#22251e] tabular-nums">
+                            ${annualPrice}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Learn more link */}
+                    <a
+                      href="/pricing/how-it-works"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block text-center text-[12px] text-[#22251e]/50 hover:text-[#22251e]/70 underline underline-offset-2 mt-2 transition-colors"
+                    >
+                      How is this calculated?
+                    </a>
+                  </div>
                 </div>
               </div>
 
-              {/* Move Forward button */}
-              <button className="w-full mt-6 py-3 rounded-xl bg-[#22251e] text-[#f4ffe0] text-[14px] font-medium cursor-pointer hover:bg-[#22251e]/85 transition-colors flex items-center justify-center gap-2">
-                Move Forward
-                <ArrowRight className="w-4 h-4" />
-              </button>
+              {/* Navigation - Pinned to bottom */}
+              <div className="px-5 sm:px-8 lg:px-12 pb-6 sm:pb-8 pt-4 border-t border-[#22251e]/5">
+                <div className="flex items-center gap-3 sm:gap-4">
+                  <button
+                    onClick={() => setAccountSubStep(0)}
+                    className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl border border-[#22251e]/20 bg-transparent text-[#22251e]/70 text-[13px] sm:text-[14px] font-medium cursor-pointer hover:bg-[#22251e]/5 hover:border-[#22251e]/30 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                    Back
+                  </button>
+                  <button
+                    onClick={handleQuoteContinue}
+                    disabled={isCreatingSession}
+                    className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl bg-[#22251e] text-[#f4ffe0] text-[13px] sm:text-[14px] font-medium cursor-pointer hover:bg-[#22251e]/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isCreatingSession ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Loading...
+                      </>
+                    ) : (
+                      <>
+                        <span className="hidden sm:inline">Move Forward</span>
+                        <span className="sm:hidden">Continue</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
+          )}
+
+          {/* ================================================================ */}
+          {/* PAYMENT STEP */}
+          {/* ================================================================ */}
+          {activeStep === 1 && clientSecret && (
+            <CheckoutProvider
+              stripe={stripePromise}
+              options={{
+                clientSecret,
+                elementsOptions: {
+                  appearance: stripeAppearance,
+                },
+              }}
+            >
+              <PaymentForm
+                annualPrice={annualPrice}
+                formData={formData}
+                onBack={() => {
+                  setActiveStep(0);
+                  setAccountSubStep(1);
+                }}
+                onSuccess={handlePaymentSuccess}
+              />
+            </CheckoutProvider>
+          )}
+
+          {/* ================================================================ */}
+          {/* CONFIRMATION STEP */}
+          {/* ================================================================ */}
+          {activeStep === 2 && (
+            <div className="flex-1 flex flex-col overflow-y-auto">
+              {/* Content */}
+              <div className="flex-1 px-5 sm:px-8 lg:px-12 pt-6 sm:pt-8 pb-6">
+                <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 lg:gap-10">
+                  {/* Left column - Hidden on mobile */}
+                  <div className="hidden lg:block lg:w-[140px] flex-shrink-0">
+                    <p className="text-[10px] uppercase tracking-[0.2em] text-[#22251e]/40 font-mono mb-2">
+                      SUMMARY &rarr;
+                    </p>
+                  </div>
+
+                  {/* Right column */}
+                  <div className="flex-1 flex flex-col lg:flex-row gap-4 sm:gap-5">
+                    {/* Business Details Card */}
+                    <div className="flex-1 rounded-xl border border-[#22251e]/8 bg-white p-4 sm:p-5 text-[12px] sm:text-[13px]">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-[13px] font-semibold text-[#22251e]">
+                          Your Business Details
+                        </h3>
+                        <button
+                          onClick={() => {
+                            setActiveStep(0);
+                            setAccountSubStep(0);
+                          }}
+                          className="flex items-center gap-1 text-[11px] text-[#22251e]/50 hover:text-[#22251e] transition-colors cursor-pointer"
+                        >
+                          <Pencil className="w-3 h-3" />
+                          Edit
+                        </button>
+                      </div>
+
+                      <div className="space-y-3">
+                        <div>
+                          <p className="text-[9px] uppercase tracking-wider text-[#22251e]/40 mb-0.5">
+                            BUSINESS NAME
+                          </p>
+                          <p className="text-[13px] font-medium text-[#22251e]">
+                            {formData.companyName || "Not provided"}
+                          </p>
+                        </div>
+
+                        {formData.address && (
+                          <div>
+                            <p className="text-[12px] text-[#22251e]/60">
+                              {formData.address}
+                              {formData.city && `, ${formData.city}`}
+                              {formData.state && `, ${formData.state}`}{" "}
+                              {formData.zip}
+                            </p>
+                          </div>
+                        )}
+
+                        <div>
+                          <p className="text-[9px] uppercase tracking-wider text-[#22251e]/40 mb-0.5">
+                            PRIMARY CONTACT
+                          </p>
+                          <p className="text-[13px] font-medium text-[#22251e]">
+                            {formData.yourName}
+                          </p>
+                          <p className="text-[12px] text-[#22251e]/60">
+                            {formData.email}
+                          </p>
+                        </div>
+
+                        <div className="flex gap-4">
+                          <div>
+                            <p className="text-[9px] uppercase tracking-wider text-[#22251e]/40">
+                              ACTIVE SUBS
+                            </p>
+                            <p className="text-[14px] font-semibold text-[#22251e]">
+                              {formData.activeSubs}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-[9px] uppercase tracking-wider text-[#22251e]/40">
+                              ACTIVE PROJECTS
+                            </p>
+                            <p className="text-[14px] font-semibold text-[#22251e]">
+                              {formData.activeProjects}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="h-px bg-[#22251e]/8 my-4" />
+
+                      {/* Your Plan */}
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="text-[12px] text-[#22251e]/60">
+                            Your plan
+                          </h4>
+                          <button
+                            onClick={() => {
+                              setActiveStep(0);
+                              setAccountSubStep(1);
+                            }}
+                            className="flex items-center gap-1 text-[11px] text-[#22251e]/50 hover:text-[#22251e] transition-colors cursor-pointer"
+                          >
+                            <Pencil className="w-3 h-3" />
+                            Edit
+                          </button>
+                        </div>
+
+                        <h3 className="text-[16px] font-semibold text-[#22251e]">
+                          {tier.name}
+                        </h3>
+                        <p className="text-[10px] uppercase tracking-wider text-[#22251e]/40 mb-1">
+                          {tier.subtitle}
+                        </p>
+                        <p className="text-[12px] text-[#22251e]/50 italic">
+                          Based on your sub count and project volume.
+                        </p>
+                      </div>
+
+                      <div className="h-px bg-[#22251e]/8 my-4" />
+
+                      {/* Payment Details */}
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="text-[12px] text-[#22251e]/60">
+                            Payment
+                          </h4>
+                          <button
+                            onClick={() => setActiveStep(1)}
+                            className="flex items-center gap-1 text-[11px] text-[#22251e]/50 hover:text-[#22251e] transition-colors cursor-pointer"
+                          >
+                            <Pencil className="w-3 h-3" />
+                            Edit
+                          </button>
+                        </div>
+
+                        <p className="text-[13px] text-[#22251e]">
+                          {paymentDetails.cardType} ····{paymentDetails.last4}
+                        </p>
+                        <p className="text-[12px] text-[#22251e]/50">
+                          Billed yearly
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Purchase Summary Card */}
+                    <div className="lg:w-[240px] flex-shrink-0">
+                      <div className="rounded-xl border border-[#22251e]/8 bg-[#eef5dc] p-5">
+                        <h3 className="text-[14px] font-semibold text-[#22251e] mb-1">
+                          Purchase Summary
+                        </h3>
+                        <p className="text-[12px] text-[#22251e]/50 mb-4">
+                          Review and confirm your purchase.
+                        </p>
+
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-[12px] font-medium text-[#22251e]">
+                            {tier.name}
+                          </span>
+                          <span className="text-[11px] text-[#22251e]/50">
+                            {tier.subtitle}
+                          </span>
+                        </div>
+
+                        <div className="h-px bg-[#22251e]/10 my-3" />
+
+                        <div className="flex items-center justify-between mb-4">
+                          <span className="text-[13px] font-semibold text-[#22251e]">Total</span>
+                          <span className="text-[16px] font-bold text-[#22251e]">${annualPrice}</span>
+                        </div>
+
+                        <button className="w-full py-2.5 rounded-xl bg-[#22251e] text-[#f4ffe0] text-[13px] font-medium cursor-pointer hover:bg-[#22251e]/90 transition-colors flex items-center justify-center gap-2">
+                          <CheckCircle2 className="w-4 h-4" />
+                          Confirm Purchase
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

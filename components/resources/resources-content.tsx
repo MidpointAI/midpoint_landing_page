@@ -11,6 +11,7 @@ import {
   Lightbulb,
   Check,
   FileText,
+  Link,
 } from "lucide-react";
 import { OnePagerModal } from "./one-pager-modal";
 import {
@@ -428,13 +429,13 @@ function FaqPage() {
           >
             Contact Us
           </a>
-          <a
+          <Link
             href="/"
             className="inline-flex items-center gap-2 text-sm md:text-base text-foreground hover:text-primary transition-colors cursor-pointer"
           >
             Learn More
             <ArrowRight className="w-4 h-4" />
-          </a>
+          </Link>
         </div>
       </div>
     </article>
@@ -522,6 +523,7 @@ function FaqItem({
 
   useEffect(() => {
     if (contentRef.current) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setHeight(isOpen ? contentRef.current.scrollHeight : 0);
     }
   }, [isOpen]);
