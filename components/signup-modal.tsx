@@ -5,10 +5,8 @@ import {
   X,
   FileText,
   CreditCard,
-  CheckCircle2,
   ArrowRight,
   ArrowLeft,
-  Pencil,
   Loader2,
 } from "lucide-react";
 import { loadStripe } from "@stripe/stripe-js";
@@ -217,7 +215,6 @@ function SummaryRow({ label, value }: SummaryRowProps) {
 const steps = [
   { label: "Account", icon: FileText },
   { label: "Payment", icon: CreditCard },
-  { label: "Confirm Purchase", icon: CheckCircle2 },
 ];
 
 interface StepIndicatorProps {
@@ -465,13 +462,6 @@ export default function SignupModal({ open, onClose }: SignupModalProps) {
     tosAccepted: false,
   });
 
-  // Payment details for confirmation step
-  const [paymentDetails, setPaymentDetails] = useState({
-    cardType: "Visa",
-    last4: "4242",
-    billingAddress: "",
-  });
-
   // Update form data helper
   const updateFormData = useCallback(
     (field: keyof FormData, value: string | boolean) => {
@@ -563,16 +553,12 @@ export default function SignupModal({ open, onClose }: SignupModalProps) {
     createCheckoutSession();
   }, [createCheckoutSession]);
 
-  // Handle payment success
+  // Handle payment success - Stripe will redirect to success page via return_url
   const handlePaymentSuccess = useCallback(() => {
-    setPaymentDetails({
-      cardType: "Visa",
-      last4: "4242",
-      billingAddress: `${formData.address}, ${formData.city}, ${formData.state} ${formData.zip}`,
-    });
-    setCompletedSteps((prev) => [...new Set([...prev, 1])]);
-    setActiveStep(2);
-  }, [formData]);
+    // Payment successful - Stripe handles redirect to /signup/success
+    // Close modal and let the redirect happen
+    onClose();
+  }, [onClose]);
 
   // Handle step navigation
   const handleStepClick = useCallback(
@@ -968,188 +954,6 @@ export default function SignupModal({ open, onClose }: SignupModalProps) {
             </CheckoutProvider>
           )}
 
-          {/* ================================================================ */}
-          {/* CONFIRMATION STEP */}
-          {/* ================================================================ */}
-          {activeStep === 2 && (
-            <div className="flex-1 flex flex-col overflow-y-auto">
-              {/* Content */}
-              <div className="flex-1 px-5 sm:px-8 lg:px-12 pt-6 sm:pt-8 pb-6">
-                <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 lg:gap-10">
-                  {/* Left column - Hidden on mobile */}
-                  <div className="hidden lg:block lg:w-[140px] flex-shrink-0">
-                    <p className="text-[10px] uppercase tracking-[0.2em] text-[#22251e]/40 font-mono mb-2">
-                      SUMMARY &rarr;
-                    </p>
-                  </div>
-
-                  {/* Right column */}
-                  <div className="flex-1 flex flex-col lg:flex-row gap-4 sm:gap-5">
-                    {/* Business Details Card */}
-                    <div className="flex-1 rounded-xl border border-[#22251e]/8 bg-white p-4 sm:p-5 text-[12px] sm:text-[13px]">
-                      <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-[13px] font-semibold text-[#22251e]">
-                          Your Business Details
-                        </h3>
-                        <button
-                          onClick={() => {
-                            setActiveStep(0);
-                            setAccountSubStep(0);
-                          }}
-                          className="flex items-center gap-1 text-[11px] text-[#22251e]/50 hover:text-[#22251e] transition-colors cursor-pointer"
-                        >
-                          <Pencil className="w-3 h-3" />
-                          Edit
-                        </button>
-                      </div>
-
-                      <div className="space-y-3">
-                        <div>
-                          <p className="text-[9px] uppercase tracking-wider text-[#22251e]/40 mb-0.5">
-                            BUSINESS NAME
-                          </p>
-                          <p className="text-[13px] font-medium text-[#22251e]">
-                            {formData.companyName || "Not provided"}
-                          </p>
-                        </div>
-
-                        {formData.address && (
-                          <div>
-                            <p className="text-[12px] text-[#22251e]/60">
-                              {formData.address}
-                              {formData.city && `, ${formData.city}`}
-                              {formData.state && `, ${formData.state}`}{" "}
-                              {formData.zip}
-                            </p>
-                          </div>
-                        )}
-
-                        <div>
-                          <p className="text-[9px] uppercase tracking-wider text-[#22251e]/40 mb-0.5">
-                            PRIMARY CONTACT
-                          </p>
-                          <p className="text-[13px] font-medium text-[#22251e]">
-                            {formData.yourName}
-                          </p>
-                          <p className="text-[12px] text-[#22251e]/60">
-                            {formData.email}
-                          </p>
-                        </div>
-
-                        <div className="flex gap-4">
-                          <div>
-                            <p className="text-[9px] uppercase tracking-wider text-[#22251e]/40">
-                              ACTIVE SUBS
-                            </p>
-                            <p className="text-[14px] font-semibold text-[#22251e]">
-                              {formData.activeSubs}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-[9px] uppercase tracking-wider text-[#22251e]/40">
-                              ACTIVE PROJECTS
-                            </p>
-                            <p className="text-[14px] font-semibold text-[#22251e]">
-                              {formData.activeProjects}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="h-px bg-[#22251e]/8 my-4" />
-
-                      {/* Your Plan */}
-                      <div>
-                        <div className="flex items-center justify-between mb-2">
-                          <h4 className="text-[12px] text-[#22251e]/60">
-                            Your plan
-                          </h4>
-                          <button
-                            onClick={() => {
-                              setActiveStep(0);
-                              setAccountSubStep(1);
-                            }}
-                            className="flex items-center gap-1 text-[11px] text-[#22251e]/50 hover:text-[#22251e] transition-colors cursor-pointer"
-                          >
-                            <Pencil className="w-3 h-3" />
-                            Edit
-                          </button>
-                        </div>
-
-                        <h3 className="text-[16px] font-semibold text-[#22251e]">
-                          {tier.name}
-                        </h3>
-                        <p className="text-[10px] uppercase tracking-wider text-[#22251e]/40 mb-1">
-                          {tier.subtitle}
-                        </p>
-                        <p className="text-[12px] text-[#22251e]/50 italic">
-                          Based on your sub count and project volume.
-                        </p>
-                      </div>
-
-                      <div className="h-px bg-[#22251e]/8 my-4" />
-
-                      {/* Payment Details */}
-                      <div>
-                        <div className="flex items-center justify-between mb-2">
-                          <h4 className="text-[12px] text-[#22251e]/60">
-                            Payment
-                          </h4>
-                          <button
-                            onClick={() => setActiveStep(1)}
-                            className="flex items-center gap-1 text-[11px] text-[#22251e]/50 hover:text-[#22251e] transition-colors cursor-pointer"
-                          >
-                            <Pencil className="w-3 h-3" />
-                            Edit
-                          </button>
-                        </div>
-
-                        <p className="text-[13px] text-[#22251e]">
-                          {paymentDetails.cardType} ····{paymentDetails.last4}
-                        </p>
-                        <p className="text-[12px] text-[#22251e]/50">
-                          Billed yearly
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Purchase Summary Card */}
-                    <div className="lg:w-[240px] flex-shrink-0">
-                      <div className="rounded-xl border border-[#22251e]/8 bg-[#eef5dc] p-5">
-                        <h3 className="text-[14px] font-semibold text-[#22251e] mb-1">
-                          Purchase Summary
-                        </h3>
-                        <p className="text-[12px] text-[#22251e]/50 mb-4">
-                          Review and confirm your purchase.
-                        </p>
-
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-[12px] font-medium text-[#22251e]">
-                            {tier.name}
-                          </span>
-                          <span className="text-[11px] text-[#22251e]/50">
-                            {tier.subtitle}
-                          </span>
-                        </div>
-
-                        <div className="h-px bg-[#22251e]/10 my-3" />
-
-                        <div className="flex items-center justify-between mb-4">
-                          <span className="text-[13px] font-semibold text-[#22251e]">Total</span>
-                          <span className="text-[16px] font-bold text-[#22251e]">${annualPrice}</span>
-                        </div>
-
-                        <button className="w-full py-2.5 rounded-xl bg-[#22251e] text-[#f4ffe0] text-[13px] font-medium cursor-pointer hover:bg-[#22251e]/90 transition-colors flex items-center justify-center gap-2">
-                          <CheckCircle2 className="w-4 h-4" />
-                          Confirm Purchase
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>

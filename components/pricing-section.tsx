@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, memo, useCallback } from "react";
-import { Check, Star, MessageSquare } from "lucide-react";
+import { Check, Star, MessageSquare, ArrowRight } from "lucide-react";
 import SignupModal from "./signup-modal";
 
 // ============================================================================
@@ -12,21 +12,23 @@ interface PricingTier {
   id: string;
   name: string;
   subtitle: string;
-  monthlyPrice: number | null;
-  yearlyPrice: number | null;
+  subsRange: string;
+  startingPrice: string | null;
+  priceNote: string;
   features: string[];
   cta: string;
-  ctaHref: string;
   popular: boolean;
+  isCustom: boolean;
 }
 
 const pricingTiers: PricingTier[] = [
   {
     id: "essential",
     name: "Essential",
-    subtitle: "UP TO 25 ACTIVE SUBS",
-    monthlyPrice: 500,
-    yearlyPrice: 450,
+    subtitle: "Small teams getting started",
+    subsRange: "Up to 25 subs",
+    startingPrice: "6,000",
+    priceNote: "Minimum annual fee",
     features: [
       "COI Collection + AI powered analysis",
       "Expert Verification",
@@ -34,42 +36,44 @@ const pricingTiers: PricingTier[] = [
       "Monthly Compliance Reporting",
       "Standard Support",
     ],
-    cta: "Get started",
-    ctaHref: "/contact",
+    cta: "Get Started",
     popular: false,
+    isCustom: false,
   },
   {
     id: "professional",
     name: "Professional",
-    subtitle: "25-75 TRADES/SUBS",
-    monthlyPrice: 450,
-    yearlyPrice: 400,
+    subtitle: "Growing contractor networks",
+    subsRange: "25-75 subs",
+    startingPrice: "7,500",
+    priceNote: "Formula-based pricing",
     features: [
       "Everything in Essential",
       "Enhanced Compliance Reporting",
       "Monthly Dashboard Updates",
       "Priority Support",
     ],
-    cta: "Get started",
-    ctaHref: "/contact",
+    cta: "Get Started",
     popular: true,
+    isCustom: false,
   },
   {
     id: "premier",
     name: "Premier",
-    subtitle: "100+ SUBS",
-    monthlyPrice: null,
-    yearlyPrice: null,
+    subtitle: "Enterprise scale operations",
+    subsRange: "100+ subs",
+    startingPrice: null,
+    priceNote: "Tailored to your needs",
     features: [
-      "Custom Pricing",
       "Everything in Professional",
-      "Full Access Subcontractor",
-      "Full audit ready access.",
+      "Full Access Subcontractor Portal",
+      "Audit-ready documentation",
       "Carrier Advocacy included",
+      "Dedicated Account Manager",
     ],
-    cta: "Get in touch",
-    ctaHref: "/contact",
+    cta: "Contact Sales",
     popular: false,
+    isCustom: true,
   },
 ];
 
@@ -111,7 +115,6 @@ const AnimatedSection = memo(function AnimatedSection({
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    // Check for reduced motion preference
     const prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
@@ -153,15 +156,8 @@ const BackgroundLayer = memo(function BackgroundLayer() {
       className="absolute inset-0 -z-10 pointer-events-none overflow-hidden"
       aria-hidden="true"
     >
-      {/* Top wash - lime haze */}
-      <div
-        className="absolute left-1/2 -translate-x-1/2 -top-40 w-[900px] h-[500px] rounded-full bg-primary/[0.02] blur-[160px]"
-      />
-      {/* Bottom wash */}
-      <div
-        className="absolute left-1/2 -translate-x-1/2 -bottom-40 w-[700px] h-[400px] rounded-full bg-primary/[0.015] blur-[140px]"
-      />
-      {/* Dark vignette overlay */}
+      <div className="absolute left-1/2 -translate-x-1/2 -top-40 w-[900px] h-[500px] rounded-full bg-primary/[0.02] blur-[160px]" />
+      <div className="absolute left-1/2 -translate-x-1/2 -bottom-40 w-[700px] h-[400px] rounded-full bg-primary/[0.015] blur-[140px]" />
       <div
         className="absolute inset-0"
         style={{
@@ -173,291 +169,129 @@ const BackgroundLayer = memo(function BackgroundLayer() {
 });
 
 // ============================================================================
-// BILLING TOGGLE
-// ============================================================================
-
-interface BillingToggleProps {
-  isYearly: boolean;
-  onToggle: (yearly: boolean) => void;
-}
-
-const BillingToggle = memo(function BillingToggle({
-  isYearly,
-  onToggle,
-}: BillingToggleProps) {
-  return (
-    <div className="flex flex-col items-center gap-2.5">
-      <span className="text-[11px] uppercase tracking-[0.12em] text-muted-foreground/40">
-        Billing
-      </span>
-      <div
-        role="radiogroup"
-        aria-label="Billing period"
-        className="inline-flex rounded-lg border border-border/25 bg-card/40 p-1"
-      >
-        <button
-          role="radio"
-          aria-checked={!isYearly}
-          onClick={() => onToggle(false)}
-          className={`px-5 py-2 rounded-md text-sm font-medium cursor-pointer transition-all duration-200 ${
-            !isYearly
-              ? "bg-primary text-primary-foreground"
-              : "text-muted-foreground/50 hover:text-muted-foreground/70"
-          }`}
-        >
-          Monthly
-        </button>
-        <button
-          role="radio"
-          aria-checked={isYearly}
-          onClick={() => onToggle(true)}
-          className={`px-5 py-2 rounded-md text-sm font-medium cursor-pointer transition-all duration-200 ${
-            isYearly
-              ? "bg-primary text-primary-foreground"
-              : "text-muted-foreground/50 hover:text-muted-foreground/70"
-          }`}
-        >
-          Yearly
-        </button>
-      </div>
-    </div>
-  );
-});
-
-// ============================================================================
 // PRICING CARD
 // ============================================================================
 
 interface PricingCardProps {
   tier: PricingTier;
-  isYearly: boolean;
-  position: "left" | "center" | "right";
   onGetStarted: () => void;
+  onContact: () => void;
 }
 
 const PricingCard = memo(function PricingCard({
   tier,
-  isYearly,
-  position,
   onGetStarted,
+  onContact,
 }: PricingCardProps) {
-  const price = isYearly ? tier.yearlyPrice : tier.monthlyPrice;
-  const isCustom = price === null;
-  const isProfessional = position === "center";
-
-  // Position-based classes
-  const flexClass = isProfessional ? "flex-[1.08]" : "flex-1";
-  const paddingClass = isProfessional
-    ? "px-7 lg:px-9 py-10 lg:py-14"
-    : "px-6 lg:px-7 py-9 lg:py-12";
-  const roundingClass =
-    position === "left"
-      ? "md:rounded-l-xl"
-      : position === "right"
-      ? "md:rounded-r-xl"
-      : "";
+  const isProfessional = tier.popular;
 
   return (
-    <div className={`${flexClass} ${paddingClass} ${roundingClass} flex flex-col`}>
-      {/* Plan name + Popular badge */}
-      <div className="flex items-center gap-3 mb-2">
-        <h3
-          className={`font-semibold text-foreground tracking-tight ${
-            isProfessional ? "text-xl" : "text-lg"
+    <div
+      className={`relative flex flex-col p-6 lg:p-8 rounded-xl border transition-all duration-200 ${
+        isProfessional
+          ? "border-primary/40 bg-card/30"
+          : "border-border/20 bg-card/10 hover:border-border/30"
+      }`}
+    >
+      {/* Popular Badge */}
+      {tier.popular && (
+        <div className="absolute -top-3 left-6">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary text-primary-foreground text-[10px] font-semibold uppercase tracking-wider">
+            <Star className="w-3 h-3" fill="currentColor" />
+            Most Popular
+          </span>
+        </div>
+      )}
+
+      {/* Header */}
+      <div className="mb-6">
+        <h3 className="text-lg font-semibold text-foreground tracking-tight mb-1">
+          {tier.name}
+        </h3>
+        <p className="text-xs text-muted-foreground/50 uppercase tracking-wider">
+          {tier.subsRange}
+        </p>
+      </div>
+
+      {/* Price */}
+      <div className="mb-6">
+        {tier.isCustom ? (
+          <div>
+            <p className="text-2xl font-bold text-foreground tracking-tight">
+              Custom
+            </p>
+            <p className="text-xs text-muted-foreground/50 mt-1">
+              {tier.priceNote}
+            </p>
+          </div>
+        ) : (
+          <div>
+            <div className="flex items-baseline gap-1">
+              <span className="text-xs text-muted-foreground/50">From</span>
+              <span className="text-3xl font-bold text-foreground tracking-tight tabular-nums">
+                ${tier.startingPrice}
+              </span>
+              <span className="text-sm text-muted-foreground/40">/year</span>
+            </div>
+            <p className="text-xs text-muted-foreground/50 mt-1">
+              {tier.priceNote}
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Divider */}
+      <div className="h-px bg-border/15 mb-6" />
+
+      {/* Features */}
+      <ul className="flex flex-col gap-3 mb-8 flex-1">
+        {tier.features.map((feature, idx) => (
+          <li key={idx} className="flex items-start gap-2.5">
+            <Check className="w-4 h-4 flex-shrink-0 mt-0.5 text-primary" />
+            <span className="text-sm text-muted-foreground/70 leading-snug">
+              {feature}
+            </span>
+          </li>
+        ))}
+      </ul>
+
+      {/* CTA Button */}
+      {tier.isCustom ? (
+        <button
+          onClick={onContact}
+          className="w-full py-3 rounded-lg text-sm font-medium cursor-pointer flex items-center justify-center gap-2 border border-border/30 text-foreground hover:border-primary hover:text-primary transition-colors duration-150"
+        >
+          <MessageSquare className="w-4 h-4" />
+          {tier.cta}
+        </button>
+      ) : (
+        <button
+          onClick={onGetStarted}
+          className={`w-full py-3 rounded-lg text-sm font-medium cursor-pointer flex items-center justify-center gap-2 transition-colors duration-150 ${
+            isProfessional
+              ? "bg-primary text-primary-foreground hover:opacity-90"
+              : "bg-secondary/80 text-foreground hover:bg-primary hover:text-primary-foreground"
           }`}
         >
-          {tier.name}
-        </h3>
-        {tier.popular && (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-primary/15 border border-primary/20 text-primary text-[9px] font-bold uppercase tracking-widest">
-            <Star className="w-2.5 h-2.5" fill="currentColor" />
-            Popular
-          </span>
-        )}
-      </div>
-
-      {/* Subtitle */}
-      <p className="text-[11px] uppercase tracking-[0.1em] text-muted-foreground/40 mb-8">
-        {tier.subtitle}
-      </p>
-
-      {/* Divider */}
-      <div className="h-px bg-border/15 mb-8" />
-
-      {/* Price block */}
-      <div className="mb-2">
-        {isCustom ? (
-          <p className="text-lg font-semibold text-foreground leading-none">
-            Custom Pricing
-          </p>
-        ) : (
-          <p
-            className={`font-bold text-foreground tracking-tight font-mono leading-none ${
-              isProfessional ? "text-[28px]" : "text-2xl"
-            }`}
-          >
-            ${price}{" "}
-            <span className="text-sm text-muted-foreground/35 font-normal">
-              monthly
-            </span>
-          </p>
-        )}
-      </div>
-
-      {/* Cadence text - fixed height for alignment */}
-      <div className="h-5 mb-10">
-        {!isCustom && (
-          <p className="text-[11px] text-muted-foreground/30">
-            {isYearly ? "Per month, billed yearly" : "Per month"}
-          </p>
-        )}
-      </div>
-
-      {/* Divider */}
-      <div className="h-px bg-border/15 mb-8" />
-
-      {/* Features */}
-      <ul className="flex flex-col gap-4 mb-10">
-        {tier.features.map((feature, idx) => (
-          <li key={idx} className="flex items-start gap-2.5">
-            <Check className="w-4 h-4 flex-shrink-0 mt-[2px] text-primary/70" />
-            <span className="text-[13px] leading-snug text-muted-foreground/55">
-              {feature}
-            </span>
-          </li>
-        ))}
-      </ul>
-
-      {/* CTA Button */}
-      <a
-        href={tier.ctaHref}
-        onClick={(e) => {
-          e.preventDefault();
-          onGetStarted();
-        }}
-        className="mt-auto w-full py-3 rounded-lg text-sm font-medium tracking-tight cursor-pointer flex items-center justify-center gap-2 bg-secondary/80 text-foreground/70 hover:bg-primary hover:text-primary-foreground transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-      >
-        {tier.id === "premier" && <MessageSquare className="w-3.5 h-3.5" />}
-        {tier.cta}
-      </a>
+          {tier.cta}
+          <ArrowRight className="w-4 h-4" />
+        </button>
+      )}
     </div>
   );
 });
 
 // ============================================================================
-// MOBILE PRICING CARD (with individual border)
-// ============================================================================
-
-const MobilePricingCard = memo(function MobilePricingCard({
-  tier,
-  isYearly,
-  onGetStarted,
-}: Omit<PricingCardProps, "position">) {
-  const price = isYearly ? tier.yearlyPrice : tier.monthlyPrice;
-  const isCustom = price === null;
-
-  return (
-    <div className="rounded-xl border border-border/20 bg-card/30 px-6 py-8 flex flex-col">
-      {/* Plan name + Popular badge */}
-      <div className="flex items-center gap-3 mb-2">
-        <h3 className="font-semibold text-foreground tracking-tight text-lg">
-          {tier.name}
-        </h3>
-        {tier.popular && (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-primary/15 border border-primary/20 text-primary text-[9px] font-bold uppercase tracking-widest">
-            <Star className="w-2.5 h-2.5" fill="currentColor" />
-            Popular
-          </span>
-        )}
-      </div>
-
-      {/* Subtitle */}
-      <p className="text-[11px] uppercase tracking-[0.1em] text-muted-foreground/40 mb-8">
-        {tier.subtitle}
-      </p>
-
-      {/* Divider */}
-      <div className="h-px bg-border/15 mb-8" />
-
-      {/* Price block */}
-      <div className="mb-2">
-        {isCustom ? (
-          <p className="text-lg font-semibold text-foreground leading-none">
-            Custom Pricing
-          </p>
-        ) : (
-          <p className="font-bold text-foreground tracking-tight font-mono leading-none text-2xl">
-            ${price}{" "}
-            <span className="text-sm text-muted-foreground/35 font-normal">
-              monthly
-            </span>
-          </p>
-        )}
-      </div>
-
-      {/* Cadence text */}
-      <div className="h-5 mb-10">
-        {!isCustom && (
-          <p className="text-[11px] text-muted-foreground/30">
-            {isYearly ? "Per month, billed yearly" : "Per month"}
-          </p>
-        )}
-      </div>
-
-      {/* Divider */}
-      <div className="h-px bg-border/15 mb-8" />
-
-      {/* Features */}
-      <ul className="flex flex-col gap-4 mb-10">
-        {tier.features.map((feature, idx) => (
-          <li key={idx} className="flex items-start gap-2.5">
-            <Check className="w-4 h-4 flex-shrink-0 mt-[2px] text-primary/70" />
-            <span className="text-[13px] leading-snug text-muted-foreground/55">
-              {feature}
-            </span>
-          </li>
-        ))}
-      </ul>
-
-      {/* CTA Button */}
-      <a
-        href={tier.ctaHref}
-        onClick={(e) => {
-          e.preventDefault();
-          onGetStarted();
-        }}
-        className="mt-auto w-full py-3 rounded-lg text-sm font-medium tracking-tight cursor-pointer flex items-center justify-center gap-2 bg-secondary/80 text-foreground/70 hover:bg-primary hover:text-primary-foreground transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-      >
-        {tier.id === "premier" && <MessageSquare className="w-3.5 h-3.5" />}
-        {tier.cta}
-      </a>
-    </div>
-  );
-});
-
-// ============================================================================
-// VERTICAL DIVIDER
-// ============================================================================
-
-const VerticalDivider = memo(function VerticalDivider() {
-  return (
-    <div className="hidden md:block w-[2px] flex-shrink-0 bg-gradient-to-b from-transparent via-primary/15 to-transparent" />
-  );
-});
-
-// ============================================================================
-// COMPARISON TABLE (Your Experience - Clean Vercel Style)
+// COMPARISON TABLE
 // ============================================================================
 
 const ComparisonTable = memo(function ComparisonTable() {
   return (
     <div className="max-w-5xl mx-auto px-6 pb-24 lg:pb-32">
-      {/* Heading */}
       <h3 className="font-[family-name:var(--font-display)] text-2xl lg:text-3xl font-light tracking-tight text-foreground mb-12 lg:mb-16">
         Your Experience
       </h3>
 
-      {/* Table Container */}
       <div className="overflow-hidden rounded-2xl border border-border/10 bg-card/10">
         {/* Header Row */}
         <div className="grid grid-cols-1 md:grid-cols-2 border-b border-border/10">
@@ -481,14 +315,11 @@ const ComparisonTable = memo(function ComparisonTable() {
               index < comparisonRows.length - 1 ? "border-b border-border/5" : ""
             }`}
           >
-            {/* Without Column */}
             <div className="px-6 py-6 lg:px-8 lg:py-7">
               <p className="text-[14px] text-muted-foreground/55 leading-relaxed">
                 {row.without}
               </p>
             </div>
-
-            {/* With Column */}
             <div className="px-6 py-6 lg:px-8 lg:py-7 md:border-l border-border/8 bg-primary/[0.015] group-hover:bg-primary/[0.025] transition-colors">
               <p className="text-[14px] text-foreground/90 leading-relaxed">
                 {row.with}
@@ -506,19 +337,18 @@ const ComparisonTable = memo(function ComparisonTable() {
 // ============================================================================
 
 export default function PricingSection() {
-  const [isYearly, setIsYearly] = useState(true);
   const [showSignup, setShowSignup] = useState(false);
 
   const handleGetStarted = useCallback(() => {
     setShowSignup(true);
   }, []);
 
-  // Mobile order: Professional first, then Essential, then Premier
-  const mobileOrder = [pricingTiers[1], pricingTiers[0], pricingTiers[2]];
+  const handleContact = useCallback(() => {
+    window.location.href = "mailto:hello@midpoint.com";
+  }, []);
 
   return (
     <section className="relative bg-background overflow-hidden">
-      {/* Background Layer */}
       <BackgroundLayer />
 
       {/* Hero Section */}
@@ -531,55 +361,31 @@ export default function PricingSection() {
           </AnimatedSection>
 
           <AnimatedSection delay={0.08}>
-            <p className="text-sm lg:text-[15px] text-muted-foreground/55 leading-relaxed max-w-lg mx-auto text-balance">
+            <p className="text-sm lg:text-[15px] text-muted-foreground/55 leading-relaxed max-w-lg mx-auto text-balance mb-3">
               Priced by the scale of your subcontractor network. Every plan
               includes full-service compliance verification — no software to
               manage, no portal to babysit.
             </p>
           </AnimatedSection>
+
+          <AnimatedSection delay={0.12}>
+            <p className="text-xs text-muted-foreground/40">
+              Starting at <span className="text-primary font-semibold">$6,000</span>/year
+            </p>
+          </AnimatedSection>
         </div>
       </div>
 
-      {/* Billing Toggle */}
-      <AnimatedSection delay={0.16} className="mb-8 lg:mb-10">
-        <BillingToggle isYearly={isYearly} onToggle={setIsYearly} />
-      </AnimatedSection>
-
       {/* Pricing Cards */}
-      <AnimatedSection delay={0.24}>
-        <div className="max-w-5xl mx-auto px-6 pb-20 lg:pb-28">
-          {/* Desktop Layout */}
-          <div className="hidden md:flex rounded-xl border border-border/15 bg-card/20">
-            <PricingCard
-              tier={pricingTiers[0]}
-              isYearly={isYearly}
-              position="left"
-              onGetStarted={handleGetStarted}
-            />
-            <VerticalDivider />
-            <PricingCard
-              tier={pricingTiers[1]}
-              isYearly={isYearly}
-              position="center"
-              onGetStarted={handleGetStarted}
-            />
-            <VerticalDivider />
-            <PricingCard
-              tier={pricingTiers[2]}
-              isYearly={isYearly}
-              position="right"
-              onGetStarted={handleGetStarted}
-            />
-          </div>
-
-          {/* Mobile Layout - Professional first */}
-          <div className="flex flex-col gap-4 md:hidden">
-            {mobileOrder.map((tier) => (
-              <MobilePricingCard
+      <AnimatedSection delay={0.2}>
+        <div className="max-w-5xl mx-auto px-6 py-12 lg:py-16">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
+            {pricingTiers.map((tier) => (
+              <PricingCard
                 key={tier.id}
                 tier={tier}
-                isYearly={isYearly}
                 onGetStarted={handleGetStarted}
+                onContact={handleContact}
               />
             ))}
           </div>
@@ -587,7 +393,7 @@ export default function PricingSection() {
       </AnimatedSection>
 
       {/* Comparison Table */}
-      <AnimatedSection delay={0.35}>
+      <AnimatedSection delay={0.3}>
         <ComparisonTable />
       </AnimatedSection>
 
