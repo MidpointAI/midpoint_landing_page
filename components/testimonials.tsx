@@ -1,367 +1,281 @@
 "use client";
 
-import { useRef, memo, useMemo } from "react";
-import { motion, useInView } from "framer-motion";
+import { useRef, useState } from "react";
+import { motion, useInView, useReducedMotion } from "framer-motion";
+import { ArrowLeft, ArrowRight, BadgeCheck } from "lucide-react";
 
-interface Testimonial {
-  quote: string;
+type Testimonial = {
+  id: string;
   name: string;
   title: string;
   company: string;
-}
+  quote: string;
+  highlights: string[];
+  avatarGradient: string;
+  panelGlow: string;
+};
 
-// Extended testimonials for infinite scroll effect
 const testimonials: Testimonial[] = [
   {
-    quote: "Working with Midpoint has been a game-changer. They've cut our compliance management time in half.",
-    name: "Spencer Nield",
-    title: "Director of Operations",
-    company: "A Finer Touch Construction",
-  },
-  {
-    quote: "We went from 10% compliance to 98% with executed agreements across the board.",
+    id: "andy-becker",
     name: "Andy Becker",
     title: "CEO",
     company: "Stonegate Homes",
+    quote:
+      "Before signing on, we didn't have subcontractor agreements in place, and only about 10% of trade partners carried the required insurance. Now every trade partner has an executed agreement and we're sitting at 98% compliance. It's streamlined, accountable, and a big win for our risk management.",
+    highlights: ["98% compliance", "Executed agreements"],
+    avatarGradient: "linear-gradient(135deg, #A3E635 0%, #34D399 100%)",
+    panelGlow:
+      "radial-gradient(circle at top left, rgba(163, 230, 53, 0.20), transparent 42%), radial-gradient(circle at 85% 15%, rgba(52, 211, 153, 0.18), transparent 28%), linear-gradient(135deg, rgba(53, 34, 18, 0.92), rgba(96, 54, 22, 0.58))",
   },
   {
-    quote: "Insurance audits used to give me anxiety. Now I go into audits with complete confidence.",
+    id: "samantha-becher",
     name: "Samantha Becher",
     title: "Office & Finance Manager",
     company: "Starwood Custom Homes",
+    quote:
+      "Since Midpoint has taken over and streamlined our compliance requirements, it has significantly reduced preparation time and stress during insurance audits and also our day to day tracking. I would definitely recommend this service to any company.",
+    highlights: ["Less audit stress", "Faster day-to-day tracking"],
+    avatarGradient: "linear-gradient(135deg, #F59E0B 0%, #FB7185 100%)",
+    panelGlow:
+      "radial-gradient(circle at top left, rgba(245, 158, 11, 0.22), transparent 44%), radial-gradient(circle at 90% 20%, rgba(251, 113, 133, 0.18), transparent 28%), linear-gradient(135deg, rgba(50, 30, 20, 0.92), rgba(110, 52, 26, 0.58))",
   },
   {
-    quote: "The AI caught over $2M in potential exposure that our manual review completely missed.",
-    name: "Marcus Chen",
-    title: "Risk Manager",
-    company: "Apex Development Group",
-  },
-  {
-    quote: "Subcontractor onboarding dropped from 2-3 weeks to under 48 hours. Incredible efficiency.",
-    name: "Jennifer Walsh",
-    title: "VP of Operations",
-    company: "Summit Builders LLC",
-  },
-  {
-    quote: "Finally, a compliance solution that actually understands construction. This is exactly what we needed.",
-    name: "David Rodriguez",
-    title: "Project Manager",
-    company: "Pacific Coast Builders",
-  },
-  {
-    quote: "Our insurance costs dropped 23% in the first year. The ROI speaks for itself.",
-    name: "Michelle Torres",
-    title: "CFO",
-    company: "Torres Development",
-  },
-  {
-    quote: "The real-time monitoring alone has prevented three major compliance issues this quarter.",
-    name: "Robert Kim",
-    title: "Compliance Director",
-    company: "Keystone Construction",
-  },
-  {
-    quote: "I can't imagine going back to spreadsheets. Midpoint has transformed how we operate.",
-    name: "Amanda Foster",
-    title: "Operations Manager",
-    company: "Foster & Sons Building",
-  },
-  {
-    quote: "The support team is phenomenal. They helped us onboard 200+ subs in just two weeks.",
-    name: "James Mitchell",
-    title: "Owner",
-    company: "Mitchell General Contractors",
-  },
-  {
-    quote: "Compliance used to be our biggest headache. Now it runs on autopilot.",
-    name: "Sarah Thompson",
-    title: "General Manager",
-    company: "Thompson Building Co",
-  },
-  {
-    quote: "The dashboard gives me visibility I never had before. Game changer for risk management.",
-    name: "Chris Anderson",
-    title: "Safety Director",
-    company: "Anderson Construction",
+    id: "spencer-nield",
+    name: "Spencer Nield",
+    title: "Director of Operations",
+    company: "A Finer Touch Construction",
+    quote:
+      "Working with Midpoint has been a game-changer for us. Their approach has reduced time spent managing the compliance process as well as dramatically reducing our exposure and insurance premiums.",
+    highlights: ["Lower exposure", "Reduced insurance premiums"],
+    avatarGradient: "linear-gradient(135deg, #38BDF8 0%, #818CF8 100%)",
+    panelGlow:
+      "radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 42%), radial-gradient(circle at 86% 16%, rgba(129, 140, 248, 0.16), transparent 28%), linear-gradient(135deg, rgba(24, 28, 45, 0.92), rgba(44, 52, 94, 0.52))",
   },
 ];
 
-// MEMOIZED Testimonial Card - prevents unnecessary re-renders
-const TestimonialCard = memo(function TestimonialCard({
-  testimonial,
-}: {
-  testimonial: Testimonial;
-}) {
-  // Memoize initials calculation
-  const initials = useMemo(
-    () =>
-      testimonial.name
-        .split(" ")
-        .map((n) => n[0])
-        .join(""),
-    [testimonial.name]
-  );
+const cardPositions = [
+  { y: 0, scale: 1, opacity: 1, rotate: 0 },
+  { y: -24, scale: 0.965, opacity: 0.44, rotate: 0.75 },
+  { y: -48, scale: 0.93, opacity: 0.2, rotate: -0.75 },
+];
 
-  return (
-    <div className="p-4 mx-2 my-2 rounded-xl bg-card/80 border border-border hover:border-primary/40 transition-colors duration-300 cursor-default group">
-      {/* Quote */}
-      <p className="text-sm text-muted-foreground leading-relaxed mb-4 group-hover:text-secondary-foreground transition-colors duration-300">
-        &ldquo;{testimonial.quote}&rdquo;
-      </p>
-
-      {/* Author */}
-      <div className="flex items-center gap-3">
-        <div className="w-8 h-8 rounded-full bg-border flex items-center justify-center border border-border group-hover:border-primary/30 transition-colors duration-300">
-          <span className="text-xs font-medium text-primary">{initials}</span>
-        </div>
-        <div className="min-w-0 flex-1">
-          <p className="text-sm font-medium text-foreground truncate">
-            {testimonial.name}
-          </p>
-          <p className="text-xs text-muted-foreground truncate">{testimonial.title}</p>
-        </div>
-      </div>
-    </div>
-  );
-});
-
-// MEMOIZED column component
-const TestimonialColumn = memo(function TestimonialColumn({
-  testimonials,
-  direction,
-  speed,
-}: {
-  testimonials: Testimonial[];
-  direction: "up" | "down";
-  speed?: string;
-}) {
-  // Memoize tripled array to prevent recreation
-  const tripled = useMemo(
-    () => [...testimonials, ...testimonials, ...testimonials],
-    [testimonials]
-  );
-
-  // Memoize style object
-  const animationStyle = useMemo(
-    () => (speed ? { animationDuration: speed } : undefined),
-    [speed]
-  );
-
-  return (
-    <div className="testimonial-column relative h-full overflow-hidden">
-      <div
-        className={`flex flex-col ${
-          direction === "up" ? "animate-marquee-up" : "animate-marquee-down"
-        }`}
-        style={animationStyle}
-      >
-        {tripled.map((testimonial, index) => (
-          <TestimonialCard
-            key={`${testimonial.name}-${index}`}
-            testimonial={testimonial}
-          />
-        ))}
-      </div>
-    </div>
-  );
-});
-
-// Memoize gradient style objects outside component
-const topGradientClass =
-  "absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-background via-background/90 to-transparent z-10 pointer-events-none";
-const bottomGradientClass =
-  "absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-background via-background/90 to-transparent z-10 pointer-events-none";
+function getInitials(name: string) {
+  return name
+    .split(" ")
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+}
 
 export default function Testimonials() {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const [activeIndex, setActiveIndex] = useState(0);
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const isInView = useInView(sectionRef, { once: true, margin: "-15%" });
+  const shouldReduceMotion = useReducedMotion();
+  const totalTestimonials = testimonials.length;
+  const activeTestimonial = testimonials[activeIndex];
 
-  // Memoize columns to prevent recreation
-  const columns = useMemo(
-    () => [
-      [
-        testimonials[0],
-        testimonials[5],
-        testimonials[10],
-        testimonials[2],
-        testimonials[7],
-        testimonials[4],
-      ],
-      [
-        testimonials[1],
-        testimonials[6],
-        testimonials[11],
-        testimonials[3],
-        testimonials[8],
-        testimonials[0],
-      ],
-      [
-        testimonials[2],
-        testimonials[7],
-        testimonials[4],
-        testimonials[9],
-        testimonials[1],
-        testimonials[6],
-      ],
-      [
-        testimonials[3],
-        testimonials[8],
-        testimonials[5],
-        testimonials[10],
-        testimonials[0],
-        testimonials[7],
-      ],
-      [
-        testimonials[4],
-        testimonials[9],
-        testimonials[1],
-        testimonials[6],
-        testimonials[11],
-        testimonials[2],
-      ],
-    ],
-    []
-  );
+  const goToPrevious = () => {
+    setActiveIndex((current) => (current - 1 + totalTestimonials) % totalTestimonials);
+  };
+
+  const goToNext = () => {
+    setActiveIndex((current) => (current + 1) % totalTestimonials);
+  };
 
   return (
-    <section ref={ref} className="relative h-screen bg-background overflow-hidden">
-      {/* Testimonial Columns Grid - GPU accelerated */}
-      <div className="absolute inset-0 grid grid-cols-3 md:grid-cols-5 gap-2 md:gap-4 px-2 md:px-4 gpu-accelerated">
-        {/* Column 1 - UP */}
-        <div className="hidden md:block h-full">
-          <TestimonialColumn
-            testimonials={columns[0]}
-            direction="up"
-            speed="45s"
-          />
-        </div>
-
-        {/* Column 2 - DOWN */}
-        <div className="h-full">
-          <TestimonialColumn
-            testimonials={columns[1]}
-            direction="down"
-            speed="50s"
-          />
-        </div>
-
-        {/* Column 3 - UP */}
-        <div className="h-full">
-          <TestimonialColumn
-            testimonials={columns[2]}
-            direction="up"
-            speed="42s"
-          />
-        </div>
-
-        {/* Column 4 - DOWN */}
-        <div className="h-full">
-          <TestimonialColumn
-            testimonials={columns[3]}
-            direction="down"
-            speed="48s"
-          />
-        </div>
-
-        {/* Column 5 - UP */}
-        <div className="hidden md:block h-full">
-          <TestimonialColumn
-            testimonials={columns[4]}
-            direction="up"
-            speed="46s"
-          />
-        </div>
+    <section
+      ref={sectionRef}
+      className="relative isolate overflow-hidden bg-background px-6 py-24 md:py-32"
+    >
+      <div className="absolute inset-0">
+        <div
+          className="absolute left-1/2 top-[4%] h-[34rem] w-[34rem] -translate-x-1/2 rounded-full blur-3xl transition-all duration-700 md:h-[44rem] md:w-[44rem]"
+          style={{ background: activeTestimonial.avatarGradient, opacity: 0.26 }}
+        />
+        <div className="absolute left-[8%] top-[18%] h-52 w-52 rounded-full bg-primary/16 blur-3xl md:h-72 md:w-72" />
+        <div className="absolute bottom-[8%] right-[10%] h-60 w-60 rounded-full bg-sky-400/12 blur-3xl md:h-80 md:w-80" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(8,10,14,0.18)_55%,rgba(8,10,14,0.92)_100%)]" />
+        <div
+          className="absolute inset-0 opacity-[0.06]"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(255,255,255,0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.12) 1px, transparent 1px)",
+            backgroundSize: "120px 120px",
+          }}
+        />
       </div>
 
-      {/* Top Gradient Fade */}
-      <div className={topGradientClass} />
-
-      {/* Bottom Gradient Fade */}
-      <div className={bottomGradientClass} />
-
-      {/* Center Text Overlay - OPTIMIZED: removed expensive backdrop-blur */}
-      <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
+      <div className="relative z-10 mx-auto flex max-w-6xl flex-col gap-12">
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="relative text-center px-12 py-16 pointer-events-auto overflow-visible"
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 24 }}
+          animate={isInView ? { opacity: 1, y: 0 } : undefined}
+          transition={{ duration: shouldReduceMotion ? 0 : 0.55, ease: [0.22, 1, 0.36, 1] }}
+          className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between"
         >
-          {/* OPTIMIZED: Large oval radial gradient that extends beyond content for seamless fade */}
-          <div
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[250%] h-[250%] pointer-events-none"
-            style={{
-              background: "radial-gradient(ellipse 50% 50% at 50% 50%, var(--background) 0%, color-mix(in oklch, var(--background) 95%, transparent) 20%, color-mix(in oklch, var(--background) 80%, transparent) 35%, color-mix(in oklch, var(--background) 50%, transparent) 50%, color-mix(in oklch, var(--background) 20%, transparent) 70%, transparent 100%)"
-            }}
-          />
-
-          {/* Content */}
-          <div className="relative z-10">
-            {/* Label */}
-            <motion.span
-              initial={{ opacity: 0, y: 10 }}
-              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              className="text-xs tracking-[0.3em] uppercase text-primary mb-4 block"
-            >
+          <div className="max-w-2xl">
+            <p className="text-xs uppercase tracking-[0.38em] text-primary/85">
               Testimonials
-            </motion.span>
+            </p>
+            <h2 className="mt-5 font-display text-4xl leading-none text-foreground md:text-6xl">
+              What builders say after{" "}
+              <span className="text-primary">Midpoint steps in.</span>
+            </h2>
+            <p className="mt-6 max-w-xl text-base leading-7 text-muted-foreground md:text-lg">
+              Three customer stories from teams that needed tighter agreements,
+              calmer audits, and a lot less compliance drag.
+            </p>
+          </div>
 
-            {/* Main Heading */}
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-              transition={{ duration: 0.6, delay: 0.5 }}
-              className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight mb-4"
+          <div className="flex items-center gap-3">
+            <span className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[0.68rem] uppercase tracking-[0.32em] text-white/58 backdrop-blur-xl">
+              {String(activeIndex + 1).padStart(2, "0")} /{" "}
+              {String(totalTestimonials).padStart(2, "0")}
+            </span>
+            <button
+              type="button"
+              onClick={goToPrevious}
+              aria-label="Show previous testimonial"
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-white/12 bg-white/5 text-white/78 transition hover:border-primary/40 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
-              <em className="italic">Trusted</em> by
-              <br />
-              <span className="text-primary">Builders</span> Nationwide
-            </motion.h2>
-
-            {/* Subtitle */}
-            <motion.p
-              initial={{ opacity: 0, y: 10 }}
-              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
-              transition={{ duration: 0.5, delay: 0.7 }}
-              className="text-muted-foreground text-base md:text-lg max-w-md mx-auto"
+              <ArrowLeft className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={goToNext}
+              aria-label="Show next testimonial"
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-white/12 bg-white/5 text-white/78 transition hover:border-primary/40 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
-              Join thousands of construction companies who&apos;ve transformed
-              their compliance workflow
-            </motion.p>
-
-            {/* Stats row */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
-              transition={{ duration: 0.5, delay: 0.9 }}
-              className="flex items-center justify-center gap-8 mt-8"
-            >
-              <div className="text-center">
-                <p className="text-2xl md:text-3xl font-bold text-foreground">
-                  2,500+
-                </p>
-                <p className="text-xs text-muted-foreground uppercase tracking-wider">
-                  Companies
-                </p>
-              </div>
-              <div className="w-px h-10 bg-border" />
-              <div className="text-center">
-                <p className="text-2xl md:text-3xl font-bold text-foreground">98%</p>
-                <p className="text-xs text-muted-foreground uppercase tracking-wider">
-                  Satisfaction
-                </p>
-              </div>
-              <div className="w-px h-10 bg-border" />
-              <div className="text-center">
-                <p className="text-2xl md:text-3xl font-bold text-foreground">4.9</p>
-                <p className="text-xs text-muted-foreground uppercase tracking-wider">
-                  Rating
-                </p>
-              </div>
-            </motion.div>
+              <ArrowRight className="h-4 w-4" />
+            </button>
           </div>
         </motion.div>
+
+        <div className="relative min-h-[620px] sm:min-h-[560px] md:min-h-[500px]" aria-live="polite">
+          {testimonials.map((testimonial, index) => {
+            const displayOrder =
+              (index - activeIndex + totalTestimonials) % totalTestimonials;
+            const position = cardPositions[displayOrder];
+
+            return (
+              <motion.article
+                key={testimonial.id}
+                animate={{
+                  y: position.y,
+                  scale: position.scale,
+                  opacity: position.opacity,
+                  rotate: position.rotate,
+                }}
+                transition={{
+                  duration: shouldReduceMotion ? 0 : 0.45,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                className="absolute inset-x-0 mx-auto w-full max-w-4xl origin-top"
+                style={{ zIndex: totalTestimonials - displayOrder }}
+                aria-hidden={displayOrder !== 0}
+              >
+                <div className="relative overflow-hidden rounded-[2rem] border border-white/12 bg-white/[0.03] shadow-[0_24px_90px_rgba(0,0,0,0.42)] backdrop-blur-[24px]">
+                  <div
+                    className="absolute inset-0"
+                    style={{ backgroundImage: testimonial.panelGlow }}
+                  />
+                  <div className="absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-white/35 to-transparent" />
+                  <div
+                    className="absolute -right-20 -top-20 h-56 w-56 rounded-full blur-3xl"
+                    style={{ background: testimonial.avatarGradient, opacity: 0.28 }}
+                  />
+
+                  <div className="relative p-6 md:p-10">
+                    <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
+                      <div className="flex items-center gap-4">
+                        <div
+                          className="flex h-14 w-14 items-center justify-center rounded-2xl text-lg font-semibold text-white shadow-[0_10px_30px_rgba(0,0,0,0.24)]"
+                          style={{ background: testimonial.avatarGradient }}
+                        >
+                          {getInitials(testimonial.name)}
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-semibold text-white md:text-2xl">
+                            {testimonial.name}
+                          </h3>
+                          <p className="mt-1 text-[0.72rem] uppercase tracking-[0.24em] text-primary/85">
+                            {testimonial.title}
+                          </p>
+                          <p className="mt-1 text-sm text-white/52">
+                            {testimonial.company}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 self-start rounded-full border border-white/10 bg-black/10 px-3 py-1.5 text-[0.68rem] uppercase tracking-[0.22em] text-white/58">
+                        <BadgeCheck className="h-3.5 w-3.5 text-primary" />
+                        Verified Customer
+                      </div>
+                    </div>
+
+                    <div className="relative mt-8">
+                      <div className="absolute -left-2 -top-10 text-7xl leading-none text-white/10 md:text-8xl">
+                        &ldquo;
+                      </div>
+                      <blockquote className="relative max-w-3xl text-[1.16rem] leading-[1.75] text-white/86 md:text-[1.72rem] md:leading-[1.6]">
+                        {testimonial.quote}
+                      </blockquote>
+                    </div>
+
+                    <div className="mt-10 flex flex-col gap-5 border-t border-white/10 pt-5 md:flex-row md:items-end md:justify-between">
+                      <div className="flex flex-wrap gap-2">
+                        {testimonial.highlights.map((highlight) => (
+                          <span
+                            key={highlight}
+                            className="rounded-full border border-primary/15 bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary"
+                          >
+                            {highlight}
+                          </span>
+                        ))}
+                      </div>
+
+                      <p className="text-xs uppercase tracking-[0.28em] text-white/42">
+                        Midpoint Customer Story
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </motion.article>
+            );
+          })}
+        </div>
+
+        <div
+          className="flex items-center justify-center gap-1 md:gap-2"
+          role="tablist"
+          aria-label="Testimonial navigation"
+        >
+          {testimonials.map((testimonial, index) => {
+            const isActive = index === activeIndex;
+
+            return (
+              <button
+                key={testimonial.id}
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+                aria-label={`Show testimonial from ${testimonial.name}`}
+                onClick={() => setActiveIndex(index)}
+                className="flex h-11 w-11 items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              >
+                <span
+                  className={`block rounded-full transition-all duration-300 ${
+                    isActive
+                      ? "h-2.5 w-8 bg-primary"
+                      : "h-2.5 w-2.5 bg-white/30 hover:bg-white/55"
+                  }`}
+                />
+              </button>
+            );
+          })}
+        </div>
       </div>
     </section>
   );
