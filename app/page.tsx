@@ -2,7 +2,6 @@ import Navbar from "@/components/navbar";
 import Hero from "@/components/hero";
 import StatementSection from "@/components/statement-section";
 import CoiAnalysisShowcase from "@/components/coi-analysis-showcase";
-import StatsSection from "@/components/stats-section";
 import FastOnboardingSection from "@/components/fast-onboarding-section";
 import Testimonials from "@/components/testimonials";
 import PricingSection from "@/components/pricing-section";
@@ -18,7 +17,6 @@ export default function Home() {
       <StatementSection />
       <CoiAnalysisShowcase />
       <FastOnboardingSection />
-      <StatsSection />
       <Testimonials />
       <PricingSection />
       <CtaSection />
