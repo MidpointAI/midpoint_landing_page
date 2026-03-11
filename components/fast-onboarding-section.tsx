@@ -3,16 +3,20 @@
 import { useRef, useState, useEffect, memo } from "react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
 
+const ENTRANCE_EASE = [0.22, 1, 0.36, 1] as const;
+
 const FAST_ONBOARDING_TIMING = {
-  speedLabel: 2,
-  heading: 0.22,
-  paragraph: 0.58,
-  bulletsStart: 1.08,
-  bulletStagger: 0.18,
-  button: 2.34,
-  dividerStart: 2.72,
-  dividerDotStagger: 0.03,
-  dividerDotDuration: 0.18,
+  speedLabel: 0.08,
+  heading: 0.14,
+  paragraph: 0.28,
+  bulletsStart: 0.42,
+  bulletStagger: 0.08,
+  button: 0.74,
+  dividerStart: 0.18,
+  dividerDotStagger: 0.016,
+  dividerDotDuration: 0.12,
+  statusLoopStart: 0.3,
+  statusLoopInterval: 650,
 };
 
 // Status indicator data with exact Figma colors
@@ -41,19 +45,20 @@ const WordReveal = memo(function WordReveal({
   className,
   as = "p",
   isInView,
+  prefersReducedMotion,
   delay,
-  wordStagger = 0.028,
-  duration = 0.34,
+  wordStagger = 0.024,
+  duration = 0.3,
 }: {
   text: string;
   className: string;
   as?: "h2" | "p" | "span";
   isInView: boolean;
+  prefersReducedMotion: boolean;
   delay: number;
   wordStagger?: number;
   duration?: number;
 }) {
-  const prefersReducedMotion = useReducedMotion();
   const Tag = as;
   const words = text.split(" ");
 
@@ -62,12 +67,12 @@ const WordReveal = memo(function WordReveal({
       {words.map((word, index) => (
         <motion.span
           key={`${word}-${index}`}
-          initial={{ opacity: 0, x: -20 }}
-          animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
+          initial={{ opacity: 0, x: -14 }}
+          animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -14 }}
           transition={{
             duration: prefersReducedMotion ? 0.12 : duration,
             delay: prefersReducedMotion ? 0 : delay + index * wordStagger,
-            ease: [0.22, 1, 0.36, 1],
+            ease: ENTRANCE_EASE,
           }}
           className="inline-block mr-[0.28em] last:mr-0"
         >
@@ -84,6 +89,7 @@ const StatusPill = memo(function StatusPill({
   dotColor,
   index,
   isInView,
+  prefersReducedMotion,
   activeIndex,
   delay,
 }: {
@@ -91,20 +97,20 @@ const StatusPill = memo(function StatusPill({
   dotColor: string;
   index: number;
   isInView: boolean;
+  prefersReducedMotion: boolean;
   activeIndex: number;
   delay: number;
 }) {
-  const prefersReducedMotion = useReducedMotion();
   const isActive = index <= activeIndex;
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: -26 }}
-      animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -26 }}
+      initial={{ opacity: 0, x: -18 }}
+      animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -18 }}
       transition={{
-        duration: prefersReducedMotion ? 0.16 : 0.4,
+        duration: prefersReducedMotion ? 0.14 : 0.32,
         delay: prefersReducedMotion ? 0 : delay,
-        ease: [0.22, 1, 0.36, 1],
+        ease: ENTRANCE_EASE,
       }}
       className="flex items-center gap-[14px] px-5 py-[11px] border border-border rounded-md"
     >
@@ -146,11 +152,14 @@ const FastForwardIcon = memo(function FastForwardIcon() {
 
 const AnimatedDivider = memo(function AnimatedDivider({
   isInView,
+  prefersReducedMotion,
 }: {
   isInView: boolean;
+  prefersReducedMotion: boolean;
 }) {
-  const prefersReducedMotion = useReducedMotion();
-  const dotStagger = prefersReducedMotion ? 0 : FAST_ONBOARDING_TIMING.dividerDotStagger;
+  const dotStagger = prefersReducedMotion
+    ? 0
+    : FAST_ONBOARDING_TIMING.dividerDotStagger;
   const drawStart = prefersReducedMotion ? 0 : FAST_ONBOARDING_TIMING.dividerStart;
 
   return (
@@ -174,7 +183,7 @@ const AnimatedDivider = memo(function AnimatedDivider({
                 ? 0.08
                 : FAST_ONBOARDING_TIMING.dividerDotDuration,
               delay: drawStart + index * dotStagger,
-              ease: [0.22, 1, 0.36, 1],
+              ease: ENTRANCE_EASE,
             }}
             className="block h-[7px] w-px rounded-full origin-top"
             style={{
@@ -190,6 +199,7 @@ const AnimatedDivider = memo(function AnimatedDivider({
 export default function FastOnboardingSection() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const prefersReducedMotion = useReducedMotion() ?? false;
   const [activeIndex, setActiveIndex] = useState(-1);
   const dividerDrawDuration =
     (dividerDots.length - 1) * FAST_ONBOARDING_TIMING.dividerDotStagger +
@@ -209,14 +219,14 @@ export default function FastOnboardingSection() {
           }
           return prev + 1;
         });
-      }, 800);
-    }, (FAST_ONBOARDING_TIMING.dividerStart + 0.2) * 1000);
+      }, FAST_ONBOARDING_TIMING.statusLoopInterval);
+    }, (prefersReducedMotion ? 0 : FAST_ONBOARDING_TIMING.statusLoopStart) * 1000);
 
     return () => {
       clearTimeout(starter);
       if (timer) clearInterval(timer);
     };
-  }, [isInView]);
+  }, [isInView, prefersReducedMotion]);
 
   return (
     <section
@@ -233,12 +243,12 @@ export default function FastOnboardingSection() {
               <div className="flex flex-col gap-8">
                 {/* SPEED Label */}
                 <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
+                  initial={{ opacity: 0, x: -16 }}
+                  animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -16 }}
                   transition={{
-                    duration: 0.42,
-                    delay: FAST_ONBOARDING_TIMING.speedLabel,
-                    ease: [0.22, 1, 0.36, 1],
+                    duration: prefersReducedMotion ? 0.14 : 0.34,
+                    delay: prefersReducedMotion ? 0 : FAST_ONBOARDING_TIMING.speedLabel,
+                    ease: ENTRANCE_EASE,
                   }}
                   className="flex items-center gap-2"
                 >
@@ -254,19 +264,20 @@ export default function FastOnboardingSection() {
                     as="h2"
                     text="Fast Onboarding, Fast Compliance"
                     isInView={isInView}
+                    prefersReducedMotion={prefersReducedMotion}
                     delay={FAST_ONBOARDING_TIMING.heading}
-                    wordStagger={0.07}
-                    duration={0.42}
+                    wordStagger={0.045}
+                    duration={0.34}
                     className="text-[36px] md:text-[44px] lg:text-[52px] font-bold leading-[1.2] tracking-[-0.52px] text-foreground"
                   />
 
                   <motion.p
-                    initial={{ opacity: 0, x: -26 }}
-                    animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -26 }}
+                    initial={{ opacity: 0, x: -18 }}
+                    animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -18 }}
                     transition={{
-                      duration: 0.55,
-                      delay: FAST_ONBOARDING_TIMING.paragraph,
-                      ease: [0.22, 1, 0.36, 1],
+                      duration: prefersReducedMotion ? 0.14 : 0.42,
+                      delay: prefersReducedMotion ? 0 : FAST_ONBOARDING_TIMING.paragraph,
+                      ease: ENTRANCE_EASE,
                     }}
                     className="text-lg leading-[1.5] text-muted-foreground"
                   >
@@ -285,14 +296,15 @@ export default function FastOnboardingSection() {
                   {featureBullets.map((bullet, idx) => (
                     <motion.p
                       key={idx}
-                      initial={{ opacity: 0, x: -26 }}
-                      animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -26 }}
+                      initial={{ opacity: 0, x: -18 }}
+                      animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -18 }}
                       transition={{
-                        duration: 0.42,
-                        delay:
-                          FAST_ONBOARDING_TIMING.bulletsStart +
-                          idx * FAST_ONBOARDING_TIMING.bulletStagger,
-                        ease: [0.22, 1, 0.36, 1],
+                        duration: prefersReducedMotion ? 0.14 : 0.34,
+                        delay: prefersReducedMotion
+                          ? 0
+                          : FAST_ONBOARDING_TIMING.bulletsStart +
+                            idx * FAST_ONBOARDING_TIMING.bulletStagger,
+                        ease: ENTRANCE_EASE,
                       }}
                       className="mb-0"
                     >
@@ -303,12 +315,12 @@ export default function FastOnboardingSection() {
 
                 {/* Learn More Button */}
                 <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
+                  initial={{ opacity: 0, x: -16 }}
+                  animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -16 }}
                   transition={{
-                    duration: 0.4,
-                    delay: FAST_ONBOARDING_TIMING.button,
-                    ease: [0.22, 1, 0.36, 1],
+                    duration: prefersReducedMotion ? 0.14 : 0.32,
+                    delay: prefersReducedMotion ? 0 : FAST_ONBOARDING_TIMING.button,
+                    ease: ENTRANCE_EASE,
                   }}
                 >
                   <a
@@ -323,7 +335,10 @@ export default function FastOnboardingSection() {
           </div>
 
           {/* Vertical Dotted Divider */}
-          <AnimatedDivider isInView={isInView} />
+          <AnimatedDivider
+            isInView={isInView}
+            prefersReducedMotion={prefersReducedMotion}
+          />
 
           {/* Right Content - Status Pills */}
           <div className="flex self-stretch lg:pl-8">
@@ -336,6 +351,7 @@ export default function FastOnboardingSection() {
                   dotColor={indicator.dotColor}
                   index={idx}
                   isInView={isInView}
+                  prefersReducedMotion={prefersReducedMotion}
                   activeIndex={activeIndex}
                   delay={
                     FAST_ONBOARDING_TIMING.dividerStart +

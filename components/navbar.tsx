@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useMemo } from "react";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import Image from "next/image";
@@ -70,43 +71,43 @@ export default function Navbar() {
       {/* Content */}
       <div className="relative max-w-[1400px] mx-auto px-6 lg:px-8 xl:px-12 h-full flex items-center justify-between">
         {/* Logo */}
-        <a href="/" className="block group">
+        <Link href="/" className="block group">
           <Image
-            src="/midpoint-logo.png"
+            src="/Midpoint-Logo.svg"
             alt="Midpoint"
-            width={140}
-            height={20}
-            className="h-5 w-auto dark:brightness-0 dark:invert transition-[filter] duration-300 group-hover:brightness-100 group-hover:sepia group-hover:saturate-[10] group-hover:hue-rotate-[30deg]"
+            width={158}
+            height={22}
+            className="h-5 w-auto transition-opacity duration-300 dark:brightness-0 dark:invert group-hover:opacity-80"
             priority
           />
-        </a>
+        </Link>
 
         {/* Desktop Nav Buttons */}
         <div className="hidden md:flex items-center gap-4">
           <ThemeToggle />
           {/* Show Home on resources page, Resources on home page, both on other pages */}
           {!isHomePage && (
-            <a
+            <Link
               href="/"
               className="text-sm tracking-[0.1em] uppercase px-5 py-2.5 border border-foreground/20 text-foreground/90 font-medium hover:border-primary hover:text-primary transition-all duration-300 rounded-xl"
             >
               Home
-            </a>
+            </Link>
           )}
           {!isResourcesPage && (
-            <a
+            <Link
               href="/resources"
               className="text-sm tracking-[0.1em] uppercase px-5 py-2.5 border border-foreground/20 text-foreground/90 font-medium hover:border-primary hover:text-primary transition-all duration-300 rounded-xl"
             >
               Resources
-            </a>
+            </Link>
           )}
-          <a
+          <Link
             href="/contact"
             className="text-sm tracking-[0.1em] uppercase px-5 py-2.5 bg-primary text-primary-foreground font-medium hover:bg-foreground transition-colors duration-300 rounded-xl"
           >
             Contact Us
-          </a>
+          </Link>
         </div>
 
         {/* Mobile Hamburger - using variants for performance */}
@@ -164,30 +165,30 @@ export default function Navbar() {
               </div>
               {/* Show Home on resources page, Resources on home page, both on other pages */}
               {!isHomePage && (
-                <a
+                <Link
                   href="/"
                   className="text-sm tracking-[0.1em] uppercase px-6 py-3 border border-foreground/20 text-foreground/90 font-medium hover:border-primary hover:text-primary transition-all duration-300 rounded-xl w-48 text-center"
                   onClick={closeMenu}
                 >
                   Home
-                </a>
+                </Link>
               )}
               {!isResourcesPage && (
-                <a
+                <Link
                   href="/resources"
                   className="text-sm tracking-[0.1em] uppercase px-6 py-3 border border-foreground/20 text-foreground/90 font-medium hover:border-primary hover:text-primary transition-all duration-300 rounded-xl w-48 text-center"
                   onClick={closeMenu}
                 >
                   Resources
-                </a>
+                </Link>
               )}
-              <a
+              <Link
                 href="/contact"
                 className="text-sm tracking-[0.1em] uppercase px-6 py-3 bg-primary text-primary-foreground font-medium hover:bg-foreground transition-colors duration-300 rounded-xl w-48 text-center"
                 onClick={closeMenu}
               >
                 Contact Us
-              </a>
+              </Link>
             </div>
           </motion.div>
         )}

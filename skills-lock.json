@@ -1,10 +1,41 @@
 {
   "version": 1,
+  "projectSkillsDir": ".agents/skills",
+  "aliases": {
+    "skills": ".agents/skills",
+    ".codex/skills": ".agents/skills",
+    ".claude/skills": ".agents/skills"
+  },
   "skills": {
     "frontend-design": {
       "source": "anthropics/skills",
       "sourceType": "github",
-      "computedHash": "063a0e6448123cd359ad0044cc46b0e490cc7964d45ef4bb9fd842bd2ffbca67"
+      "repoPath": "frontend-design",
+      "computedHash": "dab77739adfb7a0d9f19ee1d7dd1efd5f55c0290846f6103747beaf4af37d73c"
+    },
+    "next-best-practices": {
+      "source": "vercel-labs/next-skills",
+      "sourceType": "github",
+      "repoPath": "skills/next-best-practices",
+      "computedHash": "b6731f9ed4f04facfdea4a2edb38fb9fda18b1c4b46f97ecc987ca0f102b0ea0"
+    },
+    "tailwind-design-system": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "repoPath": "plugins/frontend-mobile-development/skills/tailwind-design-system",
+      "computedHash": "fbcd15bc9e21101c578231d256053471ecfc6a11174b8722f8bb9c1dba90e79b"
+    },
+    "vercel-composition-patterns": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "repoPath": "skills/composition-patterns",
+      "computedHash": "ce9139635bba2f1b10dfc83d7b4f03d3c672768da2d7070fee3bc27aa5876db8"
+    },
+    "vercel-react-best-practices": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "repoPath": "skills/react-best-practices",
+      "computedHash": "43cf670edf333652fa9bb1bd363380f8e65007d195b134856cd079d68f5e259a"
     }
   }
 }

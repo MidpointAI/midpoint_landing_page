@@ -4,6 +4,7 @@ import StatementSection from "@/components/statement-section";
 import CoiAnalysisShowcase from "@/components/coi-analysis-showcase";
 import FastOnboardingSection from "@/components/fast-onboarding-section";
 import Testimonials from "@/components/testimonials";
+import VerifiedInsurance from "@/components/verified-insurance";
 import PricingSection from "@/components/pricing-section";
 import CtaSection from "@/components/cta-section";
 import FaqSection from "@/components/faq-section";
@@ -18,6 +19,7 @@ export default function Home() {
       <CoiAnalysisShowcase />
       <FastOnboardingSection />
       <Testimonials />
+      <VerifiedInsurance />
       <PricingSection />
       <CtaSection />
       <FaqSection />

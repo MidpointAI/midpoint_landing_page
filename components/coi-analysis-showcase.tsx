@@ -1,19 +1,14 @@
 "use client";
 
-import {
-  memo,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  type KeyboardEvent,
-} from "react";
-import { AnimatePresence, motion, useInView, useReducedMotion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { motion, useInView } from "framer-motion";
 import Image from "next/image";
+import { ArrowRight, Check, ShieldCheck, Sparkles, User, X } from "lucide-react";
 
 type ViewMode = "verified" | "extraction";
+type Phase = "idle" | "ai-extracting" | "human-verifying" | "complete";
 
-type HighlightZone = {
+type ExtractionZone = {
   id: string;
   label: string;
   coverage: string;
@@ -22,9 +17,18 @@ type HighlightZone = {
   left: string;
   width: string;
   height: string;
+  aiCorrect: boolean;
+  aiCoverage?: string;
 };
 
-const highlightZones: HighlightZone[] = [
+const VERIFIED_BAR = {
+  top: "5.6%",
+  left: "17.8%",
+  width: "72%",
+  height: "2.3%",
+};
+
+const EXTRACTION_ZONES: ExtractionZone[] = [
   {
     id: "gl",
     label: "General Liability",
@@ -34,6 +38,7 @@ const highlightZones: HighlightZone[] = [
     left: "3%",
     width: "94%",
     height: "11%",
+    aiCorrect: true,
   },
   {
     id: "auto",
@@ -44,16 +49,19 @@ const highlightZones: HighlightZone[] = [
     left: "3%",
     width: "94%",
     height: "7.5%",
+    aiCorrect: true,
   },
   {
     id: "umbrella",
     label: "Umbrella / Excess",
     coverage: "$1,000,000 / $1,000,000",
+    aiCoverage: "$1,500,000 / $1,000,000",
     sublabel: "Each Occurrence / Aggregate",
     top: "57%",
     left: "3%",
     width: "94%",
     height: "4.6%",
+    aiCorrect: false,
   },
   {
     id: "wc",
@@ -64,250 +72,143 @@ const highlightZones: HighlightZone[] = [
     left: "3%",
     width: "94%",
     height: "6%",
+    aiCorrect: true,
   },
 ];
 
-const viewOptions: Array<{ id: ViewMode; label: string }> = [
-  { id: "verified", label: "Verified Coverage" },
-  { id: "extraction", label: "AI Extraction" },
-];
-
-const CheckIcon = memo(function CheckIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className || "h-3 w-3"} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-    </svg>
-  );
-});
-
-const ShieldIcon = memo(function ShieldIcon() {
-  return (
-    <svg
-      className="h-5 w-5 text-primary"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-      <line x1="3" y1="9" x2="21" y2="9" />
-      <line x1="9" y1="21" x2="9" y2="9" />
-    </svg>
-  );
-});
-
-const ArrowIcon = memo(function ArrowIcon() {
-  return (
-    <svg
-      className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <line x1="5" y1="12" x2="19" y2="12" />
-      <polyline points="12 5 19 12 12 19" />
-    </svg>
-  );
-});
-
-const ExtractedCard = memo(function ExtractedCard({
-  zone,
-  isActive,
-  isComplete,
-  isHovered,
-  onHover,
-  onHoverEnd,
-}: {
-  zone: HighlightZone;
-  isActive: boolean;
-  isComplete: boolean;
-  isHovered: boolean;
-  onHover: () => void;
-  onHoverEnd: () => void;
-}) {
-  const highlighted = isActive || isHovered;
-
-  return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, x: -32, scale: 0.98 }}
-      animate={{ opacity: 1, x: 0, scale: 1 }}
-      exit={{ opacity: 0, x: 16, scale: 0.98 }}
-      transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-      onMouseEnter={onHover}
-      onMouseLeave={onHoverEnd}
-      className={`rounded-2xl border px-4 py-3 transition-colors duration-200 ${
-        highlighted
-          ? "border-primary/70 bg-primary/10 shadow-[0_0_0_1px_rgba(201,255,100,0.15)]"
-          : "border-border bg-card/70"
-      }`}
-    >
-      <div className="flex items-start justify-between gap-4">
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <span
-              className={`text-sm font-medium transition-colors duration-200 ${
-                highlighted ? "text-foreground" : "text-muted-foreground"
-              }`}
-            >
-              {zone.label}
-            </span>
-            {isComplete ? (
-              <span className="text-primary">
-                <CheckIcon />
-              </span>
-            ) : null}
-          </div>
-          <p className="mt-1 text-xs text-muted-foreground">{zone.sublabel}</p>
-        </div>
-        <motion.span
-          initial={{ opacity: 0, scale: 0.92 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.08, duration: 0.24 }}
-          className={`whitespace-nowrap text-base font-mono tabular-nums md:text-lg ${
-            highlighted ? "text-primary" : "text-foreground"
-          }`}
-        >
-          {zone.coverage}
-        </motion.span>
-      </div>
-    </motion.div>
-  );
-});
+function addUniqueId(previous: string[], id: string) {
+  return previous.includes(id) ? previous : [...previous, id];
+}
 
 export default function CoiAnalysisShowcase() {
   const ref = useRef<HTMLElement | null>(null);
-  const timerIdsRef = useRef<number[]>([]);
-  const tabRefs = useRef<Record<ViewMode, HTMLButtonElement | null>>({
-    verified: null,
-    extraction: null,
-  });
+  const timers = useRef<number[]>([]);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
-  const prefersReducedMotion = useReducedMotion();
 
   const [activeView, setActiveView] = useState<ViewMode>("verified");
+  const [phase, setPhase] = useState<Phase>("idle");
   const [currentStep, setCurrentStep] = useState(-1);
-  const [extractedZones, setExtractedZones] = useState<string[]>([]);
-  const [flyingData, setFlyingData] = useState<string | null>(null);
-  const [hoveredZone, setHoveredZone] = useState<string | null>(null);
+  const [extractedIds, setExtractedIds] = useState<string[]>([]);
+  const [verifiedIds, setVerifiedIds] = useState<string[]>([]);
+  const [correctedIds, setCorrectedIds] = useState<string[]>([]);
+  const [currentVerifyIndex, setCurrentVerifyIndex] = useState(-1);
+  const [hoveredZoneId, setHoveredZoneId] = useState<string | null>(null);
+  const [showCorrectionPopup, setShowCorrectionPopup] = useState(false);
 
-  const clearExtractionTimers = useCallback(() => {
-    timerIdsRef.current.forEach((timerId) => window.clearTimeout(timerId));
-    timerIdsRef.current = [];
-  }, []);
+  function clearTimers() {
+    timers.current.forEach((id) => window.clearTimeout(id));
+    timers.current = [];
+  }
 
-  const resetExtractionState = useCallback(() => {
-    clearExtractionTimers();
+  function resetExtraction() {
+    clearTimers();
+    setPhase("idle");
     setCurrentStep(-1);
-    setExtractedZones([]);
-    setFlyingData(null);
-    setHoveredZone(null);
-  }, [clearExtractionTimers]);
+    setExtractedIds([]);
+    setVerifiedIds([]);
+    setCorrectedIds([]);
+    setCurrentVerifyIndex(-1);
+    setHoveredZoneId(null);
+    setShowCorrectionPopup(false);
+  }
 
-  const startExtractionSequence = useCallback(() => {
-    clearExtractionTimers();
-    setHoveredZone(null);
+  function startHumanVerification() {
+    setPhase("human-verifying");
+    setCurrentVerifyIndex(0);
 
-    if (prefersReducedMotion) {
-      setCurrentStep(highlightZones.length);
-      setExtractedZones(highlightZones.map((zone) => zone.id));
-      setFlyingData(null);
-      return;
-    }
+    function verifyStep(index: number) {
+      setCurrentVerifyIndex(index);
+      const zone = EXTRACTION_ZONES[index];
+      const verifyDelay = zone.aiCorrect ? 400 : 1000;
 
-    setCurrentStep(-1);
-    setExtractedZones([]);
-    setFlyingData(null);
+      const verify = window.setTimeout(() => {
+        if (zone.aiCorrect) {
+          setVerifiedIds((previous) => addUniqueId(previous, zone.id));
+        } else {
+          setCorrectedIds((previous) => addUniqueId(previous, zone.id));
+        }
 
-    const runStep = (stepIndex: number) => {
-      const zone = highlightZones[stepIndex];
-      setCurrentStep(stepIndex);
-      setFlyingData(zone.id);
-
-      const captureTimer = window.setTimeout(() => {
-        setExtractedZones((previous) =>
-          previous.includes(zone.id) ? previous : [...previous, zone.id]
-        );
-        setFlyingData(null);
-      }, 700);
-
-      const nextTimer = window.setTimeout(() => {
-        if (stepIndex < highlightZones.length - 1) {
-          runStep(stepIndex + 1);
+        if (index < EXTRACTION_ZONES.length - 1) {
+          const nextStep = window.setTimeout(() => {
+            verifyStep(index + 1);
+          }, 200);
+          timers.current.push(nextStep);
           return;
         }
 
-        setCurrentStep(highlightZones.length);
-      }, 1300);
+        const complete = window.setTimeout(() => {
+          setPhase("complete");
+          setCurrentVerifyIndex(-1);
+        }, 400);
+        timers.current.push(complete);
+      }, verifyDelay);
 
-      timerIdsRef.current.push(captureTimer, nextTimer);
-    };
+      timers.current.push(verify);
+    }
 
-    const initialTimer = window.setTimeout(() => {
-      runStep(0);
-    }, 300);
+    verifyStep(0);
+  }
 
-    timerIdsRef.current.push(initialTimer);
-  }, [clearExtractionTimers, prefersReducedMotion]);
+  function startExtraction() {
+    resetExtraction();
+    setPhase("ai-extracting");
 
-  const handleViewChange = useCallback(
-    (nextView: ViewMode) => {
-      if (nextView === activeView) {
-        return;
-      }
+    function runStep(index: number) {
+      setCurrentStep(index);
 
-      setActiveView(nextView);
+      const capture = window.setTimeout(() => {
+        setExtractedIds((previous) => addUniqueId(previous, EXTRACTION_ZONES[index].id));
+      }, 600);
 
-      if (nextView === "verified") {
-        resetExtractionState();
-        return;
-      }
+      const next = window.setTimeout(() => {
+        if (index < EXTRACTION_ZONES.length - 1) {
+          runStep(index + 1);
+          return;
+        }
 
-      startExtractionSequence();
-    },
-    [activeView, resetExtractionState, startExtractionSequence]
-  );
+        setCurrentStep(EXTRACTION_ZONES.length);
+        const humanStart = window.setTimeout(() => {
+          startHumanVerification();
+        }, 800);
+        timers.current.push(humanStart);
+      }, 1000);
 
-  const handleTabKeyDown = useCallback(
-    (event: KeyboardEvent<HTMLButtonElement>) => {
-      if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") {
-        return;
-      }
+      timers.current.push(capture, next);
+    }
 
-      event.preventDefault();
-
-      const currentIndex = viewOptions.findIndex((option) => option.id === activeView);
-      const direction = event.key === "ArrowRight" ? 1 : -1;
-      const nextIndex = (currentIndex + direction + viewOptions.length) % viewOptions.length;
-      const nextView = viewOptions[nextIndex].id;
-
-      handleViewChange(nextView);
-      tabRefs.current[nextView]?.focus();
-    },
-    [activeView, handleViewChange]
-  );
+    const start = window.setTimeout(() => runStep(0), 400);
+    timers.current.push(start);
+  }
 
   useEffect(() => {
-    return () => {
-      clearExtractionTimers();
-    };
-  }, [clearExtractionTimers]);
+    return () => clearTimers();
+  }, []);
 
-  const isExtractionComplete = currentStep >= highlightZones.length;
-  const processingLabel =
-    activeView === "verified" || isExtractionComplete ? "Analysis Complete" : "Processing...";
+  const isAiComplete = currentStep >= EXTRACTION_ZONES.length;
+  const isFullyComplete = phase === "complete";
+
+  const getBadgeText = () => {
+    if (activeView === "verified") return "Analysis Complete";
+    if (phase === "ai-extracting") return "AI Extracting...";
+    if (phase === "human-verifying") return "Verifying...";
+    if (phase === "complete") return "Analysis Complete";
+    return "Ready";
+  };
+
+  const handleZoneHover = (zoneId: string | null) => {
+    setHoveredZoneId(zoneId);
+    if (zoneId === "umbrella" && correctedIds.includes("umbrella")) {
+      setShowCorrectionPopup(true);
+      return;
+    }
+    setShowCorrectionPopup(false);
+  };
 
   return (
     <section
       ref={ref}
       className="relative overflow-hidden bg-background px-6 py-16 md:py-24 lg:py-32"
     >
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(201,255,100,0.08),transparent_32%)]" />
 
       <div className="relative z-10 mx-auto max-w-6xl">
         <div className="mb-10 text-center lg:mb-14">
@@ -329,149 +230,151 @@ export default function CoiAnalysisShowcase() {
           </motion.h2>
         </div>
 
-        <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1.12fr)_minmax(320px,0.88fr)] lg:gap-14">
+        <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_530px] lg:items-stretch">
           <motion.div
             initial={{ opacity: 0, y: 22 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 22 }}
             transition={{ duration: 0.65, delay: 0.12 }}
-            className="relative w-full max-w-[560px]"
           >
-            <div className="relative rounded-[28px] border border-border bg-card/90 p-2 shadow-[0_24px_80px_rgba(0,0,0,0.35)] backdrop-blur">
-              <div className="absolute -top-3 left-4 z-20 flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5">
-                <div
-                  className={`h-2 w-2 rounded-full ${
-                    activeView === "verified" || isExtractionComplete
-                      ? "bg-primary"
-                      : "animate-pulse bg-primary"
-                  }`}
-                />
-                <span className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
-                  {processingLabel}
-                </span>
+            <div className="mb-4 flex h-10 shrink-0 items-center">
+              <div
+                className={`flex h-6 items-center gap-1.5 rounded-md border px-2.5 text-xs font-medium transition-colors duration-300 ${
+                  isFullyComplete || activeView === "verified"
+                    ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-400"
+                    : phase === "ai-extracting"
+                      ? "border-blue-500/20 bg-blue-500/10 text-blue-400"
+                      : phase === "human-verifying"
+                        ? "border-amber-500/20 bg-amber-500/10 text-amber-400"
+                        : "border-border bg-secondary text-muted-foreground"
+                }`}
+              >
+                {(isFullyComplete || activeView === "verified") && <Check className="h-3 w-3" />}
+                {phase === "ai-extracting" && <Sparkles className="h-3 w-3 animate-pulse" />}
+                {phase === "human-verifying" && <User className="h-3 w-3 animate-pulse" />}
+                {getBadgeText()}
               </div>
+            </div>
 
-              <div className="relative aspect-[8.5/11] overflow-hidden rounded-[20px] bg-white">
+            <div className="overflow-hidden rounded-lg border border-border bg-card">
+              <div className="relative w-full" style={{ aspectRatio: "8.5 / 11" }}>
                 <Image
                   src="/coi-document.png"
                   alt="Certificate of Insurance"
                   fill
-                  className="object-contain"
+                  sizes="(min-width: 1024px) 680px, 100vw"
+                  className="absolute inset-0 h-full w-full object-contain"
                   priority
                 />
 
-                <AnimatePresence mode="wait" initial={false}>
-                  {activeView === "verified" ? (
-                    <motion.div
-                      key="verified-highlight"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.28 }}
-                      className="absolute inset-0"
-                    >
+                {activeView === "verified" && (
+                  <div
+                    className="absolute transition-opacity duration-300"
+                    style={{
+                      top: VERIFIED_BAR.top,
+                      left: VERIFIED_BAR.left,
+                      width: VERIFIED_BAR.width,
+                      height: VERIFIED_BAR.height,
+                      background: "rgba(201, 255, 100, 0.85)",
+                    }}
+                  />
+                )}
+
+                {activeView === "extraction" &&
+                  EXTRACTION_ZONES.map((zone, index) => {
+                    const isActive = currentStep === index && phase === "ai-extracting";
+                    const isExtracted = extractedIds.includes(zone.id);
+                    const isVerifying = currentVerifyIndex === index && phase === "human-verifying";
+                    const isVerified = verifiedIds.includes(zone.id);
+                    const isCorrected = correctedIds.includes(zone.id);
+                    const isHovered = hoveredZoneId === zone.id;
+                    const visible = isActive || isExtracted;
+
+                    if (!visible) return null;
+
+                    const borderColor = isHovered
+                      ? "rgba(255, 255, 255, 0.6)"
+                      : isVerifying
+                        ? "rgba(251, 191, 36, 0.6)"
+                        : isCorrected
+                          ? "rgba(251, 191, 36, 0.5)"
+                          : isVerified
+                            ? "rgba(16, 185, 129, 0.5)"
+                            : isActive
+                              ? "rgba(59, 130, 246, 0.6)"
+                              : "rgba(59, 130, 246, 0.3)";
+
+                    const bgColor = isHovered
+                      ? "rgba(255, 255, 255, 0.1)"
+                      : isVerifying
+                        ? "rgba(251, 191, 36, 0.08)"
+                        : isCorrected
+                          ? "rgba(251, 191, 36, 0.06)"
+                          : isVerified
+                            ? "rgba(16, 185, 129, 0.06)"
+                            : isActive
+                              ? "rgba(59, 130, 246, 0.12)"
+                              : "rgba(59, 130, 246, 0.05)";
+
+                    return (
                       <div
-                        className="absolute left-[17.8%] top-[5.6%] h-[2.3%] w-[72%] mix-blend-multiply"
-                        style={{ backgroundColor: "#c9ff64" }}
+                        key={zone.id}
+                        className={`absolute transition-all duration-200 ${
+                          isActive || isVerifying ? "animate-pulse" : ""
+                        }`}
+                        style={{
+                          top: zone.top,
+                          left: zone.left,
+                          width: zone.width,
+                          height: zone.height,
+                          border: `2px solid ${borderColor}`,
+                          background: bgColor,
+                          borderRadius: "3px",
+                          cursor: phase === "complete" ? "pointer" : "default",
+                          pointerEvents: phase === "complete" ? "auto" : "none",
+                        }}
+                        onMouseEnter={() => phase === "complete" && handleZoneHover(zone.id)}
+                        onMouseLeave={() => handleZoneHover(null)}
                       />
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      key="extraction-highlight"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.28 }}
-                      className="absolute inset-0"
+                    );
+                  })}
+
+                {showCorrectionPopup && (
+                  <div
+                    className="absolute z-20 w-56 rounded-lg border border-amber-500/30 bg-card/95 p-3 shadow-xl backdrop-blur-sm"
+                    style={{
+                      top: "68%",
+                      left: "50%",
+                      transform: "translateX(-50%)",
+                    }}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setShowCorrectionPopup(false)}
+                      className="absolute top-2 right-2 text-muted-foreground transition-colors hover:text-foreground"
                     >
-                      {highlightZones.map((zone, index) => {
-                        const isActiveZone = currentStep === index;
-                        const isExtracted = extractedZones.includes(zone.id);
-                        const isFlying = flyingData === zone.id;
-                        const isHovered = hoveredZone === zone.id;
-                        const shouldHighlight = isActiveZone || isHovered;
-
-                        return (
-                          <motion.div
-                            key={zone.id}
-                            className="pointer-events-none absolute"
-                            style={{
-                              top: zone.top,
-                              left: zone.left,
-                              width: zone.width,
-                              height: zone.height,
-                            }}
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: shouldHighlight ? 1 : isExtracted ? 0.5 : 0 }}
-                            transition={{ duration: 0.2 }}
-                          >
-                            <div
-                              className="absolute inset-0 transition-all duration-200"
-                              style={{
-                                backgroundColor: shouldHighlight
-                                  ? "rgba(34, 197, 94, 0.18)"
-                                  : isExtracted
-                                  ? "rgba(34, 197, 94, 0.06)"
-                                  : "transparent",
-                                border: shouldHighlight
-                                  ? "2px solid #22C55E"
-                                  : isExtracted
-                                  ? "1px solid rgba(34, 197, 94, 0.4)"
-                                  : "none",
-                                boxShadow: shouldHighlight
-                                  ? "0 0 12px rgba(34, 197, 94, 0.3), inset 0 0 8px rgba(34, 197, 94, 0.1)"
-                                  : "none",
-                              }}
-                            />
-
-                            {shouldHighlight ? (
-                              <motion.div
-                                initial={{ opacity: 0, y: -10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="absolute -top-6 left-0 rounded-md bg-primary px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-primary-foreground shadow-lg"
-                              >
-                                {zone.label}
-                              </motion.div>
-                            ) : null}
-
-                            {isFlying ? (
-                              <motion.div
-                                className="absolute inset-0 z-20 flex items-center justify-end pr-2"
-                                initial={{ opacity: 1 }}
-                                animate={{ opacity: [1, 1, 0], x: [0, 20, 150], scale: [1, 1.05, 0.9] }}
-                                transition={{
-                                  duration: 0.6,
-                                  times: [0, 0.4, 1],
-                                  ease: "easeInOut",
-                                }}
-                              >
-                                <span className="rounded-full bg-primary px-2 py-1 text-[10px] font-medium whitespace-nowrap text-primary-foreground shadow-lg">
-                                  {zone.coverage}
-                                </span>
-                              </motion.div>
-                            ) : null}
-
-                            {isExtracted && !shouldHighlight ? (
-                              <motion.div
-                                initial={{ scale: 0, opacity: 0 }}
-                                animate={{ scale: 1, opacity: 1 }}
-                                transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                                className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary shadow-sm"
-                              >
-                                <CheckIcon className="h-2.5 w-2.5 text-white" />
-                              </motion.div>
-                            ) : null}
-                          </motion.div>
-                        );
-                      })}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                    <div className="flex items-start gap-2.5">
+                      <div className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-amber-500/15">
+                        <ShieldCheck className="h-3.5 w-3.5 text-amber-500" />
+                      </div>
+                      <div>
+                        <p className="mb-1 text-[11px] font-medium text-foreground">
+                          AI Error Caught
+                        </p>
+                        <p className="text-[10px] leading-relaxed text-muted-foreground">
+                          AI extracted{" "}
+                          <span className="font-mono text-amber-400">$1,500,000</span> - but
+                          that wasn&apos;t right. Our expert team reviews every extraction.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
-              <div className="mt-2 text-center">
-                <span className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
-                  test_coi.pdf
-                </span>
+              <div className="flex h-9 items-center border-t border-border px-3">
+                <span className="text-[11px] text-muted-foreground">test_coi.pdf</span>
               </div>
             </div>
           </motion.div>
@@ -480,153 +383,200 @@ export default function CoiAnalysisShowcase() {
             initial={{ opacity: 0, y: 24 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
             transition={{ duration: 0.65, delay: 0.18 }}
-            className="w-full max-w-[420px] lg:ml-auto"
+            className="flex flex-col lg:h-full lg:min-h-0"
           >
-            <div className="mb-6 flex justify-start lg:justify-end">
-              <div
-                role="tablist"
-                aria-label="COI analysis views"
-                className="inline-flex rounded-full border border-border bg-card/80 p-1 shadow-[0_12px_32px_rgba(0,0,0,0.24)] backdrop-blur"
+            <div className="mb-4 flex h-10 items-center gap-1 rounded-lg bg-secondary/50 p-1">
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveView("verified");
+                  resetExtraction();
+                }}
+                className={`h-8 flex-1 rounded-md text-xs font-medium transition-colors ${
+                  activeView === "verified"
+                    ? "bg-card text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
               >
-                {viewOptions.map((option) => {
-                  const isSelected = activeView === option.id;
-
-                  return (
-                    <button
-                      key={option.id}
-                      ref={(node) => {
-                        tabRefs.current[option.id] = node;
-                      }}
-                      type="button"
-                      role="tab"
-                      id={`${option.id}-tab`}
-                      aria-controls={`${option.id}-panel`}
-                      aria-selected={isSelected}
-                      tabIndex={isSelected ? 0 : -1}
-                      onClick={() => handleViewChange(option.id)}
-                      onKeyDown={handleTabKeyDown}
-                      className={`rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
-                        isSelected
-                          ? "bg-primary text-primary-foreground shadow-[0_8px_24px_rgba(201,255,100,0.28)]"
-                          : "text-muted-foreground hover:text-foreground"
-                      }`}
-                    >
-                      {option.label}
-                    </button>
-                  );
-                })}
-              </div>
+                Verified Coverage
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveView("extraction");
+                  startExtraction();
+                }}
+                className={`h-8 flex-1 rounded-md text-xs font-medium transition-colors ${
+                  activeView === "extraction"
+                    ? "bg-card text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                AI Extraction
+              </button>
             </div>
 
-            <AnimatePresence mode="wait" initial={false}>
-              {activeView === "verified" ? (
-                <motion.div
-                  key="verified-panel"
-                  id="verified-panel"
-                  role="tabpanel"
-                  aria-labelledby="verified-tab"
-                  initial={{ opacity: 0, x: 12 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -12 }}
-                  transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
-                  className="flex flex-col gap-6 rounded-[28px] border border-border/80 bg-card/55 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.2)] backdrop-blur-sm"
-                >
-                  <div className="flex items-center gap-2">
-                    <ShieldIcon />
-                    <span className="text-sm font-bold uppercase tracking-[0.18em] text-primary">
-                      Gap Detection
-                    </span>
+            {activeView === "verified" && (
+              <div className="flex flex-1 flex-col">
+                <div className="space-y-4">
+                  <div className="inline-flex h-6 items-center gap-2 rounded border border-amber-500/20 bg-amber-500/10 px-2">
+                    <div className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+                    <span className="text-xs font-medium text-amber-500">Gap Detection</span>
                   </div>
 
-                  <div className="space-y-6">
-                    <h3 className="text-4xl font-bold leading-[1.1] tracking-tight text-foreground md:text-[44px]">
+                  <div>
+                    <h3 className="mb-2 text-4xl font-bold leading-[0.94] tracking-[-0.05em] text-foreground">
                       You are never as covered as you think
                     </h3>
-
-                    <p className="text-base leading-8 text-foreground md:text-lg">
+                    <p className="text-[15px] leading-relaxed text-muted-foreground/90">
                       When subs submit their certificates, we use advanced tools to verify
                       insurance documents with surgical accuracy. We identify hidden risks and
                       optimization opportunities that traditional methods miss.
                     </p>
-
-                    <a
-                      href="#"
-                      className="group inline-flex items-center text-base font-medium text-primary transition-opacity hover:opacity-80"
-                    >
-                      See how we can help you
-                      <ArrowIcon />
-                    </a>
-                  </div>
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="extraction-panel"
-                  id="extraction-panel"
-                  role="tabpanel"
-                  aria-labelledby="extraction-tab"
-                  initial={{ opacity: 0, x: 12 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -12 }}
-                  transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
-                  className="rounded-[28px] border border-border/80 bg-card/55 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.2)] backdrop-blur-sm"
-                >
-                  <div className="min-h-[240px] space-y-3">
-                    <AnimatePresence mode="popLayout">
-                      {highlightZones.map((zone) => {
-                        const isExtracted = extractedZones.includes(zone.id);
-                        const isActive = currentStep === highlightZones.findIndex((item) => item.id === zone.id);
-
-                        if (!isExtracted) {
-                          return null;
-                        }
-
-                        return (
-                          <ExtractedCard
-                            key={zone.id}
-                            zone={zone}
-                            isActive={isActive}
-                            isComplete={!isActive}
-                            isHovered={hoveredZone === zone.id}
-                            onHover={() => setHoveredZone(zone.id)}
-                            onHoverEnd={() => setHoveredZone(null)}
-                          />
-                        );
-                      })}
-                    </AnimatePresence>
-
-                    {extractedZones.length === 0 ? (
-                      <div className="flex h-[240px] items-center justify-center rounded-2xl border border-dashed border-border text-sm text-muted-foreground">
-                        <span className="animate-pulse">Analyzing document...</span>
-                      </div>
-                    ) : null}
                   </div>
 
-                  <AnimatePresence>
-                    {isExtractionComplete ? (
-                      <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -8 }}
-                        transition={{ duration: 0.32, delay: 0.12 }}
-                        className="mt-6 border-t border-border pt-5"
+                  <button
+                    type="button"
+                    className="group inline-flex items-center gap-2 text-sm font-medium text-foreground transition-colors hover:text-muted-foreground"
+                  >
+                    See how we can help you
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {activeView === "extraction" && (
+              <div className="flex flex-1 flex-col space-y-4">
+                <div className="flex items-center gap-2">
+                  <div
+                    className={`flex h-6 items-center gap-1.5 rounded border px-2 text-[11px] font-medium transition-colors ${
+                      phase === "ai-extracting"
+                        ? "border-blue-500/20 bg-blue-500/15 text-blue-400"
+                        : isAiComplete
+                          ? "border-border bg-secondary/80 text-muted-foreground"
+                          : "border-border/50 bg-secondary/50 text-muted-foreground/50"
+                    }`}
+                  >
+                    <Sparkles className="h-3 w-3" />
+                    AI
+                    {isAiComplete && <Check className="ml-0.5 h-2.5 w-2.5 text-emerald-500" />}
+                  </div>
+
+                  <div className="h-px w-3 bg-border" />
+
+                  <div
+                    className={`flex h-6 items-center gap-1.5 rounded border px-2 text-[11px] font-medium transition-colors ${
+                      phase === "human-verifying"
+                        ? "border-emerald-500/20 bg-emerald-500/15 text-emerald-400"
+                        : phase === "complete"
+                          ? "border-border bg-secondary/80 text-muted-foreground"
+                          : "border-border/50 bg-secondary/50 text-muted-foreground/50"
+                    }`}
+                  >
+                    <User className="h-3 w-3" />
+                    Human
+                    {phase === "complete" && (
+                      <Check className="ml-0.5 h-2.5 w-2.5 text-emerald-500" />
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex-1 space-y-3">
+                  {EXTRACTION_ZONES.map((zone, index) => {
+                    const isExtracted = extractedIds.includes(zone.id);
+                    const isVerifying = currentVerifyIndex === index && phase === "human-verifying";
+                    const isVerified = verifiedIds.includes(zone.id);
+                    const isCorrected = correctedIds.includes(zone.id);
+                    const isHovered = hoveredZoneId === zone.id;
+
+                    if (!isExtracted) return null;
+
+                    return (
+                      <div
+                        key={zone.id}
+                        className={`cursor-pointer rounded-lg border p-4 transition-all duration-200 ${
+                          isHovered
+                            ? "border-foreground/40 bg-foreground/5"
+                            : isVerifying
+                              ? "border-amber-500/30 bg-amber-500/5"
+                              : isCorrected
+                                ? "border-amber-500/20 bg-card"
+                                : isVerified
+                                  ? "border-emerald-500/20 bg-card"
+                                  : "border-blue-500/20 bg-blue-500/5"
+                        }`}
+                        onMouseEnter={() => phase === "complete" && handleZoneHover(zone.id)}
+                        onMouseLeave={() => handleZoneHover(null)}
                       >
-                        <div className="flex items-end justify-between gap-4">
-                          <div>
-                            <span className="mb-1 block text-xs uppercase tracking-[0.2em] text-muted-foreground">
-                              Compliance Score
-                            </span>
-                            <span className="text-sm text-muted-foreground">
-                              All requirements met
-                            </span>
+                        <div className="flex items-start justify-between">
+                          <div className="min-w-0">
+                            <div className="mb-0.5 flex items-center gap-2">
+                              <span className="text-sm font-medium text-foreground">
+                                {zone.label}
+                              </span>
+                              {isVerified && (
+                                <span className="inline-flex items-center gap-1 text-[10px] text-emerald-500">
+                                  <Check className="h-2.5 w-2.5" />
+                                  Verified
+                                </span>
+                              )}
+                              {isCorrected && (
+                                <span className="inline-flex items-center gap-1 text-[10px] text-amber-500">
+                                  <Check className="h-2.5 w-2.5" />
+                                  Corrected
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-xs text-muted-foreground">{zone.sublabel}</p>
                           </div>
-                          <span className="text-3xl font-light text-primary md:text-4xl">98%</span>
+
+                          <div className="text-right">
+                            {isCorrected && zone.aiCoverage ? (
+                              <div>
+                                <span className="text-xs text-muted-foreground line-through">
+                                  {zone.aiCoverage}
+                                </span>
+                                <p className="font-mono text-sm font-medium text-foreground">
+                                  {zone.coverage}
+                                </p>
+                              </div>
+                            ) : (
+                              <p className="font-mono text-sm font-medium text-foreground">
+                                {zone.coverage}
+                              </p>
+                            )}
+                          </div>
                         </div>
-                      </motion.div>
-                    ) : null}
-                  </AnimatePresence>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {isFullyComplete && (
+                  <div className="mt-auto border-t border-border pt-4">
+                    <div className="rounded-lg border border-border bg-card p-4">
+                      <div className="mb-3 flex items-center justify-between">
+                        <div>
+                          <p className="mb-1 text-xs text-muted-foreground">Compliance Score</p>
+                          <p className="text-sm font-medium text-foreground">
+                            All requirements met
+                          </p>
+                        </div>
+                        <span className="text-3xl font-semibold text-emerald-500">98%</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        1 field corrected by human review
+                      </p>
+                    </div>
+                    <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+                      AI extracts the data. Humans verify it. Your coverage is never approved
+                      without expert review.
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
           </motion.div>
         </div>
       </div>

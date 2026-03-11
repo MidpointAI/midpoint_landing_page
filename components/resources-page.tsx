@@ -136,13 +136,13 @@ export default function ResourcesPage() {
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
           <h1
             className="text-white text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-8"
-            style={{ fontFamily: "'Instrument Sans', sans-serif" }}
+            style={{ fontFamily: "var(--font-sans)" }}
           >
             Risk management<br />resources
           </h1>
           <p
             className="text-gray-400 text-lg md:text-xl max-w-xl mx-auto"
-            style={{ fontFamily: "'Inter', sans-serif" }}
+            style={{ fontFamily: "var(--font-sans)" }}
           >
             Essential tools and insights to help builders navigate complex insurance landscapes and optimize risk transfer strategies
           </p>
@@ -163,7 +163,7 @@ export default function ResourcesPage() {
             </div>
             <h2
               className="text-white text-4xl md:text-5xl font-bold mb-6"
-              style={{ fontFamily: "'Instrument Sans', sans-serif" }}
+              style={{ fontFamily: "var(--font-sans)" }}
             >
               Insurance terms <span className="text-[#c9ff64] italic">decoded</span>
             </h2>
@@ -196,7 +196,7 @@ export default function ResourcesPage() {
               <div>
                 <h3
                   className="text-white text-2xl md:text-3xl font-bold mb-6"
-                  style={{ fontFamily: "'Instrument Sans', sans-serif" }}
+                  style={{ fontFamily: "var(--font-sans)" }}
                 >
                   {activeGlossary.title}
                 </h3>
@@ -251,7 +251,7 @@ export default function ResourcesPage() {
         <div className="max-w-4xl mx-auto text-center">
           <h2
             className="text-white text-3xl md:text-4xl font-bold mb-4"
-            style={{ fontFamily: "'Instrument Sans', sans-serif" }}
+            style={{ fontFamily: "var(--font-sans)" }}
           >
             Helpful Resources
           </h2>
@@ -305,7 +305,7 @@ export default function ResourcesPage() {
           <div className="text-center mb-12">
             <h2
               className="text-white text-3xl md:text-4xl font-bold mb-4"
-              style={{ fontFamily: "'Instrument Sans', sans-serif" }}
+              style={{ fontFamily: "var(--font-sans)" }}
             >
               Common Questions
             </h2>

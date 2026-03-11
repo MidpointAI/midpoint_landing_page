@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useRef, useEffect, createElement } from "react";
 import {
   ArrowLeft,
@@ -11,7 +12,6 @@ import {
   Lightbulb,
   Check,
   FileText,
-  Link,
 } from "lucide-react";
 import { OnePagerModal } from "./one-pager-modal";
 import {

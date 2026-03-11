@@ -5,7 +5,6 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const {
-      amount,
       customerEmail,
       customerName,
       companyName,
@@ -13,17 +12,21 @@ export async function POST(request: NextRequest) {
       activeProjects,
     } = body;
 
+    const subs = Number.parseInt(activeSubs, 10) || 0;
+    const projects = Number.parseInt(activeProjects, 10) || 0;
+    const loadFactor = 1 + projects * 0.05;
+    const calculatedAmount = Math.max(6000, 100 * subs * loadFactor);
+    const amountInCents = Math.round(calculatedAmount * 100);
+
     // Validate required fields
-    if (!amount || amount < 600000) {
-      // Minimum $6,000 = 600000 cents
+    if (!customerEmail || !customerName || !companyName || subs <= 0) {
       return NextResponse.json(
-        { error: "Invalid amount. Minimum is $6,000." },
+        { error: "Missing or invalid checkout fields." },
         { status: 400 }
       );
     }
 
     // Determine tier based on number of subs
-    const subs = parseInt(activeSubs) || 0;
     let tierName = "Essential";
     let tierSubtitle = "UP TO 25 ACTIVE SUBS";
 
@@ -48,7 +51,7 @@ export async function POST(request: NextRequest) {
               name: `Midpoint ${tierName} Plan - Annual Subscription`,
               description: `${tierSubtitle} | ${activeSubs} Active Subcontractors | ${activeProjects} Active Projects`,
             },
-            unit_amount: amount, // Amount in cents
+            unit_amount: amountInCents,
           },
           quantity: 1,
         },
@@ -59,7 +62,7 @@ export async function POST(request: NextRequest) {
         activeSubs,
         activeProjects,
         tierName,
-        annualPrice: (amount / 100).toFixed(2),
+        annualPrice: calculatedAmount.toFixed(2),
       },
       return_url: `${request.headers.get("origin")}/signup/success?session_id={CHECKOUT_SESSION_ID}`,
     });

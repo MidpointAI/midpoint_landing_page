@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useRef, memo, useCallback } from "react";
+import { useState, useEffect, memo, useCallback } from "react";
+import { useReducedMotion } from "framer-motion";
 import { Check, Star, MessageSquare, ArrowRight } from "lucide-react";
 import SignupModal from "./signup-modal";
 
@@ -111,16 +112,11 @@ const AnimatedSection = memo(function AnimatedSection({
   delay = 0,
   className = "",
 }: AnimatedSectionProps) {
-  const ref = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
 
   useEffect(() => {
-    const prefersReducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
-
     if (prefersReducedMotion) {
-      setIsVisible(true);
       return;
     }
 
@@ -129,11 +125,14 @@ const AnimatedSection = memo(function AnimatedSection({
     }, delay * 1000);
 
     return () => clearTimeout(timer);
-  }, [delay]);
+  }, [delay, prefersReducedMotion]);
+
+  if (prefersReducedMotion) {
+    return <div className={className}>{children}</div>;
+  }
 
   return (
     <div
-      ref={ref}
       className={className}
       style={{
         opacity: isVisible ? 1 : 0,
@@ -161,7 +160,8 @@ const BackgroundLayer = memo(function BackgroundLayer() {
       <div
         className="absolute inset-0"
         style={{
-          background: "radial-gradient(ellipse at center, transparent 40%, hsl(0, 0%, 4%) 100%)",
+          background:
+            "radial-gradient(ellipse at center, transparent 40%, color-mix(in oklch, var(--background) 72%, var(--foreground) 28%) 100%)",
         }}
       />
     </div>

@@ -56,7 +56,7 @@ export default function CtaSection() {
             className="relative px-8 sm:px-12 py-5 bg-primary text-primary-foreground text-sm tracking-[0.15em] uppercase font-medium overflow-hidden group rounded-xl"
           >
             <span className="relative z-10">Request a Demo</span>
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-[200%] group-hover:translate-x-[200%] transition-transform duration-700" />
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-foreground/15 to-transparent dark:via-white/25 -translate-x-[200%] group-hover:translate-x-[200%] transition-transform duration-700" />
           </a>
 
           {/* Secondary Button */}

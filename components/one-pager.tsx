@@ -188,7 +188,7 @@ export default function OnePager({ embedded = false }: { embedded?: boolean }) {
             <p
               className="text-[#5f6159] whitespace-pre-wrap"
               style={{
-                fontFamily: "'Chivo Mono', monospace",
+                fontFamily: "var(--font-mono)",
                 fontSize: "19.277px",
                 lineHeight: 1
               }}
@@ -201,7 +201,7 @@ export default function OnePager({ embedded = false }: { embedded?: boolean }) {
           <div
             className="text-black whitespace-pre-wrap w-full"
             style={{
-              fontFamily: "'Instrument Sans', sans-serif",
+              fontFamily: "var(--font-sans)",
               fontSize: "14px",
               lineHeight: 1.25
             }}
@@ -232,7 +232,7 @@ export default function OnePager({ embedded = false }: { embedded?: boolean }) {
             <p
               className="text-[#c9ff64] font-bold"
               style={{
-                fontFamily: "'Instrument Sans', sans-serif",
+                fontFamily: "var(--font-sans)",
                 fontSize: "23px",
                 lineHeight: 1
               }}
@@ -242,7 +242,7 @@ export default function OnePager({ embedded = false }: { embedded?: boolean }) {
             <div
               className="text-white"
               style={{
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: "var(--font-sans)",
                 fontSize: "11px",
                 lineHeight: 1.25,
                 width: "254px"
@@ -273,7 +273,7 @@ export default function OnePager({ embedded = false }: { embedded?: boolean }) {
             <p
               className="text-[#30312b] font-bold whitespace-pre-wrap"
               style={{
-                fontFamily: "'Instrument Sans', sans-serif",
+                fontFamily: "var(--font-sans)",
                 fontSize: "24px",
                 lineHeight: 1
               }}
@@ -289,7 +289,7 @@ export default function OnePager({ embedded = false }: { embedded?: boolean }) {
               <p
                 className="text-[#30312b] whitespace-pre-wrap"
                 style={{
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: "var(--font-sans)",
                   fontSize: "12px",
                   lineHeight: 1.2
                 }}
@@ -304,7 +304,7 @@ export default function OnePager({ embedded = false }: { embedded?: boolean }) {
               <p
                 className="text-[#30312b] whitespace-pre-wrap"
                 style={{
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: "var(--font-sans)",
                   fontSize: "12px",
                   lineHeight: 1.2
                 }}
@@ -319,7 +319,7 @@ export default function OnePager({ embedded = false }: { embedded?: boolean }) {
               <p
                 className="text-[#30312b] whitespace-pre-wrap"
                 style={{
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: "var(--font-sans)",
                   fontSize: "12px",
                   lineHeight: 1.2
                 }}
@@ -334,7 +334,7 @@ export default function OnePager({ embedded = false }: { embedded?: boolean }) {
               <p
                 className="text-[#30312b] whitespace-pre-wrap"
                 style={{
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: "var(--font-sans)",
                   fontSize: "12px",
                   lineHeight: 1.2
                 }}
@@ -358,7 +358,7 @@ export default function OnePager({ embedded = false }: { embedded?: boolean }) {
             <p
               className="text-[#f3f3f3] whitespace-pre-wrap"
               style={{
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: "var(--font-sans)",
                 fontSize: "9px",
                 lineHeight: 1.1
               }}
@@ -368,7 +368,7 @@ export default function OnePager({ embedded = false }: { embedded?: boolean }) {
             <div
               className="flex gap-[12px] items-center h-[13px]"
               style={{
-                fontFamily: "'DM Mono', monospace",
+                fontFamily: "var(--font-mono)",
                 fontSize: "9.167px",
                 lineHeight: 1.1
               }}
@@ -398,7 +398,7 @@ export default function OnePager({ embedded = false }: { embedded?: boolean }) {
   }
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gray-100 py-8">
+    <div className="min-h-screen w-full flex items-center justify-center bg-background-secondary py-8">
       {/* Fixed 612px width container - matches Figma exactly */}
       {page}
     </div>

@@ -1,18 +1,11 @@
 "use client";
 
 import { useTheme } from "next-themes";
-import { useState, useEffect } from "react";
 
 export function ThemeToggle() {
-  const [mounted, setMounted] = useState(false);
   const { resolvedTheme, setTheme } = useTheme();
 
-  // Avoid hydration mismatch by only rendering after mount
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
+  if (!resolvedTheme) {
     // Return placeholder with same dimensions to avoid layout shift
     return (
       <div className="w-9 h-9 rounded-lg border border-foreground/20" />

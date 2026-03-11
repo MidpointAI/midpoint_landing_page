@@ -7,6 +7,11 @@ interface ShaderColors {
   colors: string[];
 }
 
+const fallbackColors: ShaderColors = {
+  colorBack: "#020504",
+  colors: ["#020a08", "#0d2818", "#1a4525", "#2d6b3f", "#4a9960", "#C9FF64"],
+};
+
 /**
  * Converts any CSS color string to hex format
  * Supports: oklch(), rgb(), rgba(), color(srgb), hex
@@ -111,35 +116,36 @@ function getCSSVariableAsHex(variableName: string): string {
   return colorToHex(value);
 }
 
+function readThemeColors(): ShaderColors {
+  if (typeof window === "undefined") {
+    return fallbackColors;
+  }
+
+  return {
+    colorBack: getCSSVariableAsHex("--shader-bg"),
+    colors: [
+      getCSSVariableAsHex("--shader-1"),
+      getCSSVariableAsHex("--shader-2"),
+      getCSSVariableAsHex("--shader-3"),
+      getCSSVariableAsHex("--shader-4"),
+      getCSSVariableAsHex("--shader-5"),
+      getCSSVariableAsHex("--shader-6"),
+    ],
+  };
+}
+
 /**
  * Hook that provides theme-reactive shader colors
  * Watches for CSS variable changes and returns hex colors for WebGL shaders
  */
 export function useThemeColors(): ShaderColors {
-  const [colors, setColors] = useState<ShaderColors>({
-    colorBack: "#020504",
-    colors: ["#020a08", "#0d2818", "#1a4525", "#2d6b3f", "#4a9960", "#C9FF64"],
-  });
+  const [colors, setColors] = useState<ShaderColors>(() => readThemeColors());
 
   const updateColors = useCallback(() => {
-    const newColors: ShaderColors = {
-      colorBack: getCSSVariableAsHex("--shader-bg"),
-      colors: [
-        getCSSVariableAsHex("--shader-1"),
-        getCSSVariableAsHex("--shader-2"),
-        getCSSVariableAsHex("--shader-3"),
-        getCSSVariableAsHex("--shader-4"),
-        getCSSVariableAsHex("--shader-5"),
-        getCSSVariableAsHex("--shader-6"),
-      ],
-    };
-    setColors(newColors);
+    setColors(readThemeColors());
   }, []);
 
   useEffect(() => {
-    // Initial color read
-    updateColors();
-
     // Watch for style changes on :root (theme switches)
     const observer = new MutationObserver((mutations) => {
       for (const mutation of mutations) {

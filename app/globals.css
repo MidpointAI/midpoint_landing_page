@@ -16,41 +16,68 @@ html::-webkit-scrollbar {
   display: none;
 }
 
-/* =============================================
-   DARK MODE (Default) - tweakcn compatible
-   All colors in OKLCH format for proper theming
-   ============================================= */
 :root,
+.light {
+  color-scheme: light;
+  --background: oklch(0.982 0.004 95);
+  --foreground: oklch(0.19 0.01 120);
+  --card: oklch(0.996 0.002 95);
+  --card-foreground: oklch(0.19 0.01 120);
+  --popover: oklch(0.996 0.002 95);
+  --popover-foreground: oklch(0.19 0.01 120);
+  --primary: oklch(0.54 0.17 135);
+  --primary-foreground: oklch(0.98 0.004 95);
+  --secondary: oklch(0.955 0.006 120);
+  --secondary-foreground: oklch(0.23 0.01 120);
+  --muted: oklch(0.955 0.004 115);
+  --muted-foreground: oklch(0.44 0.01 120);
+  --accent: oklch(0.54 0.17 135);
+  --accent-foreground: oklch(0.98 0.004 95);
+  --destructive: oklch(0.57 0.22 28);
+  --destructive-foreground: oklch(0.98 0.004 95);
+  --border: oklch(0.89 0.008 118);
+  --input: oklch(0.89 0.008 118);
+  --ring: oklch(0.54 0.17 135);
+  --radius: 0.75rem;
+  --chart-1: var(--primary);
+  --chart-2: oklch(0.49 0.15 152);
+  --chart-3: oklch(0.48 0.18 255);
+  --chart-4: oklch(0.58 0.16 70);
+  --chart-5: var(--destructive);
+}
+
 .dark {
-  --background: oklch(0.08 0 0);
-  --foreground: oklch(1 0 0);
-  --card: oklch(0.17 0 0);
-  --card-foreground: oklch(1 0 0);
-  --popover: oklch(0.17 0 0);
-  --popover-foreground: oklch(1 0 0);
+  color-scheme: dark;
+  --background: oklch(0.1 0.005 130);
+  --foreground: oklch(0.965 0.004 95);
+  --card: oklch(0.17 0.008 130);
+  --card-foreground: oklch(0.965 0.004 95);
+  --popover: oklch(0.17 0.008 130);
+  --popover-foreground: oklch(0.965 0.004 95);
   --primary: oklch(0.87 0.19 115);
-  --primary-foreground: oklch(0.08 0 0);
-  --secondary: oklch(0.21 0 0);
-  --secondary-foreground: oklch(1 0 0);
-  --muted: oklch(0.21 0 0);
-  --muted-foreground: oklch(0.68 0 0);
+  --primary-foreground: oklch(0.1 0.005 130);
+  --secondary: oklch(0.215 0.006 128);
+  --secondary-foreground: oklch(0.94 0.004 95);
+  --muted: oklch(0.215 0.006 128);
+  --muted-foreground: oklch(0.72 0.006 110);
   --accent: oklch(0.87 0.19 115);
-  --accent-foreground: oklch(0.08 0 0);
+  --accent-foreground: oklch(0.1 0.005 130);
   --destructive: oklch(0.63 0.24 27);
-  --destructive-foreground: oklch(1 0 0);
-  --border: oklch(0.21 0 0);
-  --input: oklch(0.21 0 0);
+  --destructive-foreground: oklch(0.965 0.004 95);
+  --border: oklch(0.27 0.008 128);
+  --input: oklch(0.27 0.008 128);
   --ring: oklch(0.87 0.19 115);
   --radius: 0.75rem;
-
-  /* Chart colors */
   --chart-1: var(--primary);
   --chart-2: oklch(0.64 0.17 152);
   --chart-3: oklch(0.62 0.21 255);
   --chart-4: oklch(0.75 0.18 70);
   --chart-5: var(--destructive);
+}
 
-  /* Sidebar variables */
+:root,
+.light,
+.dark {
   --sidebar-background: var(--background);
   --sidebar-foreground: var(--foreground);
   --sidebar-primary: var(--primary);
@@ -59,13 +86,16 @@ html::-webkit-scrollbar {
   --sidebar-accent-foreground: var(--accent-foreground);
   --sidebar-border: var(--border);
   --sidebar-ring: var(--ring);
-
-  /* Derived variables - auto-adapt via color-mix */
-  --background-secondary: color-mix(in oklch, var(--background), var(--card));
-  --surface: var(--card);
-  --border-hover: color-mix(in oklch, var(--border) 60%, var(--foreground) 40%);
-
-  /* Shader gradient colors - blend from background toward primary */
+  --background-secondary: color-mix(in oklch, var(--background) 88%, var(--card) 12%);
+  --surface: color-mix(in oklch, var(--card) 92%, var(--primary) 8%);
+  --surface-strong: color-mix(in oklch, var(--card) 82%, var(--primary) 18%);
+  --border-hover: color-mix(in oklch, var(--border) 55%, var(--foreground) 45%);
+  --hero-shimmer: color-mix(in oklch, var(--foreground) 20%, transparent);
+  --hero-shimmer-strong: color-mix(in oklch, var(--foreground) 32%, transparent);
+  --footer-background: color-mix(in oklch, var(--background) 85%, var(--primary) 15%);
+  --footer-background-strong: color-mix(in oklch, var(--background) 72%, var(--foreground) 28%);
+  --footer-muted: color-mix(in oklch, var(--foreground) 66%, transparent);
+  --footer-border: color-mix(in oklch, var(--border) 60%, var(--primary) 40%);
   --shader-bg: color-mix(in oklch, var(--background) 98%, var(--primary) 2%);
   --shader-1: color-mix(in oklch, var(--background) 92%, var(--primary) 8%);
   --shader-2: color-mix(in oklch, var(--background) 82%, var(--primary) 18%);
@@ -73,36 +103,6 @@ html::-webkit-scrollbar {
   --shader-4: color-mix(in oklch, var(--background) 50%, var(--primary) 50%);
   --shader-5: color-mix(in oklch, var(--background) 30%, var(--primary) 70%);
   --shader-6: var(--primary);
-}
-
-/* =============================================
-   LIGHT MODE - Clean professional light theme
-   ============================================= */
-.light {
-  --background: oklch(0.98 0 0);
-  --foreground: oklch(0.13 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.13 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.13 0 0);
-  --primary: oklch(0.55 0.19 135);
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.94 0.01 115);
-  --secondary-foreground: oklch(0.13 0 0);
-  --muted: oklch(0.94 0.005 115);
-  --muted-foreground: oklch(0.38 0 0);
-  --accent: oklch(0.55 0.19 135);
-  --accent-foreground: oklch(1 0 0);
-  --destructive: oklch(0.55 0.24 27);
-  --destructive-foreground: oklch(1 0 0);
-  --border: oklch(0.88 0.01 115);
-  --input: oklch(0.88 0.01 115);
-  --ring: oklch(0.55 0.19 135);
-
-  /* Light mode chart colors - slightly adjusted for visibility */
-  --chart-2: oklch(0.50 0.17 152);
-  --chart-3: oklch(0.48 0.21 255);
-  --chart-4: oklch(0.60 0.18 70);
 }
 
 /* Selection highlight - theme responsive */
@@ -157,14 +157,19 @@ html::-webkit-scrollbar {
 
   /* Design tokens */
   --radius: var(--radius);
-  --font-sans: 'Inter', 'Inter Fallback', sans-serif;
-  --font-mono: 'JetBrains Mono', 'JetBrains Mono Fallback', monospace;
-  --font-display: 'Instrument Sans', 'Instrument Sans Fallback', sans-serif;
+  --font-sans: var(--font-dm-sans);
+  --font-mono: var(--font-dm-mono);
+  --font-display: var(--font-dm-sans);
 }
 
+html,
 body {
   background: var(--background);
   color: var(--foreground);
+}
+
+body {
+  font-family: var(--font-dm-sans), sans-serif;
 }
 
 /* Custom Scrollbar - Hidden globally, see html rule above */
@@ -514,4 +519,86 @@ body {
 .animate-slide-in-left {
   animation: slide-in-from-left 0.2s ease-out forwards;
   will-change: transform, opacity;
+}
+
+/* ============================================
+   GLASS TESTIMONIAL SWIPER
+   ============================================ */
+
+.testimonials-stack {
+  width: 100%;
+  max-width: 37rem;
+  height: 25rem;
+  perspective: 1200px;
+}
+
+.testimonial-card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(100% - 2.75rem);
+  border-radius: 0.75rem;
+  cursor: grab;
+  transition:
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.4s ease,
+    box-shadow 0.3s ease;
+  transform-origin: center bottom;
+  will-change: transform, opacity;
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+.testimonial-card:hover {
+  box-shadow:
+    0 12px 40px oklch(0 0 0 / 30%),
+    0 4px 12px oklch(0 0 0 / 20%);
+}
+
+.testimonial-card.is-dragging {
+  cursor: grabbing;
+  transition: none;
+}
+
+.glass-effect {
+  background: color-mix(in oklch, var(--background) 72%, var(--card) 28%);
+  border: 1px solid color-mix(in oklch, var(--foreground) 8%, transparent);
+  box-shadow:
+    0 8px 32px oklch(0 0 0 / 40%),
+    0 2px 8px oklch(0 0 0 / 25%);
+}
+
+.glass-effect::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in oklch, var(--foreground) 8%, transparent),
+    transparent
+  );
+}
+
+.pagination-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: color-mix(in oklch, var(--foreground) 25%, transparent);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.pagination-dot:hover {
+  background: color-mix(in oklch, var(--foreground) 45%, transparent);
+}
+
+.pagination-dot.active {
+  width: 1.25rem;
+  background: color-mix(in oklch, var(--foreground) 70%, transparent);
 }

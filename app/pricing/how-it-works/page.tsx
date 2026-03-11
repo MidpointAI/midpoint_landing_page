@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import Navbar from "@/components/navbar";
 import { Copy, Check } from "lucide-react";
 import { toast } from "sonner";
@@ -185,12 +186,12 @@ export default function HowPricingWorksPage() {
               Ready to get started?
             </p>
             <div className="flex items-center justify-center gap-4">
-              <a
+              <Link
                 href="/"
                 className="px-6 py-3 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:opacity-90 transition-opacity"
               >
                 Get Your Quote
-              </a>
+              </Link>
               <a
                 href="mailto:hello@midpoint.com"
                 className="px-6 py-3 border border-border text-foreground text-sm font-medium rounded-lg hover:border-foreground/50 transition-colors"

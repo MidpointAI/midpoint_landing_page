@@ -34,7 +34,7 @@ const stripeAppearance = {
     colorTextSecondary: "rgba(34, 37, 30, 0.6)",
     colorTextPlaceholder: "rgba(34, 37, 30, 0.35)",
     colorDanger: "#dc2626",
-    fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+    fontFamily: "'DM Sans', ui-sans-serif, system-ui, sans-serif",
     fontSizeBase: "14px",
     fontWeightNormal: "400",
     fontWeightMedium: "500",
@@ -189,22 +189,6 @@ function SmallInput({ placeholder, value, onChange }: SmallInputProps) {
       onChange={(e) => onChange?.(e.target.value)}
       className="w-full px-4 py-3 rounded-lg border border-[#22251e]/10 bg-[#f4ffe0] text-[14px] text-[#22251e] placeholder:text-[#22251e]/30 focus:border-[#22251e]/25 focus:outline-none transition-all duration-150"
     />
-  );
-}
-
-interface SummaryRowProps {
-  label: string;
-  value: string;
-}
-
-function SummaryRow({ label, value }: SummaryRowProps) {
-  return (
-    <div className="flex items-center justify-between">
-      <span className="text-[13px] text-[#22251e]/50">{label}</span>
-      <span className="text-[15px] font-semibold text-[#22251e] tabular-nums">
-        {value}
-      </span>
-    </div>
   );
 }
 
@@ -486,21 +470,6 @@ export default function SignupModal({ open, onClose }: SignupModalProps) {
     });
   }, [formData.activeSubs, loadFactor]);
 
-  // Get annual price in cents
-  const annualPriceCents = useMemo(() => {
-    const subs = parseInt(formData.activeSubs) || 0;
-    const calculatedFee = 100 * subs * loadFactor;
-    return Math.max(6000, calculatedFee) * 100;
-  }, [formData.activeSubs, loadFactor]);
-
-  // Determine tier
-  const tier = useMemo(() => {
-    const subs = parseInt(formData.activeSubs) || 0;
-    if (subs > 75) return { name: "Premier", subtitle: "100+ SUBS" };
-    if (subs > 25) return { name: "Professional", subtitle: "25-75 TRADES/SUBS" };
-    return { name: "Essential", subtitle: "UP TO 25 ACTIVE SUBS" };
-  }, [formData.activeSubs]);
-
   // Create checkout session
   const createCheckoutSession = useCallback(async () => {
     setIsCreatingSession(true);
@@ -509,7 +478,6 @@ export default function SignupModal({ open, onClose }: SignupModalProps) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          amount: annualPriceCents,
           customerEmail: formData.email,
           customerName: formData.yourName,
           companyName: formData.companyName,
@@ -532,7 +500,7 @@ export default function SignupModal({ open, onClose }: SignupModalProps) {
     } finally {
       setIsCreatingSession(false);
     }
-  }, [annualPriceCents, formData]);
+  }, [formData]);
 
   // Handle Business Info continue (to Quote sub-page)
   const handleBusinessInfoContinue = useCallback(() => {

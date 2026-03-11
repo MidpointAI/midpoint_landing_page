@@ -1,65 +1,20 @@
 "use client";
 
 import { motion } from "framer-motion";
-import dynamic from "next/dynamic";
-import { Suspense } from "react";
-import { useThemeColors } from "@/hooks/use-theme-colors";
-
-// Dynamically import the shader component to reduce initial bundle size
-const GrainGradient = dynamic(
-  () => import("@paper-design/shaders-react").then((mod) => mod.GrainGradient),
-  {
-    ssr: false,
-    loading: () => (
-      <div
-        className="w-full h-full bg-background"
-        style={{
-          background:
-            "radial-gradient(ellipse at center, var(--shader-3) 0%, var(--background) 70%)",
-        }}
-      />
-    ),
-  },
-);
-
-// Theme-aware shader background component
-function ShaderBackground() {
-  const { colors, colorBack } = useThemeColors();
-
-  return (
-    <GrainGradient
-      style={{ width: "100%", height: "100%" }}
-      colors={colors}
-      colorBack={colorBack}
-      softness={0.4}
-      intensity={1}
-      noise={0.08}
-      shape="corners"
-      speed={0.3}
-      scale={1.5}
-    />
-  );
-}
 
 export default function Hero() {
   return (
     <section className="min-h-screen flex flex-col items-center justify-center bg-background px-6 py-24 md:py-32 lg:py-40 relative overflow-hidden">
-      {/* Cinematic Shader Background - dynamically loaded */}
-      <div className="absolute inset-0 z-0">
-        <Suspense
-          fallback={
-            <div
-              className="w-full h-full bg-background"
-              style={{
-                background:
-                  "radial-gradient(ellipse at center, var(--shader-3) 0%, var(--background) 70%)",
-              }}
-            />
-          }
-        >
-          {/* <ShaderBackground /> */}
-        </Suspense>
-      </div>
+      {/* Cinematic background */}
+      {/* <div className="absolute inset-0 z-0">
+        <div
+          className="h-full w-full bg-background"
+          style={{
+            background:
+              "radial-gradient(ellipse at center, var(--shader-3) 0%, var(--background) 70%)",
+          }}
+        />
+      </div> */}
 
       {/* Dark overlay for text readability */}
       <div className="absolute inset-0 z-[1] bg-gradient-to-b from-background/40 via-transparent to-background/80" />
@@ -81,8 +36,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="font-display text-[15vw] md:text-[12vw] lg:text-[9vw] leading-[0.85] tracking-[0.02em] text-foreground uppercase text-center"
-          style={{ fontFamily: "var(--font-bebas)" }}
+          className="font-display text-[clamp(4.8rem,15vw,10rem)] font-extrabold leading-[0.82] tracking-[-0.08em] text-foreground uppercase text-center"
         >
           Eliminate
         </motion.h1>
@@ -90,8 +44,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
-          className="font-display text-[15vw] md:text-[12vw] lg:text-[9vw] leading-[0.85] tracking-[0.02em] text-primary uppercase text-center mt-[-1vw]"
-          style={{ fontFamily: "var(--font-bebas)" }}
+          className="font-display mt-[-0.6rem] text-[clamp(4.8rem,15vw,10rem)] font-extrabold leading-[0.82] tracking-[-0.08em] text-primary uppercase text-center"
         >
           Paperwork
         </motion.h1>
@@ -120,7 +73,7 @@ export default function Hero() {
             className="relative px-8 sm:px-12 py-5 bg-primary text-primary-foreground text-sm tracking-[0.15em] uppercase font-medium overflow-hidden group rounded-xl"
           >
             <span className="relative z-10">Sign Up</span>
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-[200%] group-hover:translate-x-[200%] transition-transform duration-700" />
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-foreground/15 to-transparent dark:via-white/25 -translate-x-[200%] group-hover:translate-x-[200%] transition-transform duration-700" />
           </a>
 
           {/* Secondary Button */}
@@ -131,13 +84,6 @@ export default function Hero() {
             Learn More
           </a>
 
-          {/* One Pager Button */}
-          <a
-            href="/one-pager"
-            className="px-8 sm:px-12 py-5 bg-[#1a1a19] text-[#c9ff64] text-sm tracking-[0.15em] uppercase font-medium hover:bg-[#2a2a29] transition-colors duration-300 rounded-xl"
-          >
-            View One Pager
-          </a>
         </motion.div>
       </div>
 

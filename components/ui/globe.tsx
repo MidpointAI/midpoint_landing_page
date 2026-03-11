@@ -1,7 +1,15 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { Color, Fog, PerspectiveCamera, Scene, Vector3 } from "three";
+import { useEffect, useMemo, useRef } from "react";
+import {
+  AmbientLight,
+  Color,
+  DirectionalLight,
+  Fog,
+  PerspectiveCamera,
+  PointLight,
+  Scene,
+} from "three";
 import ThreeGlobe from "three-globe";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { WebGLRenderer } from "three";
@@ -54,17 +62,6 @@ interface WorldProps {
 let numbersOfRings = [0];
 
 export function Globe({ globeConfig, data }: WorldProps) {
-  const [globeData, setGlobeData] = useState<
-    | {
-        size: number;
-        order: number;
-        color: (t: number) => string;
-        lat: number;
-        lng: number;
-      }[]
-    | null
-  >(null);
-
   const globeRef = useRef<ThreeGlobe | null>(null);
 
   const defaultProps = {
@@ -84,14 +81,7 @@ export function Globe({ globeConfig, data }: WorldProps) {
     ...globeConfig,
   };
 
-  useEffect(() => {
-    if (globeRef.current) {
-      _buildData();
-      _buildMaterial();
-    }
-  }, [globeRef.current]);
-
-  const _buildMaterial = () => {
+  function buildMaterial() {
     if (!globeRef.current) return;
 
     const globeMaterial = globeRef.current.globeMaterial() as unknown as {
@@ -104,9 +94,9 @@ export function Globe({ globeConfig, data }: WorldProps) {
     globeMaterial.emissive = new Color(globeConfig.emissive);
     globeMaterial.emissiveIntensity = globeConfig.emissiveIntensity || 0.1;
     globeMaterial.shininess = globeConfig.shininess || 0.9;
-  };
+  }
 
-  const _buildData = () => {
+  const globeData = useMemo(() => {
     const arcs = data;
     const points = [];
     for (let i = 0; i < arcs.length; i++) {
@@ -137,26 +127,16 @@ export function Globe({ globeConfig, data }: WorldProps) {
         ) === i
     );
 
-    setGlobeData(filteredPoints);
-  };
+    return filteredPoints;
+  }, [data, defaultProps.pointSize]);
 
   useEffect(() => {
-    if (globeRef.current && globeData) {
-      globeRef.current
-        .hexPolygonsData(countries.features)
-        .hexPolygonResolution(3)
-        .hexPolygonMargin(0.7)
-        .showAtmosphere(defaultProps.showAtmosphere)
-        .atmosphereColor(defaultProps.atmosphereColor)
-        .atmosphereAltitude(defaultProps.atmosphereAltitude)
-        .hexPolygonColor(() => {
-          return defaultProps.polygonColor;
-        });
-      startAnimation();
+    if (globeRef.current) {
+      buildMaterial();
     }
-  }, [globeData]);
+  }, [globeConfig]);
 
-  const startAnimation = () => {
+  function startAnimation() {
     if (!globeRef.current || !globeData) return;
 
     globeRef.current
@@ -186,13 +166,35 @@ export function Globe({ globeConfig, data }: WorldProps) {
 
     globeRef.current
       .ringsData([])
-      .ringColor((e: unknown) => (t: number) => e as string)
+      .ringColor((e: unknown) => () => e as string)
       .ringMaxRadius(defaultProps.maxRings)
       .ringPropagationSpeed(RING_PROPAGATION_SPEED)
       .ringRepeatPeriod(
         (defaultProps.arcTime * defaultProps.arcLength) / defaultProps.rings
       );
-  };
+  }
+
+  useEffect(() => {
+    if (globeRef.current && globeData) {
+      globeRef.current
+        .hexPolygonsData(countries.features)
+        .hexPolygonResolution(3)
+        .hexPolygonMargin(0.7)
+        .showAtmosphere(defaultProps.showAtmosphere)
+        .atmosphereColor(defaultProps.atmosphereColor)
+        .atmosphereAltitude(defaultProps.atmosphereAltitude)
+        .hexPolygonColor(() => {
+          return defaultProps.polygonColor;
+        });
+      startAnimation();
+    }
+  }, [
+    globeData,
+    defaultProps.atmosphereAltitude,
+    defaultProps.atmosphereColor,
+    defaultProps.polygonColor,
+    defaultProps.showAtmosphere,
+  ]);
 
   useEffect(() => {
     if (!globeRef.current || !globeData) return;
@@ -213,7 +215,7 @@ export function Globe({ globeConfig, data }: WorldProps) {
     return () => {
       clearInterval(interval);
     };
-  }, [globeRef.current, globeData]);
+  }, [data.length, globeData]);
 
   // The Three.js globe is rendered programmatically, not as a React element
   return null;
@@ -252,7 +254,8 @@ export function World({ globeConfig, data }: WorldProps) {
   };
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    const container = containerRef.current;
+    if (!container) return;
 
     // Initialize scene
     const scene = new Scene();
@@ -268,7 +271,7 @@ export function World({ globeConfig, data }: WorldProps) {
     const renderer = new WebGLRenderer({ antialias: true, alpha: true });
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setClearColor(0x000000, 0);
-    containerRef.current.appendChild(renderer.domElement);
+    container.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
     // Initialize controls
@@ -355,7 +358,6 @@ export function World({ globeConfig, data }: WorldProps) {
     scene.add(globe);
 
     // Add lights
-    const { AmbientLight, DirectionalLight, PointLight } = require("three");
     scene.add(new AmbientLight(defaultProps.ambientLight, 0.6));
     const dLight1 = new DirectionalLight(defaultProps.directionalLeftLight, 0.8);
     dLight1.position.set(-400, 100, 400);
@@ -401,8 +403,8 @@ export function World({ globeConfig, data }: WorldProps) {
     return () => {
       window.removeEventListener("resize", handleResize);
       cancelAnimationFrame(frameId);
-      if (rendererRef.current && containerRef.current) {
-        containerRef.current.removeChild(rendererRef.current.domElement);
+      if (rendererRef.current) {
+        container.removeChild(rendererRef.current.domElement);
         rendererRef.current.dispose();
       }
       if (controlsRef.current) controlsRef.current.dispose();

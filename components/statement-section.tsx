@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useMemo } from "react";
+import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 
 // Static words array defined outside component to prevent recreation

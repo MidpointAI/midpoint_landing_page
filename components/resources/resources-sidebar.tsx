@@ -22,9 +22,6 @@ export function ResourcesSidebar({
 }: ResourcesSidebarProps) {
   const [termsOpen, setTermsOpen] = useState(true);
 
-  // Check if active page is a glossary term
-  const isTermActive = glossaryTerms.some((t) => t.id === activePage);
-
   const handleNavigate = (page: DocPage) => {
     onNavigate(page);
     // Smooth scroll to content
@@ -84,7 +81,7 @@ export function ResourcesSidebar({
                     text-left px-3 py-2.5 rounded-lg text-sm border transition-all duration-200 cursor-pointer
                     ${
                       activePage === term.id
-                        ? "bg-[hsl(68,100%,50%,0.08)] border-[hsl(68,100%,50%,0.2)] text-primary font-medium"
+                        ? "bg-primary/10 border-primary/20 text-primary font-medium"
                         : "border-transparent text-muted-foreground/70 hover:text-primary"
                     }
                   `}
@@ -159,7 +156,7 @@ function NavItem({
         flex items-center gap-3 px-3 py-3 rounded-lg text-sm border transition-all duration-200 cursor-pointer
         ${
           isActive
-            ? "bg-[hsl(68,100%,50%,0.08)] border-[hsl(68,100%,50%,0.2)] text-primary font-medium"
+            ? "bg-primary/10 border-primary/20 text-primary font-medium"
             : "border-transparent text-muted-foreground/70 hover:text-primary"
         }
       `}
