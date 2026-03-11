@@ -211,7 +211,7 @@ export default function CoiAnalysisShowcase() {
     >
 
       <div className="relative z-10 mx-auto max-w-6xl">
-        <div className="mb-10 text-center lg:mb-14">
+        {/* <div className="mb-10 text-center lg:mb-14">
           <motion.span
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
@@ -228,7 +228,7 @@ export default function CoiAnalysisShowcase() {
           >
             See AI in <em className="italic">Action</em>
           </motion.h2>
-        </div>
+        </div> */}
 
         <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_530px] lg:items-stretch">
           <motion.div
@@ -274,7 +274,8 @@ export default function CoiAnalysisShowcase() {
                       left: VERIFIED_BAR.left,
                       width: VERIFIED_BAR.width,
                       height: VERIFIED_BAR.height,
-                      background: "rgba(201, 255, 100, 0.85)",
+                      background: "#C9FF64",
+                      mixBlendMode: "multiply",
                     }}
                   />
                 )}

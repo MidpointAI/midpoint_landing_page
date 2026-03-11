@@ -15,11 +15,11 @@ export default function Home() {
     <main className="relative">
       <Navbar />
       <Hero />
-      <StatementSection />
-      <CoiAnalysisShowcase />
-      <FastOnboardingSection />
       <Testimonials />
       <VerifiedInsurance />
+      {/* <StatementSection /> */}
+      <CoiAnalysisShowcase />
+      <FastOnboardingSection />
       <PricingSection />
       <CtaSection />
       <FaqSection />
