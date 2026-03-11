@@ -20,7 +20,7 @@ export default function Home() {
       {/* <StatementSection /> */}
       <CoiAnalysisShowcase />
       <FastOnboardingSection />
-      <PricingSection />
+      {/* <PricingSection /> */}
       <CtaSection />
       <FaqSection />
       <Footer />
