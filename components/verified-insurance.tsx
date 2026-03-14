@@ -179,7 +179,7 @@ export default function VerifiedInsurance() {
     offset: ["start end", "end start"],
   });
 
-  const progressValue = useTransform(scrollYProgress, [0, 1], [0, 100]);
+  const progressValue = useTransform(scrollYProgress, [0.35, 0.75], [0, 100]);
   const [progress, setProgress] = useState(0);
 
   useMotionValueEvent(progressValue, "change", (v) => {

@@ -61,7 +61,7 @@ export default function Testimonials() {
               className="absolute inset-0"
               style={{
                 backgroundImage:
-                  "radial-gradient(circle, color-mix(in oklch, var(--foreground) 22%, transparent) 1px, transparent 1px)",
+                  "radial-gradient(circle, color-mix(in oklch, var(--foreground) 60%, transparent) 1px, transparent 1px)",
                 backgroundSize: "15px 15px",
                 maskImage:
                   "radial-gradient(ellipse 55% 48% at 50% 42%, black 0%, black 18%, rgba(0,0,0,0.55) 30%, rgba(0,0,0,0.25) 42%, rgba(0,0,0,0.08) 55%, transparent 65%)",

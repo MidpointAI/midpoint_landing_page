@@ -39,8 +39,7 @@ export default function CtaSection() {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="text-lg text-muted-foreground mt-12 max-w-xl mx-auto leading-relaxed"
         >
-          Join hundreds of builders who&apos;ve eliminated paperwork headaches
-          and reduced their insurance costs.
+          Discover how Midpoint can simplify your insurance management and reduce potential financial risks.
         </motion.p>
 
         {/* Buttons */}

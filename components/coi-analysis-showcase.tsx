@@ -22,10 +22,10 @@ type ExtractionZone = {
 };
 
 const VERIFIED_BAR = {
-  top: "5.6%",
-  left: "17.8%",
-  width: "72%",
-  height: "2.3%",
+  top: "7.3%",
+  left: "3.5%",
+  width: "88.5%",
+  height: "1.3%",
 };
 
 const EXTRACTION_ZONES: ExtractionZone[] = [
@@ -268,16 +268,27 @@ export default function CoiAnalysisShowcase() {
 
                 {activeView === "verified" && (
                   <div
-                    className="absolute transition-opacity duration-300"
+                    className="absolute overflow-hidden"
                     style={{
                       top: VERIFIED_BAR.top,
                       left: VERIFIED_BAR.left,
                       width: VERIFIED_BAR.width,
                       height: VERIFIED_BAR.height,
-                      background: "#C9FF64",
-                      mixBlendMode: "multiply",
                     }}
-                  />
+                  >
+                    <motion.div
+                      initial={{ scaleX: 0 }}
+                      animate={{ scaleX: 1 }}
+                      transition={{ duration: 1.2, ease: [0.25, 0.1, 0.25, 1] }}
+                      style={{
+                        transformOrigin: "left",
+                        width: "100%",
+                        height: "100%",
+                        background: "var(--primary)",
+                        mixBlendMode: "multiply",
+                      }}
+                    />
+                  </div>
                 )}
 
                 {activeView === "extraction" &&
@@ -293,7 +304,7 @@ export default function CoiAnalysisShowcase() {
                     if (!visible) return null;
 
                     const borderColor = isHovered
-                      ? "rgba(255, 255, 255, 0.6)"
+                      ? "color-mix(in oklch, var(--foreground) 50%, transparent)"
                       : isVerifying
                         ? "rgba(251, 191, 36, 0.6)"
                         : isCorrected
@@ -305,7 +316,7 @@ export default function CoiAnalysisShowcase() {
                               : "rgba(59, 130, 246, 0.3)";
 
                     const bgColor = isHovered
-                      ? "rgba(255, 255, 255, 0.1)"
+                      ? "color-mix(in oklch, var(--foreground) 8%, transparent)"
                       : isVerifying
                         ? "rgba(251, 191, 36, 0.08)"
                         : isCorrected
@@ -384,22 +395,29 @@ export default function CoiAnalysisShowcase() {
             initial={{ opacity: 0, y: 24 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
             transition={{ duration: 0.65, delay: 0.18 }}
-            className="flex flex-col lg:h-full lg:min-h-0"
+            className="flex flex-col lg:h-full lg:min-h-0 lg:pt-14"
           >
-            <div className="mb-4 flex h-10 items-center gap-1 rounded-lg bg-secondary/50 p-1">
+            <div className="relative mb-6 flex items-center gap-8">
               <button
                 type="button"
                 onClick={() => {
                   setActiveView("verified");
                   resetExtraction();
                 }}
-                className={`h-8 flex-1 rounded-md text-xs font-medium transition-colors ${
+                className={`relative pb-3 text-lg font-medium transition-colors ${
                   activeView === "verified"
-                    ? "bg-card text-foreground shadow-sm"
+                    ? "text-primary"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 Verified Coverage
+                {activeView === "verified" && (
+                  <motion.div
+                    layoutId="tab-underline"
+                    className="absolute bottom-0 left-0 h-[2px] w-full bg-primary"
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  />
+                )}
               </button>
               <button
                 type="button"
@@ -407,14 +425,22 @@ export default function CoiAnalysisShowcase() {
                   setActiveView("extraction");
                   startExtraction();
                 }}
-                className={`h-8 flex-1 rounded-md text-xs font-medium transition-colors ${
+                className={`relative pb-3 text-lg font-medium transition-colors ${
                   activeView === "extraction"
-                    ? "bg-card text-foreground shadow-sm"
+                    ? "text-primary"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 AI Extraction
+                {activeView === "extraction" && (
+                  <motion.div
+                    layoutId="tab-underline"
+                    className="absolute bottom-0 left-0 h-[2px] w-full bg-primary"
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  />
+                )}
               </button>
+              <div className="absolute bottom-0 -left-4 h-px w-[62%] bg-border" />
             </div>
 
             {activeView === "verified" && (
