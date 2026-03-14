@@ -376,7 +376,7 @@ export default function CoiAnalysisShowcase() {
                         </p>
                         <p className="text-[10px] leading-relaxed text-muted-foreground">
                           AI extracted{" "}
-                          <span className="font-mono text-amber-400">$1,500,000</span> - but
+                          <span className="font-mono text-amber-600 dark:text-amber-400">$1,500,000</span> - but
                           that wasn&apos;t right. Our expert team reviews every extraction.
                         </p>
                       </div>

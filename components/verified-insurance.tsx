@@ -92,7 +92,7 @@ function ScrollDonut({ progress }: { progress: number }) {
           strokeDasharray={`${trailDraw} ${trailGap}`}
           strokeDashoffset={0}
           opacity={0.9}
-          style={{ filter: "drop-shadow(0 0 8px rgba(201,255,100,0.12))" }}
+          style={{ filter: "drop-shadow(0 0 8px color-mix(in oklch, var(--primary) 12%, transparent))" }}
         />
       </svg>
 
