@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import Image from "next/image";
-import { ArrowRight, Check, ShieldCheck, Sparkles, User, X } from "lucide-react";
+import { ArrowRight, Check, Eye, ShieldCheck, Sparkles, User, X } from "lucide-react";
 
 type ViewMode = "verified" | "extraction";
 type Phase = "idle" | "ai-extracting" | "human-verifying" | "complete";
@@ -444,18 +444,20 @@ export default function CoiAnalysisShowcase() {
             </div>
 
             {activeView === "verified" && (
-              <div className="flex flex-1 flex-col">
-                <div className="space-y-4">
-                  <div className="inline-flex h-6 items-center gap-2 rounded border border-amber-500/20 bg-amber-500/10 px-2">
-                    <div className="h-1.5 w-1.5 rounded-full bg-amber-500" />
-                    <span className="text-xs font-medium text-amber-500">Gap Detection</span>
+              <div className="flex flex-1 flex-col mt-8">
+                <div className="space-y-5">
+                  <div className="flex items-center gap-2.5">
+                    <Eye className="h-5 w-5 text-primary" />
+                    <span className="text-sm font-bold uppercase tracking-wider text-primary">
+                      Gap Detection
+                    </span>
                   </div>
 
                   <div>
-                    <h3 className="mb-2 text-4xl font-bold leading-[0.94] tracking-[-0.05em] text-foreground">
+                    <h3 className="mb-3 text-4xl font-bold leading-[0.94] tracking-[-0.05em] text-foreground">
                       You are never as covered as you think
                     </h3>
-                    <p className="text-[15px] leading-relaxed text-muted-foreground/90">
+                    <p className="text-base leading-relaxed text-muted-foreground">
                       When subs submit their certificates, we use advanced tools to verify
                       insurance documents with surgical accuracy. We identify hidden risks and
                       optimization opportunities that traditional methods miss.
@@ -464,7 +466,7 @@ export default function CoiAnalysisShowcase() {
 
                   <button
                     type="button"
-                    className="group inline-flex items-center gap-2 text-sm font-medium text-foreground transition-colors hover:text-muted-foreground"
+                    className="group inline-flex items-center gap-2 text-sm font-medium text-primary transition-colors hover:text-primary/80"
                   >
                     See how we can help you
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />

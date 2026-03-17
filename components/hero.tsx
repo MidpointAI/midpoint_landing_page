@@ -36,7 +36,8 @@ export default function Hero() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="font-display text-[clamp(4.8rem,15vw,10rem)] font-extrabold leading-[0.82] tracking-[-0.08em] text-foreground uppercase text-center"
+          className="font-display text-[clamp(4.8rem,15vw,10rem)] font-extrabold leading-[0.82] tracking-[0.08em] text-foreground text-center"
+          style={{ fontKerning: 'normal' }}
         >
           Eliminate
         </motion.h1>
@@ -44,7 +45,8 @@ export default function Hero() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
-          className="font-display mt-[-0.6rem] text-[clamp(4.8rem,15vw,10rem)] font-extrabold leading-[0.82] tracking-[-0.08em] text-primary uppercase text-center"
+          className="font-display mt-2 text-[clamp(4.8rem,15vw,10rem)] font-extrabold leading-[0.82] tracking-[0.08em] text-primary text-center"
+          style={{ fontKerning: 'normal' }}
         >
           Paperwork
         </motion.h1>

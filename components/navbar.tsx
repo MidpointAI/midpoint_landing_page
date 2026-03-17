@@ -38,7 +38,7 @@ export default function Navbar() {
   const pathname = usePathname();
 
   // Determine which nav links to show based on current page
-  const isHomePage = pathname === "/";
+  const isContactPage = pathname === "/contact";
   const isResourcesPage = pathname === "/resources";
 
   // Memoize toggle handler
@@ -85,15 +85,6 @@ export default function Navbar() {
         {/* Desktop Nav Buttons */}
         <div className="hidden md:flex items-center gap-4">
           <ThemeToggle />
-          {/* Show Home on resources page, Resources on home page, both on other pages */}
-          {!isHomePage && (
-            <Link
-              href="/"
-              className="text-sm tracking-[0.1em] uppercase px-5 py-2.5 border border-foreground/20 text-foreground/90 font-medium hover:border-primary hover:text-primary transition-all duration-300 rounded-xl"
-            >
-              Home
-            </Link>
-          )}
           {!isResourcesPage && (
             <Link
               href="/resources"
@@ -102,12 +93,14 @@ export default function Navbar() {
               Resources
             </Link>
           )}
-          <Link
-            href="/contact"
-            className="text-sm tracking-[0.1em] uppercase px-5 py-2.5 bg-primary text-primary-foreground font-medium hover:bg-foreground transition-colors duration-300 rounded-xl"
-          >
-            Contact Us
-          </Link>
+          {!isContactPage && (
+            <Link
+              href="/contact"
+              className="text-sm tracking-[0.1em] uppercase px-5 py-2.5 bg-primary text-primary-foreground font-medium hover:bg-foreground transition-colors duration-300 rounded-xl"
+            >
+              Contact Us
+            </Link>
+          )}
         </div>
 
         {/* Mobile Hamburger - using variants for performance */}
@@ -163,16 +156,6 @@ export default function Navbar() {
               <div className="mb-2">
                 <ThemeToggle />
               </div>
-              {/* Show Home on resources page, Resources on home page, both on other pages */}
-              {!isHomePage && (
-                <Link
-                  href="/"
-                  className="text-sm tracking-[0.1em] uppercase px-6 py-3 border border-foreground/20 text-foreground/90 font-medium hover:border-primary hover:text-primary transition-all duration-300 rounded-xl w-48 text-center"
-                  onClick={closeMenu}
-                >
-                  Home
-                </Link>
-              )}
               {!isResourcesPage && (
                 <Link
                   href="/resources"
@@ -182,13 +165,15 @@ export default function Navbar() {
                   Resources
                 </Link>
               )}
-              <Link
-                href="/contact"
-                className="text-sm tracking-[0.1em] uppercase px-6 py-3 bg-primary text-primary-foreground font-medium hover:bg-foreground transition-colors duration-300 rounded-xl w-48 text-center"
-                onClick={closeMenu}
-              >
-                Contact Us
-              </Link>
+              {!isContactPage && (
+                <Link
+                  href="/contact"
+                  className="text-sm tracking-[0.1em] uppercase px-6 py-3 bg-primary text-primary-foreground font-medium hover:bg-foreground transition-colors duration-300 rounded-xl w-48 text-center"
+                  onClick={closeMenu}
+                >
+                  Contact Us
+                </Link>
+              )}
             </div>
           </motion.div>
         )}

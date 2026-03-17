@@ -2,23 +2,65 @@
 
 import React, { useState, useRef, useCallback } from "react"
 import { motion } from "framer-motion"
-import Link from "next/link"
 import emailjs from "@emailjs/browser"
-import { Send, Mail, ArrowUpRight, CheckCircle, AlertCircle, MapPin, Phone } from "lucide-react"
+import {
+  ArrowRight,
+  ArrowUpRight,
+  Check,
+  Mail,
+  MapPin,
+} from "lucide-react"
 import { SlideToVerify } from "@/components/contact/slide-to-verify"
 import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
 
-function LabelBlock({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
+const contactDetails = [
+  {
+    label: "Email",
+    value: "service@midpointverified.com",
+    href: "mailto:service@midpointverified.com",
+    icon: Mail,
+  },
+  {
+    label: "Office",
+    value: "111 E Monroe Ave, Buckeye, AZ 85396",
+    icon: MapPin,
+  },
+] as const
+
+function Field({
+  id,
+  label,
+  error,
+  optional,
+  children,
+}: {
+  id: string
+  label: string
+  error?: string
+  optional?: boolean
+  children: React.ReactNode
+}) {
   return (
-    <div>
-      <label className="block text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground mb-2">
+    <div className="space-y-2">
+      <Label htmlFor={id} className="text-sm">
         {label}
-      </label>
+        {optional ? (
+          <span className="ml-1.5 text-muted-foreground font-normal">(optional)</span>
+        ) : (
+          <span className="ml-0.5 text-destructive">*</span>
+        )}
+      </Label>
       {children}
-      {error && (
-        <p className="mt-1.5 text-xs text-destructive">{error}</p>
-      )}
+      {error ? (
+        <p id={`${id}-error`} className="text-sm text-destructive">
+          {error}
+        </p>
+      ) : null}
     </div>
   )
 }
@@ -36,7 +78,6 @@ export default function ContactPage() {
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle")
   const [isHumanVerified, setIsHumanVerified] = useState(false)
 
-  // Form validation
   const validateForm = useCallback(() => {
     const newErrors: Record<string, string> = {}
 
@@ -64,7 +105,6 @@ export default function ContactPage() {
     return Object.keys(newErrors).length === 0
   }, [formData])
 
-  // Handle input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
@@ -73,7 +113,6 @@ export default function ContactPage() {
     }
   }
 
-  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!validateForm()) return
@@ -81,7 +120,6 @@ export default function ContactPage() {
     setStatus("sending")
 
     try {
-      // Send email via EmailJS
       if (formRef.current) {
         await emailjs.sendForm(
           process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
@@ -91,7 +129,6 @@ export default function ContactPage() {
         )
       }
 
-      // Also save to Google Sheets as backup
       await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -107,271 +144,262 @@ export default function ContactPage() {
     }
   }
 
-  const isFormValid = formData.name && formData.email && formData.subject && formData.message.length >= 10 && isHumanVerified
+  const isFormValid = Boolean(
+    formData.name &&
+      formData.email &&
+      formData.subject &&
+      formData.message.length >= 10 &&
+      isHumanVerified
+  )
+
+  if (status === "success") {
+    return (
+      <>
+        <Navbar />
+        <main className="min-h-screen bg-background text-foreground">
+          <div className="min-h-[60vh] flex items-center justify-center px-6">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+              className="text-center max-w-md"
+            >
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", stiffness: 200, delay: 0.1 }}
+                className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground"
+              >
+                <Check className="h-8 w-8" />
+              </motion.div>
+              <h2 className="text-2xl font-semibold tracking-tight">
+                Message sent
+              </h2>
+              <p className="mt-3 text-muted-foreground">
+                Thanks for reaching out. Our team will review your message and respond within 24 hours on business days.
+              </p>
+              <Button
+                variant="outline"
+                onClick={() => setStatus("idle")}
+                className="mt-8"
+              >
+                Send another message
+              </Button>
+            </motion.div>
+          </div>
+        </main>
+        <Footer />
+      </>
+    )
+  }
 
   return (
     <>
       <Navbar />
       <main className="min-h-screen bg-background text-foreground">
-        <section className="relative py-24 md:py-32">
-          <div className="mx-auto max-w-6xl px-6">
-            {/* Header */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-              className="text-center mb-16"
-            >
-              <p className="text-xs font-medium uppercase tracking-[0.3em] text-primary mb-4">
-                Contact Us
-              </p>
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-semibold tracking-tight">
-                Let&apos;s Start a{" "}
-                <span className="text-primary">Conversation</span>
+        {/* Hero */}
+        <section className="border-b border-border pt-28 md:pt-36">
+          <div className="mx-auto max-w-6xl px-6 py-16 md:py-24">
+            <div className="max-w-2xl">
+              <p className="text-sm text-muted-foreground">Contact</p>
+              <h1 className="mt-3 text-4xl font-semibold tracking-tight text-primary md:text-5xl">
+                Get in touch
               </h1>
-              <p className="mt-6 text-muted-foreground max-w-2xl mx-auto text-lg">
-                Have questions about Midpoint? Want to see a demo? We&apos;d love to hear from you.
-                Fill out the form below and we&apos;ll get back to you within 24 hours.
+              <p className="mt-4 text-lg text-muted-foreground">
+                Request a demo, ask a coverage question, or start an onboarding conversation. We respond within 24 hours.
               </p>
-            </motion.div>
-
-            <div className="grid lg:grid-cols-5 gap-12 lg:gap-16">
-              {/* Contact Info Sidebar */}
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="lg:col-span-2 space-y-8"
-              >
-                <div className="p-6 rounded-2xl bg-card border border-border">
-                  <h3 className="text-lg font-semibold mb-6">Get in Touch</h3>
-
-                  <div className="space-y-6">
-                    <div className="flex items-start gap-4">
-                      <div className="p-3 rounded-xl bg-primary/10">
-                        <Mail className="w-5 h-5 text-primary" />
-                      </div>
-                      <div>
-                        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground mb-1">Email</p>
-                        <a href="mailto:hello@midpoint.com" className="text-foreground hover:text-primary transition-colors">
-                          hello@midpoint.com
-                        </a>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start gap-4">
-                      <div className="p-3 rounded-xl bg-primary/10">
-                        <Phone className="w-5 h-5 text-primary" />
-                      </div>
-                      <div>
-                        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground mb-1">Phone</p>
-                        <a href="tel:1-800-123-4567" className="text-foreground hover:text-primary transition-colors">
-                          1-800-123-4567
-                        </a>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start gap-4">
-                      <div className="p-3 rounded-xl bg-primary/10">
-                        <MapPin className="w-5 h-5 text-primary" />
-                      </div>
-                      <div>
-                        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground mb-1">Office</p>
-                        <p className="text-foreground">
-                          548 Market Street<br />
-                          Suite 95673<br />
-                          San Francisco, CA 94104
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="p-6 rounded-2xl bg-card border border-border">
-                  <h3 className="text-lg font-semibold mb-3">Response Time</h3>
-                  <p className="text-muted-foreground text-sm">
-                    We typically respond within 24 hours during business days.
-                    For urgent matters, please call us directly.
-                  </p>
-                </div>
-              </motion.div>
-
-              {/* Form */}
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.3 }}
-                className="lg:col-span-3"
-              >
-                {/* Success State */}
-                {status === "success" ? (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="text-center py-16 px-8 rounded-2xl bg-card border border-border"
-                  >
-                    <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ type: "spring", stiffness: 200, delay: 0.1 }}
-                    >
-                      <CheckCircle className="w-16 h-16 mx-auto text-primary" />
-                    </motion.div>
-                    <h3 className="text-2xl font-semibold mt-6">Message Sent!</h3>
-                    <p className="mt-3 text-muted-foreground max-w-md mx-auto">
-                      Thanks for reaching out. Our team will review your message and get back to you within 24 hours.
-                    </p>
-                    <button
-                      onClick={() => setStatus("idle")}
-                      className="mt-8 text-sm text-primary hover:underline"
-                    >
-                      Send another message
-                    </button>
-                  </motion.div>
-                ) : (
-                  <form
-                    ref={formRef}
-                    onSubmit={handleSubmit}
-                    className="p-8 rounded-2xl bg-card border border-border space-y-6"
-                  >
-                    {/* Name & Email Row */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <LabelBlock label="Name" error={errors.name}>
-                        <input
-                          name="name"
-                          value={formData.name}
-                          onChange={handleChange}
-                          placeholder="Your name"
-                          required
-                          className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
-                        />
-                      </LabelBlock>
-                      <LabelBlock label="Email" error={errors.email}>
-                        <input
-                          name="email"
-                          type="email"
-                          value={formData.email}
-                          onChange={handleChange}
-                          placeholder="your@email.com"
-                          required
-                          className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
-                        />
-                      </LabelBlock>
-                    </div>
-
-                    {/* Company (Optional) */}
-                    <LabelBlock label="Company (Optional)">
-                      <input
-                        name="company"
-                        value={formData.company}
-                        onChange={handleChange}
-                        placeholder="Your company name"
-                        className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
-                      />
-                    </LabelBlock>
-
-                    {/* Subject */}
-                    <LabelBlock label="Subject" error={errors.subject}>
-                      <input
-                        name="subject"
-                        value={formData.subject}
-                        onChange={handleChange}
-                        placeholder="What's this about?"
-                        required
-                        className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
-                      />
-                    </LabelBlock>
-
-                    {/* Message */}
-                    <LabelBlock label="Message" error={errors.message}>
-                      <textarea
-                        name="message"
-                        value={formData.message}
-                        onChange={handleChange}
-                        placeholder="Tell us about your needs..."
-                        required
-                        rows={5}
-                        className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all resize-none"
-                      />
-                    </LabelBlock>
-
-                    {/* Error Message */}
-                    {status === "error" && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="flex items-center gap-3 p-4 rounded-xl bg-destructive/10 border border-destructive/30"
-                      >
-                        <AlertCircle className="w-5 h-5 text-destructive flex-shrink-0" />
-                        <span className="text-sm text-destructive">
-                          Failed to send. Please try again or email us directly.
-                        </span>
-                      </motion.div>
-                    )}
-
-                    {/* Slide to Verify */}
-                    <SlideToVerify
-                      onVerified={() => setIsHumanVerified(true)}
-                      isVerified={isHumanVerified}
-                    />
-
-                    {/* Submit Button */}
-                    <motion.button
-                      type="submit"
-                      disabled={!isFormValid || status === "sending"}
-                      className={`
-                        w-full flex items-center justify-center gap-2 py-4 rounded-xl
-                        text-sm font-medium uppercase tracking-wider
-                        transition-all duration-300
-                        ${isFormValid && status !== "sending"
-                          ? "bg-primary text-primary-foreground hover:opacity-90"
-                          : "bg-border text-muted-foreground cursor-not-allowed"
-                        }
-                      `}
-                      whileHover={isFormValid ? { scale: 1.01 } : {}}
-                      whileTap={isFormValid ? { scale: 0.99 } : {}}
-                    >
-                      {status === "sending" ? (
-                        <>
-                          <motion.div
-                            className="w-4 h-4 border-2 border-current border-t-transparent rounded-full"
-                            animate={{ rotate: 360 }}
-                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                          />
-                          Sending...
-                        </>
-                      ) : (
-                        <>
-                          <Send className="w-4 h-4" />
-                          Send Message
-                        </>
-                      )}
-                    </motion.button>
-                  </form>
-                )}
-
-                {/* Direct Email Link */}
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.5 }}
-                  className="mt-6 text-center"
-                >
-                  <p className="text-sm text-muted-foreground">
-                    Prefer email?{" "}
-                    <Link
-                      href="mailto:hello@midpoint.com"
-                      className="inline-flex items-center gap-1 text-primary hover:underline"
-                    >
-                      hello@midpoint.com
-                      <ArrowUpRight className="w-3 h-3" />
-                    </Link>
-                  </p>
-                </motion.div>
-              </motion.div>
             </div>
           </div>
         </section>
+
+        {/* Two-column content */}
+        <div className="mx-auto max-w-6xl px-6">
+          <div className="grid gap-16 py-16 md:grid-cols-[1fr_1.5fr] md:gap-24 md:py-24">
+            {/* Left: Contact details + What to expect */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
+              <h2 className="text-sm font-medium text-foreground">Contact details</h2>
+
+              <div className="mt-6 space-y-6">
+                {contactDetails.map(({ label, value, icon: Icon, ...rest }) => {
+                  const href = "href" in rest ? rest.href : undefined
+                  return (
+                    <div key={label} className="flex items-start gap-4">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-border bg-secondary/50">
+                        <Icon className="h-4 w-4 text-muted-foreground" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground">{label}</p>
+                        {href ? (
+                          <a
+                            href={href}
+                            className="group mt-0.5 inline-flex items-center gap-1.5 text-sm font-medium text-foreground transition-colors hover:text-primary"
+                          >
+                            {value}
+                            <ArrowUpRight className="h-3.5 w-3.5 opacity-0 transition-opacity group-hover:opacity-100" />
+                          </a>
+                        ) : (
+                          <p className="mt-0.5 text-sm font-medium text-foreground">
+                            {value}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+
+              <div className="my-8 h-px bg-border" />
+
+              <h2 className="text-sm font-medium text-foreground">What to expect</h2>
+              <ul className="mt-4 space-y-3">
+                <li className="flex items-start gap-3 text-sm text-muted-foreground">
+                  <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-muted-foreground/50" />
+                  Share your workflow, use case, or the question you need answered.
+                </li>
+                <li className="flex items-start gap-3 text-sm text-muted-foreground">
+                  <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-muted-foreground/50" />
+                  Our team reviews every request and replies within 24 hours on business days.
+                </li>
+                <li className="flex items-start gap-3 text-sm text-muted-foreground">
+                  <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-muted-foreground/50" />
+                  If a walkthrough makes sense, we follow up with the right next step.
+                </li>
+              </ul>
+            </motion.div>
+
+            {/* Right: Form */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid gap-6 sm:grid-cols-2">
+                  <Field id="name" label="Name" error={errors.name}>
+                    <Input
+                      id="name"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      placeholder="Your name"
+                      required
+                      aria-invalid={Boolean(errors.name)}
+                      aria-describedby={errors.name ? "name-error" : undefined}
+                      className="h-11"
+                    />
+                  </Field>
+                  <Field id="email" label="Email" error={errors.email}>
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      placeholder="you@company.com"
+                      required
+                      aria-invalid={Boolean(errors.email)}
+                      aria-describedby={errors.email ? "email-error" : undefined}
+                      className="h-11"
+                    />
+                  </Field>
+                </div>
+
+                <Field id="company" label="Company" optional>
+                  <Input
+                    id="company"
+                    name="company"
+                    value={formData.company}
+                    onChange={handleChange}
+                    placeholder="Your company name"
+                    className="h-11"
+                  />
+                </Field>
+
+                <Field id="subject" label="Subject" error={errors.subject}>
+                  <Input
+                    id="subject"
+                    name="subject"
+                    value={formData.subject}
+                    onChange={handleChange}
+                    placeholder="What can we help with?"
+                    required
+                    aria-invalid={Boolean(errors.subject)}
+                    aria-describedby={errors.subject ? "subject-error" : undefined}
+                    className="h-11"
+                  />
+                </Field>
+
+                <Field id="message" label="Message" error={errors.message}>
+                  <Textarea
+                    id="message"
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
+                    placeholder="Tell us about your workflow, team, or what you want to solve."
+                    required
+                    rows={5}
+                    aria-invalid={Boolean(errors.message)}
+                    aria-describedby={errors.message ? "message-error" : undefined}
+                    className="resize-none"
+                  />
+                </Field>
+
+                <div className="rounded-xl border border-border bg-secondary/30 p-3">
+                  <SlideToVerify
+                    onVerified={() => setIsHumanVerified(true)}
+                    isVerified={isHumanVerified}
+                  />
+                </div>
+
+                {status === "error" ? (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="rounded-lg border border-destructive/20 bg-destructive/5 p-4"
+                    role="alert"
+                  >
+                    <p className="text-sm text-destructive">
+                      Something went wrong. Try again or email us directly at{" "}
+                      <a
+                        href="mailto:service@midpointverified.com"
+                        className="font-medium underline underline-offset-4"
+                      >
+                        service@midpointverified.com
+                      </a>
+                      .
+                    </p>
+                  </motion.div>
+                ) : null}
+
+                <Button
+                  type="submit"
+                  disabled={!isFormValid || status === "sending"}
+                  className="h-11 w-full sm:w-auto"
+                >
+                  {status === "sending" ? (
+                    <>
+                      <motion.span
+                        className="h-4 w-4 rounded-full border-2 border-current border-t-transparent"
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                      />
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      Send message
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </>
+                  )}
+                </Button>
+              </form>
+            </motion.div>
+          </div>
+        </div>
       </main>
       <Footer />
     </>
