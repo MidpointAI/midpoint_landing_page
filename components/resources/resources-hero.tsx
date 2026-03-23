@@ -1,6 +1,8 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
+import { Boxes } from "@/components/ui/background-boxes";
 
 export function ResourcesHero() {
   const scrollToContent = () => {
@@ -11,9 +13,31 @@ export function ResourcesHero() {
   };
 
   return (
-    <section className="min-h-svh flex flex-col items-center justify-center relative px-6">
+    <section className="min-h-svh flex flex-col items-center justify-center relative px-6 overflow-hidden">
+      {/* Interactive Grid Background */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1.4, ease: "easeOut" }}
+        className="absolute inset-0"
+      >
+        <Boxes />
+        <div className="absolute inset-0 w-full h-full bg-background z-[1] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_50%,transparent_40%,black_80%)] pointer-events-none" />
+      </motion.div>
+
+      {/* Gradient overlays */}
+      <div className="absolute inset-0 z-[4] bg-gradient-to-b from-background/30 via-transparent to-background/60 pointer-events-none" />
+
+      {/* Background shadow behind text */}
+      <div
+        className="absolute inset-0 z-[5] pointer-events-none"
+        style={{
+          background: "radial-gradient(ellipse 35% 25% at 50% 50%, var(--background) 0%, var(--background) 50%, transparent 100%)",
+        }}
+      />
+
       {/* Centered content */}
-      <div className="text-center">
+      <div className="text-center relative z-10">
         {/* Kicker text */}
         <p className="text-[11px] sm:text-[12px] uppercase tracking-[0.25em] mb-6">
           <span className="text-muted-foreground">Insurance Compliance, </span>
@@ -36,7 +60,7 @@ export function ResourcesHero() {
       {/* Scroll indicator */}
       <button
         onClick={scrollToContent}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-30 hover:opacity-50 transition-opacity cursor-pointer"
+        className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 opacity-30 hover:opacity-50 transition-opacity cursor-pointer"
         aria-label="Scroll to content"
       >
         {/* Pill shape with bouncing dot */}

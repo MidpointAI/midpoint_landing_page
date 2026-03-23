@@ -10,7 +10,9 @@ import {
   Mail,
   MapPin,
 } from "lucide-react"
+import { ChevronDown } from "lucide-react"
 import { SlideToVerify } from "@/components/contact/slide-to-verify"
+import { Boxes } from "@/components/ui/background-boxes"
 import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
 import { Button } from "@/components/ui/button"
@@ -198,22 +200,64 @@ export default function ContactPage() {
       <Navbar />
       <main className="min-h-screen bg-background text-foreground">
         {/* Hero */}
-        <section className="border-b border-border pt-28 md:pt-36">
-          <div className="mx-auto max-w-6xl px-6 py-16 md:py-24">
-            <div className="max-w-2xl">
-              <p className="text-sm text-muted-foreground">Contact</p>
-              <h1 className="mt-3 text-4xl font-semibold tracking-tight text-primary md:text-5xl">
-                Get in touch
-              </h1>
-              <p className="mt-4 text-lg text-muted-foreground">
-                Request a demo, ask a coverage question, or start an onboarding conversation. We respond within 24 hours.
-              </p>
-            </div>
+        <section className="min-h-svh flex flex-col items-center justify-center relative px-6 overflow-hidden">
+          {/* Interactive Grid Background */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1.4, ease: "easeOut" }}
+            className="absolute inset-0"
+          >
+            <Boxes />
+            <div className="absolute inset-0 w-full h-full bg-background z-[1] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_50%,transparent_40%,black_80%)] pointer-events-none" />
+          </motion.div>
+
+          {/* Gradient overlays */}
+          <div className="absolute inset-0 z-[4] bg-gradient-to-b from-background/30 via-transparent to-background/60 pointer-events-none" />
+
+          {/* Background shadow behind text */}
+          <div
+            className="absolute inset-0 z-[5] pointer-events-none"
+            style={{
+              background: "radial-gradient(ellipse 35% 25% at 50% 50%, var(--background) 0%, var(--background) 50%, transparent 100%)",
+            }}
+          />
+
+          {/* Centered content */}
+          <div className="text-center relative z-10">
+            <p className="text-[11px] sm:text-[12px] uppercase tracking-[0.25em] mb-6">
+              <span className="text-muted-foreground">We&apos;d Love to </span>
+              <span className="text-primary">Hear From You</span>
+            </p>
+
+            <h1 className="font-[family-name:var(--font-display)] text-5xl sm:text-7xl lg:text-8xl xl:text-[112px] font-extrabold leading-[0.9] tracking-tight">
+              <span className="block text-foreground">GET IN</span>
+              <span className="block text-primary">TOUCH</span>
+            </h1>
+
+            <p className="max-w-[28rem] mx-auto text-sm sm:text-[15px] text-muted-foreground mt-8 leading-relaxed">
+              Request a demo, ask a coverage question, or start an onboarding conversation. We respond within 24 hours.
+            </p>
           </div>
+
+          {/* Scroll indicator */}
+          <button
+            onClick={() => {
+              const content = document.getElementById("contact-content")
+              if (content) content.scrollIntoView({ behavior: "smooth" })
+            }}
+            className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 opacity-30 hover:opacity-50 transition-opacity cursor-pointer"
+            aria-label="Scroll to content"
+          >
+            <div className="w-5 h-8 rounded-full border border-current flex items-start justify-center pt-1.5">
+              <div className="w-1 h-1 rounded-full bg-current animate-bounce" />
+            </div>
+            <ChevronDown className="w-4 h-4" />
+          </button>
         </section>
 
         {/* Two-column content */}
-        <div className="mx-auto max-w-6xl px-6">
+        <div id="contact-content" className="mx-auto max-w-6xl px-6">
           <div className="grid gap-16 py-16 md:grid-cols-[1fr_1.5fr] md:gap-24 md:py-24">
             {/* Left: Contact details + What to expect */}
             <motion.div

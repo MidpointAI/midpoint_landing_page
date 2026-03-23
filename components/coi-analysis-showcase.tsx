@@ -187,14 +187,6 @@ export default function CoiAnalysisShowcase() {
   const isAiComplete = currentStep >= EXTRACTION_ZONES.length;
   const isFullyComplete = phase === "complete";
 
-  const getBadgeText = () => {
-    if (activeView === "verified") return "Analysis Complete";
-    if (phase === "ai-extracting") return "AI Extracting...";
-    if (phase === "human-verifying") return "Verifying...";
-    if (phase === "complete") return "Analysis Complete";
-    return "Ready";
-  };
-
   const handleZoneHover = (zoneId: string | null) => {
     setHoveredZoneId(zoneId);
     if (zoneId === "umbrella" && correctedIds.includes("umbrella")) {
@@ -236,25 +228,6 @@ export default function CoiAnalysisShowcase() {
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 22 }}
             transition={{ duration: 0.65, delay: 0.12 }}
           >
-            <div className="mb-4 flex h-10 shrink-0 items-center">
-              <div
-                className={`flex h-6 items-center gap-1.5 rounded-md border px-2.5 text-xs font-medium transition-colors duration-300 ${
-                  isFullyComplete || activeView === "verified"
-                    ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-400"
-                    : phase === "ai-extracting"
-                      ? "border-blue-500/20 bg-blue-500/10 text-blue-400"
-                      : phase === "human-verifying"
-                        ? "border-amber-500/20 bg-amber-500/10 text-amber-400"
-                        : "border-border bg-secondary text-muted-foreground"
-                }`}
-              >
-                {(isFullyComplete || activeView === "verified") && <Check className="h-3 w-3" />}
-                {phase === "ai-extracting" && <Sparkles className="h-3 w-3 animate-pulse" />}
-                {phase === "human-verifying" && <User className="h-3 w-3 animate-pulse" />}
-                {getBadgeText()}
-              </div>
-            </div>
-
             <div className="overflow-hidden rounded-lg border border-border bg-card">
               <div className="relative w-full" style={{ aspectRatio: "8.5 / 11" }}>
                 <Image
