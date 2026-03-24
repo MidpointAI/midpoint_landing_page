@@ -368,7 +368,7 @@ export default function CoiAnalysisShowcase() {
             initial={{ opacity: 0, y: 24 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
             transition={{ duration: 0.65, delay: 0.18 }}
-            className="flex flex-col lg:h-full lg:min-h-0 lg:pt-14"
+            className="flex flex-col lg:h-full lg:min-h-0"
           >
             <div className="relative mb-6 flex items-center gap-8">
               <button
