@@ -1,12 +1,30 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, useInView } from "framer-motion";
+import { AnimatePresence, motion, useInView } from "framer-motion";
 import Image from "next/image";
-import { ArrowRight, Check, Eye, ShieldCheck, Sparkles, User, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Eye, ShieldCheck, X } from "lucide-react";
 
 type ViewMode = "verified" | "extraction";
-type Phase = "idle" | "ai-extracting" | "human-verifying" | "complete";
+type Phase =
+  | "idle"
+  | "ai-extracting"
+  | "human-verifying"
+  | "compliance-checking"
+  | "complete";
+type WorkflowStepId = "extract" | "review" | "compliance";
+type WorkflowStep = {
+  id: WorkflowStepId;
+  headline: string;
+};
+type WorkflowSnapshot = {
+  phase: Phase;
+  currentStep: number;
+  extractedIds: string[];
+  verifiedIds: string[];
+  correctedIds: string[];
+  currentVerifyIndex: number;
+};
 
 type ExtractionZone = {
   id: string;
@@ -76,8 +94,76 @@ const EXTRACTION_ZONES: ExtractionZone[] = [
   },
 ];
 
+const ALL_ZONE_IDS = EXTRACTION_ZONES.map((zone) => zone.id);
+const VERIFIED_ZONE_IDS = EXTRACTION_ZONES.filter((zone) => zone.aiCorrect).map((zone) => zone.id);
+const CORRECTED_ZONE_IDS = EXTRACTION_ZONES.filter((zone) => !zone.aiCorrect).map((zone) => zone.id);
+
+const WORKFLOW_STEPS: WorkflowStep[] = [
+  {
+    id: "extract" as const,
+    headline: "AI extracts the COI fields",
+  },
+  {
+    id: "review" as const,
+    headline: "Experts review the extracted data",
+  },
+  {
+    id: "compliance" as const,
+    headline: "Compliance gets checked",
+  },
+];
+
 function addUniqueId(previous: string[], id: string) {
   return previous.includes(id) ? previous : [...previous, id];
+}
+
+function getNarrativeStepFromPhase(phase: Phase): WorkflowStepId {
+  switch (phase) {
+    case "idle":
+    case "ai-extracting":
+      return "extract";
+    case "human-verifying":
+      return "review";
+    case "compliance-checking":
+    case "complete":
+      return "compliance";
+  }
+}
+
+function getWorkflowStep(stepId: WorkflowStepId) {
+  return WORKFLOW_STEPS.find((step) => step.id === stepId) ?? WORKFLOW_STEPS[0];
+}
+
+function getWorkflowSnapshot(stepId: WorkflowStepId): WorkflowSnapshot {
+  switch (stepId) {
+    case "extract":
+      return {
+        phase: "ai-extracting",
+        currentStep: EXTRACTION_ZONES.length,
+        extractedIds: ALL_ZONE_IDS,
+        verifiedIds: [],
+        correctedIds: [],
+        currentVerifyIndex: -1,
+      };
+    case "review":
+      return {
+        phase: "human-verifying",
+        currentStep: EXTRACTION_ZONES.length,
+        extractedIds: ALL_ZONE_IDS,
+        verifiedIds: VERIFIED_ZONE_IDS,
+        correctedIds: CORRECTED_ZONE_IDS,
+        currentVerifyIndex: -1,
+      };
+    case "compliance":
+      return {
+        phase: "complete",
+        currentStep: EXTRACTION_ZONES.length,
+        extractedIds: ALL_ZONE_IDS,
+        verifiedIds: VERIFIED_ZONE_IDS,
+        correctedIds: CORRECTED_ZONE_IDS,
+        currentVerifyIndex: -1,
+      };
+  }
 }
 
 export default function CoiAnalysisShowcase() {
@@ -98,6 +184,21 @@ export default function CoiAnalysisShowcase() {
   function clearTimers() {
     timers.current.forEach((id) => window.clearTimeout(id));
     timers.current = [];
+  }
+
+  function applyWorkflowSnapshot(stepId: WorkflowStepId) {
+    clearTimers();
+
+    const snapshot = getWorkflowSnapshot(stepId);
+
+    setPhase(snapshot.phase);
+    setCurrentStep(snapshot.currentStep);
+    setExtractedIds(snapshot.extractedIds);
+    setVerifiedIds(snapshot.verifiedIds);
+    setCorrectedIds(snapshot.correctedIds);
+    setCurrentVerifyIndex(snapshot.currentVerifyIndex);
+    setHoveredZoneId(null);
+    setShowCorrectionPopup(false);
   }
 
   function resetExtraction() {
@@ -136,11 +237,17 @@ export default function CoiAnalysisShowcase() {
           return;
         }
 
-        const complete = window.setTimeout(() => {
-          setPhase("complete");
+        const beginComplianceCheck = window.setTimeout(() => {
           setCurrentVerifyIndex(-1);
-        }, 400);
-        timers.current.push(complete);
+          setPhase("compliance-checking");
+
+          const complete = window.setTimeout(() => {
+            setPhase("complete");
+          }, 800);
+
+          timers.current.push(complete);
+        }, 350);
+        timers.current.push(beginComplianceCheck);
       }, verifyDelay);
 
       timers.current.push(verify);
@@ -184,8 +291,13 @@ export default function CoiAnalysisShowcase() {
     return () => clearTimers();
   }, []);
 
-  const isAiComplete = currentStep >= EXTRACTION_ZONES.length;
   const isFullyComplete = phase === "complete";
+  const correctionCount = correctedIds.length;
+  const activeWorkflowStepId = getNarrativeStepFromPhase(phase);
+  const activeWorkflowStep = getWorkflowStep(activeWorkflowStepId);
+  const activeWorkflowIndex = WORKFLOW_STEPS.findIndex((step) => step.id === activeWorkflowStepId);
+  const canInspectExtractionDetails =
+    phase === "complete" || (phase === "human-verifying" && currentVerifyIndex === -1);
 
   const handleZoneHover = (zoneId: string | null) => {
     setHoveredZoneId(zoneId);
@@ -194,6 +306,16 @@ export default function CoiAnalysisShowcase() {
       return;
     }
     setShowCorrectionPopup(false);
+  };
+
+  const handleWorkflowStepChange = (direction: "previous" | "next") => {
+    const nextIndex = direction === "previous" ? activeWorkflowIndex - 1 : activeWorkflowIndex + 1;
+
+    if (nextIndex < 0 || nextIndex >= WORKFLOW_STEPS.length) {
+      return;
+    }
+
+    applyWorkflowSnapshot(WORKFLOW_STEPS[nextIndex].id);
   };
 
   return (
@@ -314,10 +436,10 @@ export default function CoiAnalysisShowcase() {
                           border: `2px solid ${borderColor}`,
                           background: bgColor,
                           borderRadius: "3px",
-                          cursor: phase === "complete" ? "pointer" : "default",
-                          pointerEvents: phase === "complete" ? "auto" : "none",
+                          cursor: canInspectExtractionDetails ? "pointer" : "default",
+                          pointerEvents: canInspectExtractionDetails ? "auto" : "none",
                         }}
-                        onMouseEnter={() => phase === "complete" && handleZoneHover(zone.id)}
+                        onMouseEnter={() => canInspectExtractionDetails && handleZoneHover(zone.id)}
                         onMouseLeave={() => handleZoneHover(null)}
                       />
                     );
@@ -349,8 +471,8 @@ export default function CoiAnalysisShowcase() {
                         </p>
                         <p className="text-[10px] leading-relaxed text-muted-foreground">
                           AI extracted{" "}
-                          <span className="font-mono text-amber-600 dark:text-amber-400">$1,500,000</span> - but
-                          that wasn&apos;t right. Our expert team reviews every extraction.
+                          <span className="font-mono text-amber-600 dark:text-amber-400">$1,500,000</span> — but
+                          our expert team caught it. Nothing ever goes unnoticed.
                         </p>
                       </div>
                     </div>
@@ -449,42 +571,53 @@ export default function CoiAnalysisShowcase() {
             )}
 
             {activeView === "extraction" && (
-              <div className="flex flex-1 flex-col space-y-4">
-                <div className="flex items-center gap-2">
-                  <div
-                    className={`flex h-6 items-center gap-1.5 rounded border px-2 text-[11px] font-medium transition-colors ${
-                      phase === "ai-extracting"
-                        ? "border-blue-500/20 bg-blue-500/15 text-blue-400"
-                        : isAiComplete
-                          ? "border-border bg-secondary/80 text-muted-foreground"
-                          : "border-border/50 bg-secondary/50 text-muted-foreground/50"
-                    }`}
-                  >
-                    <Sparkles className="h-3 w-3" />
-                    AI
-                    {isAiComplete && <Check className="ml-0.5 h-2.5 w-2.5 text-emerald-500" />}
+              <div className="mt-8 flex flex-1 flex-col">
+                <div className="space-y-5">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-sm font-bold tracking-[0.22em] text-primary tabular-nums">
+                      {String(activeWorkflowIndex + 1).padStart(2, "0")}/
+                      {String(WORKFLOW_STEPS.length).padStart(2, "0")}
+                    </span>
+                    <div className="flex items-center gap-2.5">
+                      <button
+                        type="button"
+                        onClick={() => handleWorkflowStepChange("previous")}
+                        disabled={activeWorkflowIndex === 0}
+                        aria-label="Previous extraction step"
+                        className="group flex h-10 w-10 items-center justify-center rounded-full border border-border/40 transition-all duration-200 hover:border-primary/50 hover:bg-primary/10 disabled:cursor-default disabled:opacity-35 disabled:hover:border-border/40 disabled:hover:bg-transparent"
+                      >
+                        <ArrowLeft className="h-4.5 w-4.5 text-muted-foreground transition-colors duration-200 group-hover:text-primary" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleWorkflowStepChange("next")}
+                        disabled={activeWorkflowIndex === WORKFLOW_STEPS.length - 1}
+                        aria-label="Next extraction step"
+                        className="group flex h-10 w-10 items-center justify-center rounded-full border border-border/40 transition-all duration-200 hover:border-primary/50 hover:bg-primary/10 disabled:cursor-default disabled:opacity-35 disabled:hover:border-border/40 disabled:hover:bg-transparent"
+                      >
+                        <ArrowRight className="h-4.5 w-4.5 text-muted-foreground transition-colors duration-200 group-hover:text-primary" />
+                      </button>
+                    </div>
                   </div>
 
-                  <div className="h-px w-3 bg-border" />
-
-                  <div
-                    className={`flex h-6 items-center gap-1.5 rounded border px-2 text-[11px] font-medium transition-colors ${
-                      phase === "human-verifying"
-                        ? "border-emerald-500/20 bg-emerald-500/15 text-emerald-400"
-                        : phase === "complete"
-                          ? "border-border bg-secondary/80 text-muted-foreground"
-                          : "border-border/50 bg-secondary/50 text-muted-foreground/50"
-                    }`}
-                  >
-                    <User className="h-3 w-3" />
-                    Human
-                    {phase === "complete" && (
-                      <Check className="ml-0.5 h-2.5 w-2.5 text-emerald-500" />
-                    )}
+                  <div className="relative min-h-[4.8rem] overflow-hidden">
+                    <AnimatePresence mode="wait" initial={false}>
+                      <motion.div
+                        key={activeWorkflowStep.id}
+                        initial={{ opacity: 0, x: 28 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -40 }}
+                        transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+                      >
+                        <h3 className="mb-3 text-4xl font-bold leading-[0.94] tracking-[-0.05em] text-foreground">
+                          {activeWorkflowStep.headline}
+                        </h3>
+                      </motion.div>
+                    </AnimatePresence>
                   </div>
                 </div>
 
-                <div className="flex-1 space-y-3">
+                <div className="mt-8 flex-1 space-y-2">
                   {EXTRACTION_ZONES.map((zone, index) => {
                     const isExtracted = extractedIds.includes(zone.id);
                     const isVerifying = currentVerifyIndex === index && phase === "human-verifying";
@@ -497,7 +630,9 @@ export default function CoiAnalysisShowcase() {
                     return (
                       <div
                         key={zone.id}
-                        className={`cursor-pointer rounded-lg border p-4 transition-all duration-200 ${
+                        className={`rounded-lg border p-3 transition-all duration-200 ${
+                          canInspectExtractionDetails ? "cursor-pointer " : ""
+                        }${
                           isHovered
                             ? "border-foreground/40 bg-foreground/5"
                             : isVerifying
@@ -508,7 +643,7 @@ export default function CoiAnalysisShowcase() {
                                   ? "border-emerald-500/20 bg-card"
                                   : "border-blue-500/20 bg-blue-500/5"
                         }`}
-                        onMouseEnter={() => phase === "complete" && handleZoneHover(zone.id)}
+                        onMouseEnter={() => canInspectExtractionDetails && handleZoneHover(zone.id)}
                         onMouseLeave={() => handleZoneHover(null)}
                       >
                         <div className="flex items-start justify-between">
@@ -556,24 +691,28 @@ export default function CoiAnalysisShowcase() {
                 </div>
 
                 {isFullyComplete && (
-                  <div className="mt-auto border-t border-border pt-4">
-                    <div className="rounded-lg border border-border bg-card p-4">
-                      <div className="mb-3 flex items-center justify-between">
+                  <div className="mt-auto border-t border-border pt-2.5">
+                    <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3">
+                      <div className="mb-2 flex items-center justify-between">
                         <div>
-                          <p className="mb-1 text-xs text-muted-foreground">Compliance Score</p>
-                          <p className="text-sm font-medium text-foreground">
-                            All requirements met
+                          <p className="mb-1 text-xs uppercase tracking-[0.22em] text-emerald-500">
+                            Compliance Check Complete
                           </p>
+                          <p className="text-sm font-medium text-foreground">All requirements met</p>
                         </div>
-                        <span className="text-3xl font-semibold text-emerald-500">98%</span>
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full border border-emerald-500/20 bg-emerald-500/12">
+                          <Check className="h-5 w-5 text-emerald-500" />
+                        </div>
                       </div>
                       <p className="text-xs text-muted-foreground">
-                        1 field corrected by human review
+                        {correctionCount > 0
+                          ? `${correctionCount} field${correctionCount === 1 ? "" : "s"} corrected during expert review before approval.`
+                          : "The extracted coverage matched the requirements without needing corrections."}
                       </p>
                     </div>
-                    <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-                      AI extracts the data. Humans verify it. Your coverage is never approved
-                      without expert review.
+                    <p className="mt-2.5 text-sm leading-relaxed text-muted-foreground">
+                      AI extracts the data, experts verify it, and compliance is checked before
+                      the certificate is ever approved.
                     </p>
                   </div>
                 )}

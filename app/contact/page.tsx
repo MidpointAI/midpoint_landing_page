@@ -156,42 +156,62 @@ export default function ContactPage() {
 
   if (status === "success") {
     return (
-      <>
+      <div className="flex min-h-screen flex-col">
         <Navbar />
-        <main className="min-h-screen bg-background text-foreground">
-          <div className="min-h-[60vh] flex items-center justify-center px-6">
+        <main className="flex flex-1 items-center justify-center px-6 relative overflow-hidden">
+          {/* Interactive Grid Background */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1.4, ease: "easeOut" }}
+            className="absolute inset-0"
+          >
+            <Boxes />
+            <div className="absolute inset-0 w-full h-full bg-background z-[1] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_50%,transparent_40%,black_80%)] pointer-events-none" />
+          </motion.div>
+
+          {/* Gradient overlays */}
+          <div className="absolute inset-0 z-[4] bg-gradient-to-b from-background/30 via-transparent to-background/60 pointer-events-none" />
+
+          {/* Background shadow behind text */}
+          <div
+            className="absolute inset-0 z-[5] pointer-events-none"
+            style={{
+              background: "radial-gradient(ellipse 35% 25% at 50% 50%, var(--background) 0%, var(--background) 50%, transparent 100%)",
+            }}
+          />
+
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            className="text-center max-w-md relative z-10"
+          >
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5 }}
-              className="text-center max-w-md"
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring", stiffness: 200, delay: 0.1 }}
+              className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground"
             >
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: "spring", stiffness: 200, delay: 0.1 }}
-                className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground"
-              >
-                <Check className="h-8 w-8" />
-              </motion.div>
-              <h2 className="text-2xl font-semibold tracking-tight">
-                Message sent
-              </h2>
-              <p className="mt-3 text-muted-foreground">
-                Thanks for reaching out. Our team will review your message and respond within 24 hours on business days.
-              </p>
-              <Button
-                variant="outline"
-                onClick={() => setStatus("idle")}
-                className="mt-8"
-              >
-                Send another message
-              </Button>
+              <Check className="h-8 w-8" />
             </motion.div>
-          </div>
+            <h2 className="text-2xl font-semibold tracking-tight">
+              Message sent
+            </h2>
+            <p className="mt-3 text-muted-foreground">
+              Thanks for reaching out. Our team will review your message and respond within 24 hours on business days.
+            </p>
+            <Button
+              variant="outline"
+              onClick={() => setStatus("idle")}
+              className="mt-8"
+            >
+              Send another message
+            </Button>
+          </motion.div>
         </main>
         <Footer />
-      </>
+      </div>
     )
   }
 
