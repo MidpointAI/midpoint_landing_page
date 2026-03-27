@@ -14,6 +14,7 @@ import { createElement } from "react";
 export type DocPage =
   | "overview"
   | "what-is-midpoint"
+  | "proper-risk-transfer"
   | "downloads"
   | "faq"
   | "general-liability"

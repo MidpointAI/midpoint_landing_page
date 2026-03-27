@@ -8,6 +8,7 @@ import {
   HelpCircle,
   ArrowUpRight,
   Sparkles,
+  ShieldCheck,
 } from "lucide-react";
 import { glossaryTerms, type DocPage } from "./resources-data";
 
@@ -50,6 +51,14 @@ export function ResourcesSidebar({
           label="What is Midpoint?"
           isActive={activePage === "what-is-midpoint"}
           onClick={() => handleNavigate("what-is-midpoint")}
+        />
+
+        {/* Proper Risk Transfer */}
+        <NavItem
+          icon={<ShieldCheck className="w-4 h-4" />}
+          label="Proper Risk Transfer"
+          isActive={activePage === "proper-risk-transfer"}
+          onClick={() => handleNavigate("proper-risk-transfer")}
         />
 
         {/* Insurance Terms collapsible */}

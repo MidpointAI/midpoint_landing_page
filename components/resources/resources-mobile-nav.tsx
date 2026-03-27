@@ -11,6 +11,7 @@ interface ResourcesMobileNavProps {
 const navItems: { id: DocPage; label: string }[] = [
   { id: "overview", label: "Overview" },
   { id: "what-is-midpoint", label: "What is Midpoint?" },
+  { id: "proper-risk-transfer", label: "Proper Risk Transfer" },
   ...glossaryTerms.map((t) => ({ id: t.id, label: t.tab })),
   { id: "downloads", label: "Downloads" },
   { id: "faq", label: "FAQ" },
