@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useRef, useEffect, createElement } from "react";
+import { useTheme } from "next-themes";
 import {
   ArrowLeft,
   ArrowRight,
@@ -240,6 +241,20 @@ function WhatIsMidpointPage() {
    ───────────────────────────────────────────── */
 function ProperRiskTransferPage() {
   const [copied, setCopied] = useState(false);
+  const { resolvedTheme } = useTheme();
+
+  const handleDownloadPDF = () => {
+    const href =
+      resolvedTheme === "dark"
+        ? "/proper-risk-transfer-dark.pdf"
+        : "/proper-risk-transfer-light.pdf";
+    const a = document.createElement("a");
+    a.href = href;
+    a.download = "Proper Risk Transfer – Midpoint.pdf";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
 
   const handleCopyLink = async () => {
     const url = `${window.location.origin}/resources/proper-risk-transfer`;
@@ -285,14 +300,13 @@ function ProperRiskTransferPage() {
 
       {/* Action bar */}
       <div className="flex items-center gap-3 mt-6 mb-8 flex-wrap">
-        <a
-          href="/proper-risk-transfer.pdf"
-          download="Proper Risk Transfer – Midpoint.pdf"
+        <button
+          onClick={handleDownloadPDF}
           className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity cursor-pointer"
         >
           <Download className="w-4 h-4" />
           Download PDF
-        </a>
+        </button>
         <button
           onClick={handleShare}
           className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium border border-border/40 text-foreground/80 hover:border-primary/40 hover:text-primary transition-all cursor-pointer"
