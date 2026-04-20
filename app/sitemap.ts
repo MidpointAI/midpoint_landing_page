@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://usemidpoint.com";
+  const baseUrl = "https://midpointverified.com";
 
   // Static pages
   const staticPages = [

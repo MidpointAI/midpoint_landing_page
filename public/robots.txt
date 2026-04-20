@@ -1,12 +1,12 @@
 
 # Midpoint - AI-Powered Insurance Compliance
-# https://usemidpoint.com
+# https://midpointverified.com
 
 User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://usemidpoint.com/sitemap.xml
+Sitemap: https://midpointverified.com/sitemap.xml
 
 # Crawl-delay for respectful crawling
 Crawl-delay: 1

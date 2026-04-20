@@ -36,14 +36,14 @@ export const metadata: Metadata = {
   authors: [{ name: "Midpoint" }],
   creator: "Midpoint",
   publisher: "Midpoint",
-  metadataBase: new URL("https://usemidpoint.com"),
+  metadataBase: new URL("https://midpointverified.com"),
   alternates: {
     canonical: "/",
   },
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://usemidpoint.com",
+    url: "https://midpointverified.com",
     siteName: "Midpoint",
     title: "Midpoint - AI-Powered Insurance Compliance for Builders",
     description:
