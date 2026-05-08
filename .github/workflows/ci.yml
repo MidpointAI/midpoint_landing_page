@@ -1,0 +1,114 @@
+name: CI & Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Lint & Type Check
+  # ---------------------------------------------------------------------------
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - name: TypeScript type check
+        run: npx tsc --noEmit
+      - name: Lint
+        run: npm run lint
+
+  # ---------------------------------------------------------------------------
+  # Deploy (main only, after checks pass)
+  # ---------------------------------------------------------------------------
+  deploy:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: [lint]
+    runs-on: ubuntu-latest
+    concurrency:
+      group: deploy-landing
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      id-token: write
+
+    env:
+      REGISTRY: us-central1-docker.pkg.dev
+      IMAGE_REPO: us-central1-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/midpoint-landing/web
+      CLOUD_RUN_SERVICE: midpoint-landing
+      CLOUD_RUN_REGION: us-central1
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - id: auth
+      uses: google-github-actions/auth@v2
+      with:
+        workload_identity_provider: ${{ vars.WIF_PROVIDER }}
+        service_account: ${{ vars.WIF_SERVICE_ACCOUNT }}
+
+    - uses: google-github-actions/setup-gcloud@v2
+
+    - name: Configure Docker for Artifact Registry
+      run: gcloud auth configure-docker us-central1-docker.pkg.dev
+
+    - name: Build and push
+      run: |
+        IMAGE=${{ env.IMAGE_REPO }}:${{ github.sha }}
+        docker build \
+          --build-arg NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}" \
+          --build-arg NEXT_PUBLIC_EMAILJS_SERVICE_ID="${{ secrets.NEXT_PUBLIC_EMAILJS_SERVICE_ID }}" \
+          --build-arg NEXT_PUBLIC_EMAILJS_TEMPLATE_ID="${{ secrets.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID }}" \
+          --build-arg NEXT_PUBLIC_EMAILJS_PUBLIC_KEY="${{ secrets.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY }}" \
+          -t $IMAGE .
+        docker push $IMAGE
+
+    - name: Deploy to Cloud Run
+      run: |
+        gcloud run services update ${{ env.CLOUD_RUN_SERVICE }} \
+          --image=${{ env.IMAGE_REPO }}:${{ github.sha }} \
+          --region=${{ env.CLOUD_RUN_REGION }} \
+          --project=${{ vars.GCP_PROJECT_ID }}
+
+  # ---------------------------------------------------------------------------
+  # Slack notification on failure
+  # ---------------------------------------------------------------------------
+  notify-failure:
+    if: failure() && github.ref == 'refs/heads/main'
+    needs: [lint, deploy]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Slack on failure
+        run: |
+          curl -sf -X POST "$SLACK_WEBHOOK_URL" \
+            -H 'Content-Type: application/json' \
+            -d '{
+              "text": "Landing Page CI/Deploy Failed",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Landing Page CI/Deploy Failed*\n*Repository:* ${{ github.repository }}\n*Branch:* ${{ github.ref_name }}\n*Commit:* <${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}|${{ github.sha }}>"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Full Log>"
+                  }
+                }
+              ]
+            }'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
