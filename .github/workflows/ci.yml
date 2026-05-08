@@ -24,9 +24,8 @@ jobs:
       - run: npm ci
       - name: TypeScript type check
         run: npx tsc --noEmit
-      # TODO: re-enable lint once pre-existing warnings are fixed
-      # - name: Lint
-      #   run: npm run lint
+      - name: Lint
+        run: npx next lint --max-warnings 999
 
   # ---------------------------------------------------------------------------
   # Deploy (main only, after checks pass)
