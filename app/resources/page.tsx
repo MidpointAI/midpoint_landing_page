@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import { ResourcesHero } from "@/components/resources/resources-hero";
 import {
@@ -21,9 +20,6 @@ export default function ResourcesPage() {
 
   return (
     <div className="min-h-svh bg-background text-foreground">
-      {/* Navbar */}
-      <Navbar />
-
       {/* Hero Section */}
       <ResourcesHero />
 

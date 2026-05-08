@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
-import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import {
   ShieldCheck,
@@ -62,8 +61,6 @@ export function ProperRiskTransferContent() {
 
   return (
     <div className="min-h-svh bg-background text-foreground">
-      <Navbar />
-
       <section className="pt-32 pb-24 px-6">
         <div className="max-w-3xl mx-auto">
           <div>

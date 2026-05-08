@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 
+const PROJECT_VALUE_LABELS: Record<string, string> = {
+  under750k: "Under $750K",
+  "750k-2m": "$750K – $2M",
+  "2m-5m": "$2M – $5M",
+  "5mplus": "$5M+",
+};
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -10,15 +17,16 @@ export async function POST(request: NextRequest) {
       companyName,
       activeSubs,
       activeProjects,
+      projectValueRange,
+      phone,
+      address,
+      city,
+      state,
+      zip,
     } = body;
 
     const subs = Number.parseInt(activeSubs, 10) || 0;
-    const projects = Number.parseInt(activeProjects, 10) || 0;
-    const loadFactor = 1 + projects * 0.05;
-    const calculatedAmount = Math.max(6000, 100 * subs * loadFactor);
-    const amountInCents = Math.round(calculatedAmount * 100);
 
-    // Validate required fields
     if (!customerEmail || !customerName || !companyName || subs <= 0) {
       return NextResponse.json(
         { error: "Missing or invalid checkout fields." },
@@ -26,19 +34,41 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Determine tier based on number of subs
+    let calculatedAmount: number;
+    if (subs <= 25) calculatedAmount = 6000;
+    else if (subs <= 100) calculatedAmount = subs * 125;
+    else calculatedAmount = subs * 150;
+    const amountInCents = Math.round(calculatedAmount * 100);
+
     let tierName = "Essential";
     let tierSubtitle = "UP TO 25 ACTIVE SUBS";
-
-    if (subs > 75) {
+    if (subs > 100) {
       tierName = "Premier";
-      tierSubtitle = "100+ SUBS";
+      tierSubtitle = "100+ ACTIVE SUBS";
     } else if (subs > 25) {
       tierName = "Professional";
-      tierSubtitle = "25-75 TRADES/SUBS";
+      tierSubtitle = "26-100 ACTIVE SUBS";
     }
 
-    // Create Checkout Session with custom ui_mode for embedded Payment Element
+    const projectValueLabel =
+      (projectValueRange && PROJECT_VALUE_LABELS[projectValueRange]) || "—";
+
+    const metadata: Record<string, string> = {
+      customerName,
+      companyName,
+      activeSubs: String(activeSubs ?? ""),
+      activeProjects: String(activeProjects ?? ""),
+      projectValueRange: projectValueRange ?? "",
+      projectValueLabel,
+      tierName,
+      annualPrice: calculatedAmount.toFixed(2),
+    };
+    if (phone) metadata.phone = String(phone);
+    if (address) metadata.address = String(address);
+    if (city) metadata.city = String(city);
+    if (state) metadata.state = String(state);
+    if (zip) metadata.zip = String(zip);
+
     const session = await stripe.checkout.sessions.create({
       ui_mode: "custom",
       mode: "payment",
@@ -49,21 +79,14 @@ export async function POST(request: NextRequest) {
             currency: "usd",
             product_data: {
               name: `Midpoint ${tierName} Plan - Annual Subscription`,
-              description: `${tierSubtitle} | ${activeSubs} Active Subcontractors | ${activeProjects} Active Projects`,
+              description: `${tierSubtitle} | ${activeSubs} Active Subs | ${activeProjects || 0} Active Projects | Avg Project Size: ${projectValueLabel}`,
             },
             unit_amount: amountInCents,
           },
           quantity: 1,
         },
       ],
-      metadata: {
-        customerName,
-        companyName,
-        activeSubs,
-        activeProjects,
-        tierName,
-        annualPrice: calculatedAmount.toFixed(2),
-      },
+      metadata,
       return_url: `${request.headers.get("origin")}/signup/success?session_id={CHECKOUT_SESSION_ID}`,
     });
 

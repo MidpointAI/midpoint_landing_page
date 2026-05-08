@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Navbar from "@/components/navbar";
 import { Copy, Check } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
@@ -50,7 +49,6 @@ function CopyableFormula() {
 export default function HowPricingWorksPage() {
   return (
     <>
-      <Navbar />
       <main className="pt-[72px] min-h-screen bg-background">
         <div className="max-w-3xl mx-auto px-6">
           {/* Hero */}

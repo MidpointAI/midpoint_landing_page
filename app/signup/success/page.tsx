@@ -4,7 +4,6 @@ import { useEffect, useState, Suspense, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import confetti from "canvas-confetti";
-import Navbar from "@/components/navbar";
 import {
   Check,
   Loader2,
@@ -104,49 +103,43 @@ function SuccessContent() {
 
   if (loading) {
     return (
-      <>
-        <Navbar />
-        <div className="pt-[72px] min-h-screen bg-background flex items-center justify-center">
-          <div className="flex flex-col items-center gap-4">
-            <Loader2 className="w-8 h-8 animate-spin text-primary" />
-            <p className="text-muted-foreground text-sm">Loading payment details...</p>
-          </div>
+      <div className="pt-[72px] min-h-screen bg-background flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          <p className="text-muted-foreground text-sm">Loading payment details...</p>
         </div>
-      </>
+      </div>
     );
   }
 
   if (error || !sessionData) {
     return (
-      <>
-        <Navbar />
-        <div className="pt-[72px] min-h-screen bg-background flex items-center justify-center px-6">
-          <div className="max-w-md w-full">
-            <div className="flex items-center gap-5">
-              <div className="flex-shrink-0 flex items-center justify-center w-12 h-12 rounded-full bg-red-500/10">
-                <AlertCircle className="w-6 h-6 text-red-500" />
-              </div>
-              <div className="flex-1">
-                <h1 className="text-xl font-semibold text-foreground mb-1">
-                  Something went wrong
-                </h1>
-                <p className="text-muted-foreground text-sm">
-                  {error || "Unable to load payment details."}
-                </p>
-              </div>
+      <div className="pt-[72px] min-h-screen bg-background flex items-center justify-center px-6">
+        <div className="max-w-md w-full">
+          <div className="flex items-center gap-5">
+            <div className="flex-shrink-0 flex items-center justify-center w-12 h-12 rounded-full bg-red-500/10">
+              <AlertCircle className="w-6 h-6 text-red-500" />
             </div>
-            <div className="mt-6 pl-[68px]">
-              <Link
-                href="/"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                Return Home
-              </Link>
+            <div className="flex-1">
+              <h1 className="text-xl font-semibold text-foreground mb-1">
+                Something went wrong
+              </h1>
+              <p className="text-muted-foreground text-sm">
+                {error || "Unable to load payment details."}
+              </p>
             </div>
           </div>
+          <div className="mt-6 pl-[68px]">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Return Home
+            </Link>
+          </div>
         </div>
-      </>
+      </div>
     );
   }
 
@@ -154,9 +147,7 @@ function SuccessContent() {
   const isPaymentSuccessful = payment_status === "paid";
 
   return (
-    <>
-      <Navbar />
-      <main className="pt-[72px] min-h-screen bg-background">
+    <main className="pt-[72px] min-h-screen bg-background">
         <div className="max-w-3xl mx-auto px-6">
           {/* Hero Section - Properly Centered */}
           <section className="py-12 lg:py-14 border-b border-border">
@@ -275,7 +266,6 @@ function SuccessContent() {
           </section>
         </div>
       </main>
-    </>
   );
 }
 
@@ -283,12 +273,9 @@ export default function SuccessPage() {
   return (
     <Suspense
       fallback={
-        <>
-          <Navbar />
-          <div className="pt-[72px] min-h-screen bg-background flex items-center justify-center">
-            <Loader2 className="w-8 h-8 animate-spin text-primary" />
-          </div>
-        </>
+        <div className="pt-[72px] min-h-screen bg-background flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        </div>
       }
     >
       <SuccessContent />

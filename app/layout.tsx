@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
-import { DM_Mono, DM_Sans, Geist } from "next/font/google";
+import { DM_Mono, DM_Sans, Figtree, Geist } from "next/font/google";
 import { Providers } from "@/components/providers";
+import SiteChrome from "@/components/v2/site-chrome";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
@@ -17,6 +18,13 @@ const dmMono = DM_Mono({
   variable: "--font-dm-mono",
   subsets: ["latin"],
   weight: ["400", "500"],
+  display: "swap",
+});
+
+const figtree = Figtree({
+  variable: "--font-display",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800", "900"],
   display: "swap",
 });
 
@@ -92,9 +100,11 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={cn("font-sans", geist.variable)}>
       <body
-        className={`${dmSans.variable} ${dmMono.variable} bg-background font-sans text-foreground antialiased`}
+        className={`${dmSans.variable} ${dmMono.variable} ${figtree.variable} bg-background font-sans text-foreground antialiased`}
       >
-        <Providers>{children}</Providers>
+        <Providers>
+          <SiteChrome>{children}</SiteChrome>
+        </Providers>
       </body>
     </html>
   );

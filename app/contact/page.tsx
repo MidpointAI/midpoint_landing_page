@@ -13,7 +13,6 @@ import {
 import { ChevronDown } from "lucide-react"
 import { SlideToVerify } from "@/components/contact/slide-to-verify"
 import { Boxes } from "@/components/ui/background-boxes"
-import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -157,7 +156,6 @@ export default function ContactPage() {
   if (status === "success") {
     return (
       <div className="flex min-h-screen flex-col">
-        <Navbar />
         <main className="flex flex-1 items-center justify-center px-6 relative overflow-hidden">
           {/* Interactive Grid Background */}
           <motion.div
@@ -217,7 +215,6 @@ export default function ContactPage() {
 
   return (
     <>
-      <Navbar />
       <main className="min-h-screen bg-background text-foreground">
         {/* Hero */}
         <section className="min-h-svh flex flex-col items-center justify-center relative px-6 overflow-hidden">
