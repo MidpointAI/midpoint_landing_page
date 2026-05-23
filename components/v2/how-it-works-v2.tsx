@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState, createElement } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useCallback, useEffect, useRef, useState, createElement } from "react";
+import { motion, AnimatePresence, useInView, useScroll, useTransform } from "framer-motion";
 import {
   ClipboardListIcon,
   MailIcon,
@@ -61,6 +61,17 @@ export default function HowItWorksV2() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [, setProgress] = useState(0);
+  const sectionRef = useRef<HTMLElement>(null);
+  const isInView = useInView(sectionRef, { once: true, amount: 0.2 });
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+
+  // Parallax layers
+  const headerY = useTransform(scrollYProgress, [0, 1], [60, -40]);
+  const contentY = useTransform(scrollYProgress, [0, 1], [40, -20]);
 
   const advance = useCallback(() => {
     setActiveIndex((prev) => (prev + 1) % steps.length);
@@ -91,25 +102,58 @@ export default function HowItWorksV2() {
   };
 
   return (
-    <section id="how-it-works" className="w-full bg-zinc-950 py-24 overflow-hidden scroll-mt-24">
+    <section ref={sectionRef} id="how-it-works" className="w-full bg-white dark:bg-zinc-950 py-24 overflow-hidden scroll-mt-24 md:flex-1">
       <div className="max-w-7xl mx-auto px-6 pb-[80px]">
-        <div className="text-center mb-16 max-w-3xl mx-auto">
-          <p className="text-zinc-500 text-xs tracking-[0.2em] uppercase mb-4">
+        <motion.div
+          className="text-center mb-16 max-w-3xl mx-auto"
+          style={{ y: headerY }}
+        >
+          <motion.p
+            className="text-zinc-400 dark:text-zinc-500 text-xs tracking-[0.2em] uppercase mb-4"
+            initial={{ opacity: 0, y: 20, filter: "blur(4px)" }}
+            animate={isInView ? { opacity: 1, y: 0, filter: "blur(0px)" } : { opacity: 0, y: 20, filter: "blur(4px)" }}
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          >
             Beyond COI checks
-          </p>
-          <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight mb-5">
-            We Don&apos;t Just Store Documents —
-            <br />
-            We <span className="text-lime-400">Verify</span> Them
+          </motion.p>
+
+          {/* Heading with clip-mask reveal */}
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-5">
+            <span className="text-reveal-line text-zinc-900 dark:text-white">
+              <motion.span
+                className="block"
+                initial={{ y: "110%" }}
+                animate={isInView ? { y: "0%" } : { y: "110%" }}
+                transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+              >
+                We Don&apos;t Just Store Documents —
+              </motion.span>
+            </span>
+            <span className="text-reveal-line">
+              <motion.span
+                className="block text-zinc-900 dark:text-white"
+                initial={{ y: "110%" }}
+                animate={isInView ? { y: "0%" } : { y: "110%" }}
+                transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+              >
+                We <span className="text-lime-600 dark:text-lime-400">Verify</span> Them
+              </motion.span>
+            </span>
           </h2>
-          <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
+
+          <motion.p
+            className="text-zinc-500 dark:text-zinc-400 text-base md:text-lg leading-relaxed"
+            initial={{ opacity: 0, y: 30, filter: "blur(4px)" }}
+            animate={isInView ? { opacity: 1, y: 0, filter: "blur(0px)" } : { opacity: 0, y: 30, filter: "blur(4px)" }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
+          >
             Most General Contractors assume their construction management software,
             accounting platform, or bookkeeper is handling trade partner compliance —
             they&apos;re not. They&apos;re storing documents. Midpoint goes further: we read
             the policy language itself to confirm your trade partners are truly
             compliant, so you&apos;re protected when it matters — not just organized.
-          </p>
-        </div>
+          </motion.p>
+        </motion.div>
 
         <div className="flex md:hidden overflow-x-auto gap-2 mb-8 pb-2 -mx-2 px-2">
           {steps.map((step, i) => (
@@ -119,7 +163,7 @@ export default function HowItWorksV2() {
               className={`flex-shrink-0 px-4 py-2 rounded-full text-xs font-medium transition-colors whitespace-nowrap ${
                 i === activeIndex
                   ? "bg-lime-400 text-zinc-950"
-                  : "bg-zinc-800 text-zinc-400 hover:text-white"
+                  : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
               }`}
             >
               {step.title}
@@ -127,9 +171,15 @@ export default function HowItWorksV2() {
           ))}
         </div>
 
-        <div className="flex flex-col md:flex-row md:gap-16 items-center justify-center gap-[48px]">
+        <motion.div
+          className="flex flex-col md:flex-row md:gap-16 items-center justify-center gap-[48px]"
+          style={{ y: contentY }}
+          initial={{ opacity: 0, y: 50, filter: "blur(8px)" }}
+          animate={isInView ? { opacity: 1, y: 0, filter: "blur(0px)" } : { opacity: 0, y: 50, filter: "blur(8px)" }}
+          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
+        >
           <div className="hidden md:flex flex-col w-[280px] flex-shrink-0 relative">
-            <div className="absolute left-[4px] top-3 bottom-3 w-px bg-zinc-800" />
+            <div className="absolute left-[4px] top-3 bottom-3 w-px bg-zinc-200 dark:bg-zinc-800" />
             {steps.map((step, i) => {
               const isActive = i === activeIndex;
               return (
@@ -143,13 +193,13 @@ export default function HowItWorksV2() {
                       animate={isActive ? { scale: [1, 1.3, 1] } : { scale: 1 }}
                       transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                       className={`h-[9px] w-[9px] rounded-full transition-colors duration-300 ${
-                        isActive ? "bg-lime-400" : "bg-zinc-600 group-hover:bg-zinc-400"
+                        isActive ? "bg-lime-400" : "bg-zinc-300 dark:bg-zinc-600 group-hover:bg-zinc-400"
                       }`}
                     />
                   </div>
                   <span
                     className={`text-sm font-medium transition-colors duration-300 ${
-                      isActive ? "text-white" : "text-zinc-500 group-hover:text-zinc-300"
+                      isActive ? "text-zinc-900 dark:text-white" : "text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-600 dark:group-hover:text-zinc-300"
                     }`}
                   >
                     {step.title}
@@ -163,33 +213,33 @@ export default function HowItWorksV2() {
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeIndex}
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -16, transition: { duration: 0.25, ease: [0.25, 0.1, 0.25, 1] } }}
-                transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+                initial={{ opacity: 0, y: 24, filter: "blur(6px)" }}
+                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                exit={{ opacity: 0, y: -24, filter: "blur(6px)", transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] } }}
+                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                 className="py-2"
               >
                 <div className="flex items-center gap-2.5 mb-4">
                   {createElement(steps[activeIndex].icon, {
-                    className: "h-5 w-5 text-lime-400",
+                    className: "h-5 w-5 text-lime-600 dark:text-lime-400",
                   })}
-                  <p className="text-xs text-zinc-500 font-medium uppercase tracking-wider">
+                  <p className="text-xs text-zinc-400 dark:text-zinc-500 font-medium uppercase tracking-wider">
                     Step {activeIndex + 1}
                   </p>
                 </div>
-                <h3 className="text-2xl text-white font-semibold tracking-tight mb-4">
+                <h3 className="text-2xl text-zinc-900 dark:text-white font-semibold tracking-tight mb-4">
                   {steps[activeIndex].title}
                 </h3>
-                <p className="text-zinc-400 text-base leading-relaxed mb-6 max-w-lg">
+                <p className="text-zinc-500 dark:text-zinc-400 text-base leading-relaxed mb-6 max-w-lg">
                   {steps[activeIndex].description}
                 </p>
-                <p className="text-sm text-lime-400 font-medium">
+                <p className="text-sm text-lime-600 dark:text-lime-400 font-medium">
                   {steps[activeIndex].highlight}
                 </p>
               </motion.div>
             </AnimatePresence>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
