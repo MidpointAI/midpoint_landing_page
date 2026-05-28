@@ -137,9 +137,30 @@ export default function ExpertsVerifyGraphic() {
   const activeY = rowY(activeIndex);
 
   return (
+    <div ref={ref} className="w-full flex justify-center">
+      {/* Mobile (< md): vertical tree */}
+      <MobileTree activeIndex={activeIndex} coverage={coverage} />
+
+      {/* Desktop (md+): horizontal card */}
+      <DesktopCard activeIndex={activeIndex} activeY={activeY} coverage={coverage} />
+    </div>
+  );
+}
+
+/* --------------------------------- DesktopCard ----------------------------- */
+
+function DesktopCard({
+  activeIndex,
+  activeY,
+  coverage,
+}: {
+  activeIndex: number;
+  activeY: number;
+  coverage: Coverage;
+}) {
+  return (
     <div
-      ref={ref}
-      className="relative rounded-xl bg-[#151515] shadow-[0_4px_7.1px_rgba(0,0,0,0.58)] ring-1 ring-white/[0.08]"
+      className="hidden md:block relative rounded-xl bg-[#151515] shadow-[0_4px_7.1px_rgba(0,0,0,0.58)] ring-1 ring-white/[0.08]"
       style={{
         width: CARD_W,
         height: CARD_H,
@@ -234,6 +255,115 @@ export default function ExpertsVerifyGraphic() {
       {/* Inset highlight ring per Figma */}
       <div className="absolute inset-0 pointer-events-none rounded-xl shadow-[inset_0_0_1.9px_rgba(255,255,255,0.25)]" />
     </div>
+  );
+}
+
+/* --------------------------------- MobileTree ------------------------------ */
+/**
+ * Mobile vertical-tree layout. Three stacked sections (Requirements →
+ * Coverages → Details) joined by short animated vertical connectors.
+ * No SVG needed — vertical lines are 1px CSS divs.
+ */
+function MobileTree({
+  activeIndex,
+  coverage,
+}: {
+  activeIndex: number;
+  coverage: Coverage;
+}) {
+  return (
+    <div
+      className="md:hidden w-full max-w-md rounded-xl bg-[#151515] shadow-[0_4px_7.1px_rgba(0,0,0,0.58)] ring-1 ring-white/[0.08] p-5 flex flex-col items-stretch"
+      style={{ fontFamily: "var(--font-dm-mono), monospace" }}
+    >
+      {/* Requirements label */}
+      <div className="flex items-center justify-center px-4 py-3 rounded-md border border-white/10">
+        <span className="text-[15px] text-white whitespace-nowrap leading-none">
+          Requirements
+        </span>
+      </div>
+
+      {/* Vertical connector */}
+      <Connector key={`top-${activeIndex}`} />
+
+      {/* Coverage list */}
+      <div className="flex flex-col rounded-md border border-white/10 px-4 py-3 gap-2">
+        {COVERAGES.map((c, i) => {
+          const isActive = i === activeIndex;
+          return (
+            <motion.div
+              key={c.name}
+              className="flex items-center gap-3"
+              animate={{
+                color: isActive ? "rgb(255,255,255)" : "rgb(157,157,157)",
+                fontWeight: isActive ? 500 : 400,
+              }}
+              transition={{ duration: 0.3, ease: EASE_TECH }}
+            >
+              <motion.span
+                className="inline-block h-1.5 w-1.5 rounded-full"
+                animate={{
+                  backgroundColor: isActive ? "#c9ff64" : "rgba(157,157,157,0.4)",
+                  scale: isActive ? 1.3 : 1,
+                }}
+                transition={{ duration: 0.3 }}
+              />
+              <span className="text-[15px] whitespace-nowrap leading-none">{c.name}</span>
+            </motion.div>
+          );
+        })}
+      </div>
+
+      {/* Vertical connector */}
+      <Connector key={`bot-${activeIndex}`} />
+
+      {/* Details list — keyed on activeIndex so rows fully replace */}
+      <div
+        key={activeIndex}
+        className="flex flex-col rounded-md border border-white/10 px-4 py-3 gap-2"
+      >
+        {coverage.details.map((d, i) => (
+          <motion.div
+            key={d.label}
+            className={`flex items-center justify-between gap-3 leading-none ${
+              d.missing ? "bg-[#ff4848] -mx-4 px-4 py-2" : ""
+            }`}
+            initial={{ opacity: 0, x: 4 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.22, ease: EASE_TECH, delay: 0.35 + i * 0.05 }}
+          >
+            <span className="text-[13px] text-white leading-tight">{d.label}</span>
+            {d.value && (
+              <span
+                className={`text-[13px] whitespace-nowrap leading-tight ${
+                  d.missing ? "text-white" : "text-[#22c55e]"
+                }`}
+              >
+                {d.value}
+              </span>
+            )}
+            {d.check && (
+              <CheckIcon className="h-4 w-4 text-[#22c55e] flex-shrink-0" strokeWidth={2.5} />
+            )}
+            {d.missing && !d.value && (
+              <span className="text-[13px] text-white whitespace-nowrap leading-tight">Missing</span>
+            )}
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/** A short vertical line that draws itself in. */
+function Connector() {
+  return (
+    <motion.div
+      className="self-center bg-white/40 w-px"
+      initial={{ height: 0, opacity: 0 }}
+      animate={{ height: 24, opacity: 1 }}
+      transition={{ duration: 0.35, ease: EASE_TECH, delay: 0.1 }}
+    />
   );
 }
 

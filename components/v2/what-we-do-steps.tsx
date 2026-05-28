@@ -134,7 +134,7 @@ const StepItem = forwardRef<HTMLDivElement, { step: StepDef; isActive: boolean }
             <div className="flex flex-col gap-4 items-center text-center max-w-5xl">
               <StepPill step={step.step} isActive={isActive} />
               <h3
-                className="text-2xl md:text-[36px] font-bold tracking-[-0.01em] leading-[1.2] whitespace-nowrap"
+                className="text-2xl md:text-[36px] font-bold tracking-[-0.01em] leading-[1.2] md:whitespace-nowrap"
                 style={{
                   fontFamily: "var(--font-display), sans-serif",
                   color: isActive ? "rgb(255,255,255)" : "rgba(255,255,255,0.3)",
