@@ -49,9 +49,13 @@ const EASE: [number, number, number, number] = [0.25, 0.1, 0.25, 1];
 function StepPill({ step, isActive }: { step: number; isActive: boolean }) {
   return (
     <motion.div
-      className="inline-flex items-center justify-center rounded-full border-[0.5px] px-6 py-1.5"
+      className="relative inline-flex items-center justify-center rounded-full border-[0.5px] px-6 py-1.5 backdrop-blur-md"
       animate={{
         borderColor: isActive ? "rgba(242,242,242,1)" : "rgba(242,242,242,0.3)",
+        backgroundColor: isActive ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0)",
+        boxShadow: isActive
+          ? "inset 0 4px 12.6px 0 rgba(255,255,255,0.25)"
+          : "inset 0 0 0 0 rgba(255,255,255,0)",
       }}
       transition={{ duration: 0.4, ease: EASE }}
     >
@@ -98,10 +102,7 @@ function StepBody({ children, isActive }: { children: React.ReactNode; isActive:
 const StepItem = forwardRef<HTMLDivElement, { step: StepDef; isActive: boolean }>(
   function StepItem({ step, isActive }, ref) {
     return (
-      <div
-        ref={ref}
-        className="relative w-full rounded-lg overflow-hidden border-b border-black/50 last:border-b-0"
-      >
+      <div ref={ref} className="relative w-full">
         {/* Step 2 — text left, image right (Figma spec: p-[112px], gap-[43px]) */}
         {step.layout === "text-and-image" && (
           <div className="px-8 md:px-16 lg:px-28 py-16 md:py-20 lg:py-28 flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-[43px]">
@@ -130,9 +131,18 @@ const StepItem = forwardRef<HTMLDivElement, { step: StepDef; isActive: boolean }
         {/* Step 3 — centered headline + animated graphic (p-[112px], gap-[48px]) */}
         {step.layout === "centered-graphic" && (
           <div className="px-6 md:px-16 lg:px-28 py-16 md:py-20 lg:py-28 flex flex-col items-center gap-12">
-            <div className="flex flex-col gap-4 items-center text-center max-w-3xl">
+            <div className="flex flex-col gap-4 items-center text-center max-w-5xl">
               <StepPill step={step.step} isActive={isActive} />
-              <StepTitle isActive={isActive}>{step.title}</StepTitle>
+              <h3
+                className="text-2xl md:text-[36px] font-bold tracking-[-0.01em] leading-[1.2] whitespace-nowrap"
+                style={{
+                  fontFamily: "var(--font-display), sans-serif",
+                  color: isActive ? "rgb(255,255,255)" : "rgba(255,255,255,0.3)",
+                  transition: "color 0.5s",
+                }}
+              >
+                {step.title}
+              </h3>
               <StepBody isActive={isActive}>{step.body}</StepBody>
             </div>
             <motion.div
@@ -224,8 +234,8 @@ export default function WhatWeDoSteps() {
           WHAT WE DO.
         </p>
 
-        {/* Steps wrapper — single rounded card per Figma */}
-        <div className="w-full border border-white/30 rounded-2xl overflow-hidden">
+        {/* Steps — free-floating, no outer box */}
+        <div className="w-full flex flex-col">
           {STEPS.map((step, index) => (
             <StepItem
               key={step.step}
