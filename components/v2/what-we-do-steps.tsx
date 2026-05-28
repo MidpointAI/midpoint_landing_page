@@ -97,22 +97,10 @@ function StepBody({ children, isActive }: { children: React.ReactNode; isActive:
 /* ---------------------------------- StepItem -------------------------------- */
 const StepItem = forwardRef<HTMLDivElement, { step: StepDef; isActive: boolean }>(
   function StepItem({ step, isActive }, ref) {
-    // Background — only Step 5 ever shows the radial gradient (per Figma)
-    const showGradient = step.layout === "text-right-highlight" && isActive;
-
     return (
-      <motion.div
+      <div
         ref={ref}
         className="relative w-full rounded-lg overflow-hidden border-b border-black/50 last:border-b-0"
-        animate={
-          showGradient
-            ? {
-                background:
-                  "radial-gradient(ellipse at 82% 24%, rgba(34,37,30,1) 0%, rgba(17,29,24,1) 50%, rgba(0,21,18,1) 100%)",
-              }
-            : { background: "rgba(0,0,0,0)" }
-        }
-        transition={{ duration: 0.5, ease: EASE }}
       >
         {/* Step 2 — text left, image right (Figma spec: p-[112px], gap-[43px]) */}
         {step.layout === "text-and-image" && (
@@ -186,7 +174,7 @@ const StepItem = forwardRef<HTMLDivElement, { step: StepDef; isActive: boolean }
             </div>
           </div>
         )}
-      </motion.div>
+      </div>
     );
   }
 );
