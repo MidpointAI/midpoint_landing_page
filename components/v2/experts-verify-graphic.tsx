@@ -260,10 +260,48 @@ function DesktopCard({
 
 /* --------------------------------- MobileTree ------------------------------ */
 /**
- * Mobile vertical-tree layout. Three stacked sections (Requirements →
- * Coverages → Details) joined by short animated vertical connectors.
- * No SVG needed — vertical lines are 1px CSS divs.
+ * Mobile vertical-tree layout. Mirrors the desktop card visually — same
+ * borderless columns, same SVG connectors with 8px rounded corners, same
+ * pathLength animations — just rotated for vertical flow.
+ *
+ * Structure:
+ *   Requirements (centered, top)
+ *           │
+ *           │  (vertical drop, then 8px arc LEFT)
+ *           │
+ *      ╭───┘
+ *      │
+ *      ●  Active Coverage      <- coverage list (active row connects to trunk)
+ *      ○  ...
+ *      │
+ *      │  (trunk continues down through the details)
+ *      │
+ *      ├──── Detail 1
+ *      ├──── Detail 2
+ *      ├──── …
+ *      ╰──── Last Detail        <- 8px arc RIGHT at trunk bottom
  */
+
+// Mobile layout constants
+const M_PAD = 20;
+const M_COV_ROW_H = 38; // coverage rows are single-line
+const M_DET_ROW_H = 52; // detail rows can wrap to 2 lines
+const M_REQ_H = 32;
+const M_SECTION_GAP = 24;
+const M_W = 340; // card width on mobile
+const M_TRUNK_X = 32;
+const M_LABEL_X = 52; // where coverage / detail labels start
+const M_STUB_END_X = M_LABEL_X - 4;
+const M_CENTER_X = M_W / 2;
+// Backwards-compat alias used below
+const M_ROW_H = M_COV_ROW_H;
+
+const mRowY_cov = (i: number) =>
+  M_PAD + M_REQ_H + M_SECTION_GAP + i * M_COV_ROW_H + M_COV_ROW_H / 2;
+const mDetStartY =
+  M_PAD + M_REQ_H + M_SECTION_GAP + COVERAGES.length * M_COV_ROW_H + M_SECTION_GAP;
+const mRowY_det = (i: number) => mDetStartY + i * M_DET_ROW_H + M_DET_ROW_H / 2;
+
 function MobileTree({
   activeIndex,
   coverage,
@@ -271,99 +309,208 @@ function MobileTree({
   activeIndex: number;
   coverage: Coverage;
 }) {
+  const detailCount = coverage.details.length;
+  const activeY = mRowY_cov(activeIndex);
+  const lastDetY = mRowY_det(detailCount - 1);
+  const cardH = mDetStartY + detailCount * M_DET_ROW_H + M_PAD;
+
+  const reqBottomY = M_PAD + M_REQ_H;
+
+  // -------------------------------------------------------------------------
+  // PATH A — Requirements → Active Coverage
+  // Mirrors desktop's L-bend: from Req center going down, 8px arc LEFT,
+  // then horizontal to the active coverage's marker on the trunk line.
+  // -------------------------------------------------------------------------
+  const pathA = [
+    `M ${M_CENTER_X} ${reqBottomY}`,
+    // down to just before the bend
+    `L ${M_CENTER_X} ${activeY - R}`,
+    // 90° arc — going-down → going-left (clockwise visually, sweep 1)
+    `A ${R} ${R} 0 0 1 ${M_CENTER_X - R} ${activeY}`,
+    // left to the active coverage marker
+    `L ${M_TRUNK_X} ${activeY}`,
+  ].join(" ");
+
+  // -------------------------------------------------------------------------
+  // PATH B — Trunk from active coverage down through every detail row,
+  // ending with an 8px arc into the last row's stub. Same structure as
+  // the desktop "comb spine," just running top-to-bottom instead of being
+  // the right-side spine.
+  // -------------------------------------------------------------------------
+  const pathB = [
+    `M ${M_TRUNK_X} ${activeY}`,
+    // vertical drop to just above the bottom corner
+    `L ${M_TRUNK_X} ${lastDetY - R}`,
+    // 90° arc — going-down → going-right (CCW visually, sweep 0)
+    `A ${R} ${R} 0 0 0 ${M_TRUNK_X + R} ${lastDetY}`,
+    // horizontal to the last row label stub end
+    `L ${M_STUB_END_X} ${lastDetY}`,
+  ].join(" ");
+
+  // -------------------------------------------------------------------------
+  // PATH C — perpendicular stubs from the trunk to each detail row label
+  // (skipping the last row, which is part of Path B's rounded bottom).
+  // -------------------------------------------------------------------------
+  const stubPaths: { d: string; i: number }[] = [];
+  for (let i = 0; i < detailCount - 1; i++) {
+    stubPaths.push({
+      d: `M ${M_TRUNK_X} ${mRowY_det(i)} L ${M_STUB_END_X} ${mRowY_det(i)}`,
+      i,
+    });
+  }
+
+  const stroke = "rgba(255,255,255,0.55)";
+
   return (
     <div
-      className="md:hidden w-full max-w-md rounded-xl bg-[#151515] shadow-[0_4px_7.1px_rgba(0,0,0,0.58)] ring-1 ring-white/[0.08] p-5 flex flex-col items-stretch"
-      style={{ fontFamily: "var(--font-dm-mono), monospace" }}
+      className="md:hidden relative rounded-xl bg-[#151515] shadow-[0_4px_7.1px_rgba(0,0,0,0.58)] ring-1 ring-white/[0.08]"
+      style={{
+        width: M_W,
+        height: cardH,
+        maxWidth: "100%",
+        fontFamily: "var(--font-dm-mono), monospace",
+      }}
     >
-      {/* Requirements label */}
-      <div className="flex items-center justify-center px-4 py-3 rounded-md border border-white/10">
+      {/* SVG connectors */}
+      <svg
+        className="absolute inset-0 pointer-events-none"
+        width={M_W}
+        height={cardH}
+        viewBox={`0 0 ${M_W} ${cardH}`}
+      >
+        <g
+          key={activeIndex}
+          fill="none"
+          stroke={stroke}
+          strokeWidth={1}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <motion.path
+            d={pathA}
+            initial={{ pathLength: 0, opacity: 0 }}
+            animate={{ pathLength: 1, opacity: 1 }}
+            transition={{ duration: 0.5, ease: EASE_TECH }}
+          />
+          <motion.path
+            d={pathB}
+            initial={{ pathLength: 0, opacity: 0 }}
+            animate={{ pathLength: 1, opacity: 1 }}
+            transition={{ duration: 0.5, ease: EASE_TECH, delay: 0.45 }}
+          />
+          {stubPaths.map(({ d, i }) => (
+            <motion.path
+              key={i}
+              d={d}
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{ pathLength: 1, opacity: 1 }}
+              transition={{
+                duration: 0.18,
+                ease: EASE_TECH,
+                delay: 0.7 + i * 0.06,
+              }}
+            />
+          ))}
+        </g>
+      </svg>
+
+      {/* Requirements label — centered horizontally at the top */}
+      <div
+        className="absolute flex items-center justify-center"
+        style={{
+          left: 0,
+          right: 0,
+          top: M_PAD,
+          height: M_REQ_H,
+        }}
+      >
         <span className="text-[15px] text-white whitespace-nowrap leading-none">
           Requirements
         </span>
       </div>
 
-      {/* Vertical connector */}
-      <Connector key={`top-${activeIndex}`} />
-
-      {/* Coverage list */}
-      <div className="flex flex-col rounded-md border border-white/10 px-4 py-3 gap-2">
-        {COVERAGES.map((c, i) => {
-          const isActive = i === activeIndex;
-          return (
-            <motion.div
-              key={c.name}
-              className="flex items-center gap-3"
+      {/* Coverage labels */}
+      {COVERAGES.map((c, i) => {
+        const isActive = i === activeIndex;
+        return (
+          <div
+            key={c.name}
+            className="absolute flex items-center"
+            style={{
+              left: M_LABEL_X,
+              right: M_PAD,
+              top: mRowY_cov(i) - M_COV_ROW_H / 2,
+              height: M_COV_ROW_H,
+            }}
+          >
+            <motion.span
+              className="text-[15px] whitespace-nowrap leading-none"
               animate={{
                 color: isActive ? "rgb(255,255,255)" : "rgb(157,157,157)",
                 fontWeight: isActive ? 500 : 400,
               }}
               transition={{ duration: 0.3, ease: EASE_TECH }}
             >
-              <motion.span
-                className="inline-block h-1.5 w-1.5 rounded-full"
-                animate={{
-                  backgroundColor: isActive ? "#c9ff64" : "rgba(157,157,157,0.4)",
-                  scale: isActive ? 1.3 : 1,
-                }}
-                transition={{ duration: 0.3 }}
-              />
-              <span className="text-[15px] whitespace-nowrap leading-none">{c.name}</span>
-            </motion.div>
-          );
-        })}
-      </div>
+              {c.name}
+            </motion.span>
+          </div>
+        );
+      })}
 
-      {/* Vertical connector */}
-      <Connector key={`bot-${activeIndex}`} />
-
-      {/* Details list — keyed on activeIndex so rows fully replace */}
-      <div
-        key={activeIndex}
-        className="flex flex-col rounded-md border border-white/10 px-4 py-3 gap-2"
-      >
+      {/* Detail rows — keyed on activeIndex so rows fully replace */}
+      <div key={activeIndex} className="absolute inset-0 pointer-events-none">
         {coverage.details.map((d, i) => (
           <motion.div
             key={d.label}
-            className={`flex items-center justify-between gap-3 leading-none ${
-              d.missing ? "bg-[#ff4848] -mx-4 px-4 py-2" : ""
+            className={`absolute flex items-center justify-between gap-3 ${
+              d.missing ? "bg-[#ff4848]" : ""
             }`}
+            style={{
+              left: M_LABEL_X,
+              right: M_PAD,
+              top: mRowY_det(i) - M_DET_ROW_H / 2,
+              height: M_DET_ROW_H,
+              paddingLeft: d.missing ? 8 : 0,
+              paddingRight: d.missing ? 8 : 0,
+              borderRadius: d.missing ? 4 : 0,
+            }}
             initial={{ opacity: 0, x: 4 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.22, ease: EASE_TECH, delay: 0.35 + i * 0.05 }}
+            transition={{
+              duration: 0.22,
+              ease: EASE_TECH,
+              delay: 0.7 + i * 0.06,
+            }}
           >
-            <span className="text-[13px] text-white leading-tight">{d.label}</span>
-            {d.value && (
-              <span
-                className={`text-[13px] whitespace-nowrap leading-tight ${
-                  d.missing ? "text-white" : "text-[#22c55e]"
-                }`}
-              >
-                {d.value}
-              </span>
-            )}
-            {d.check && (
-              <CheckIcon className="h-4 w-4 text-[#22c55e] flex-shrink-0" strokeWidth={2.5} />
-            )}
-            {d.missing && !d.value && (
-              <span className="text-[13px] text-white whitespace-nowrap leading-tight">Missing</span>
-            )}
+            <span className="text-[12px] text-white leading-tight pr-2">
+              {d.label}
+            </span>
+            <div className="flex items-center gap-1 flex-shrink-0">
+              {d.value && (
+                <span
+                  className={`text-[12px] whitespace-nowrap leading-tight ${
+                    d.missing ? "text-white" : "text-[#22c55e]"
+                  }`}
+                >
+                  {d.value}
+                </span>
+              )}
+              {d.check && (
+                <CheckIcon className="h-4 w-4 text-[#22c55e]" strokeWidth={2.5} />
+              )}
+              {d.missing && !d.value && (
+                <span className="text-[12px] text-white whitespace-nowrap leading-tight">
+                  Missing
+                </span>
+              )}
+            </div>
           </motion.div>
         ))}
       </div>
-    </div>
-  );
-}
 
-/** A short vertical line that draws itself in. */
-function Connector() {
-  return (
-    <motion.div
-      className="self-center bg-white/40 w-px"
-      initial={{ height: 0, opacity: 0 }}
-      animate={{ height: 24, opacity: 1 }}
-      transition={{ duration: 0.35, ease: EASE_TECH, delay: 0.1 }}
-    />
+      {/* Inset highlight ring per Figma */}
+      <div className="absolute inset-0 pointer-events-none rounded-xl shadow-[inset_0_0_1.9px_rgba(255,255,255,0.25)]" />
+    </div>
   );
 }
 
