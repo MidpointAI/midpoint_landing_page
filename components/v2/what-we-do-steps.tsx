@@ -114,9 +114,10 @@ const StepItem = forwardRef<HTMLDivElement, { step: StepDef; isActive: boolean }
         }
         transition={{ duration: 0.5, ease: EASE }}
       >
+        {/* Step 2 — text left, image right (Figma spec: p-[112px], gap-[43px]) */}
         {step.layout === "text-and-image" && (
-          <div className="px-8 md:px-20 lg:px-28 py-16 md:py-24 flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
-            <div className="flex flex-col gap-10 max-w-[500px] flex-1">
+          <div className="px-8 md:px-16 lg:px-28 py-16 md:py-20 lg:py-28 flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-[43px]">
+            <div className="flex flex-col gap-[43px] w-full lg:w-[500px] flex-shrink-0">
               <div className="flex flex-col gap-6 items-start">
                 <StepPill step={step.step} isActive={isActive} />
                 <StepTitle isActive={isActive}>{step.title}</StepTitle>
@@ -124,7 +125,7 @@ const StepItem = forwardRef<HTMLDivElement, { step: StepDef; isActive: boolean }
               <StepBody isActive={isActive}>{step.body}</StepBody>
             </div>
             <motion.div
-              className="w-full lg:w-2/5 flex-shrink-0"
+              className="w-full max-w-[520px] flex-shrink-0"
               animate={{ opacity: isActive ? 1 : 0.25 }}
               transition={{ duration: 0.5 }}
             >
@@ -138,15 +139,16 @@ const StepItem = forwardRef<HTMLDivElement, { step: StepDef; isActive: boolean }
           </div>
         )}
 
+        {/* Step 3 — centered headline + animated graphic (p-[112px], gap-[48px]) */}
         {step.layout === "centered-graphic" && (
-          <div className="px-6 md:px-16 lg:px-24 py-16 md:py-24 flex flex-col items-center gap-12">
+          <div className="px-6 md:px-16 lg:px-28 py-16 md:py-20 lg:py-28 flex flex-col items-center gap-12">
             <div className="flex flex-col gap-4 items-center text-center max-w-3xl">
               <StepPill step={step.step} isActive={isActive} />
               <StepTitle isActive={isActive}>{step.title}</StepTitle>
               <StepBody isActive={isActive}>{step.body}</StepBody>
             </div>
             <motion.div
-              className="w-full flex justify-center"
+              className="w-full flex justify-center overflow-x-auto"
               animate={{ opacity: isActive ? 1 : 0.35 }}
               transition={{ duration: 0.5 }}
             >
@@ -155,9 +157,10 @@ const StepItem = forwardRef<HTMLDivElement, { step: StepDef; isActive: boolean }
           </div>
         )}
 
+        {/* Step 4 — right-aligned text, large gap between title and body */}
         {step.layout === "text-right" && (
-          <div className="px-8 md:px-20 py-16 md:py-24 flex flex-col items-end">
-            <div className="flex flex-col gap-[109px] w-full max-w-[529px]">
+          <div className="px-8 md:px-16 lg:px-20 py-16 md:py-20 lg:py-28 flex flex-col items-end">
+            <div className="flex flex-col gap-[80px] lg:gap-[109px] w-full max-w-[529px]">
               <div className="flex flex-col gap-4 items-start w-full">
                 <StepPill step={step.step} isActive={isActive} />
                 <StepTitle isActive={isActive}>{step.title}</StepTitle>
@@ -169,9 +172,10 @@ const StepItem = forwardRef<HTMLDivElement, { step: StepDef; isActive: boolean }
           </div>
         )}
 
+        {/* Step 5 — right-aligned text with radial gradient highlight on active */}
         {step.layout === "text-right-highlight" && (
-          <div className="px-8 md:px-20 py-16 md:py-24 flex flex-col items-end">
-            <div className="flex flex-col gap-[94px] w-full max-w-[512px]">
+          <div className="px-8 md:px-16 lg:px-20 py-16 md:py-20 lg:py-28 flex flex-col items-end">
+            <div className="flex flex-col gap-[70px] lg:gap-[94px] w-full max-w-[512px]">
               <div className="flex flex-col gap-4 items-start w-full">
                 <StepPill step={step.step} isActive={isActive} />
                 <StepTitle isActive={isActive}>{step.title}</StepTitle>

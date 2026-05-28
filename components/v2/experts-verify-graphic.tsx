@@ -1,33 +1,25 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { CheckIcon } from "lucide-react";
 
 /**
  * Animated "Experts verify policy info" graphic.
  *
- * Cycles through four coverage types (General Liability → Auto → Worker's Comp → Umbrella).
- * On each step:
- *   1. Old details fade out
- *   2. The horizontal connector slides to the new coverage row
- *   3. The right-side vertical line + stubs draw in
- *   4. Each detail row fades in top-to-bottom
- *
- * Tight, technical easings — no bounce. Monospace type throughout.
+ * Auto-cycles through 4 coverage types. On each transition:
+ *  1. The old details are unmounted instantly (key swap).
+ *  2. The Requirements → Active-Coverage line draws — straight when active
+ *     row is 0, otherwise an L-shape with two 8px rounded corners.
+ *  3. The horizontal from active coverage into the details trunk draws.
+ *  4. The details trunk (a "comb" spine with 8px rounded top & bottom
+ *     corners that turn into the first and last row stubs) draws.
+ *  5. Each detail row fades in top-to-bottom, paired with its short
+ *     horizontal stub from the trunk.
  */
 
-type Detail = {
-  label: string;
-  value?: string;
-  check?: boolean;
-  missing?: boolean;
-};
-
-type Coverage = {
-  name: string;
-  details: Detail[];
-};
+type Detail = { label: string; value?: string; check?: boolean; missing?: boolean };
+type Coverage = { name: string; details: Detail[] };
 
 const COVERAGES: Coverage[] = [
   {
@@ -35,9 +27,9 @@ const COVERAGES: Coverage[] = [
     details: [
       { label: "Policy Basis:", value: "Occurrence" },
       { label: "Per Occurrence:", value: "$1,000,000" },
-      { label: "Personal & Adv. Injury Limit:", value: "$1,000,000" },
-      { label: "Additional Insured — Ongoing Ops", check: true },
-      { label: "Additional Insured — Completed Ops", check: true },
+      { label: "Personal and Advertising Injury Limit:", value: "$1,000,000" },
+      { label: "Additional Insured - Ongoing operations", check: true },
+      { label: "Additional Insured - Completed Ops", check: true },
       { label: "Waiver of Subrogation", check: true },
       { label: "Primary and Non-Contributory", check: true },
     ],
@@ -56,8 +48,8 @@ const COVERAGES: Coverage[] = [
     name: "Worker's Comp",
     details: [
       { label: "Each Accident", value: "$1,000,000" },
-      { label: "Each Employee — Injury by Disease", value: "$1,000,000" },
-      { label: "Aggregate — Injury by Disease", value: "$1,000,000" },
+      { label: "Each Employee for Injury by Disease", value: "$1,000,000" },
+      { label: "Aggregate for Injury by Disease", value: "$1,000,000" },
       { label: "Waiver of Subrogation", check: true },
       { label: "Cancellation Notice", missing: true },
     ],
@@ -75,12 +67,47 @@ const COVERAGES: Coverage[] = [
   },
 ];
 
-// Layout constants (matched to Figma)
-const COVERAGE_ROW_HEIGHT = 40; // px — must match py-2 + line-height in coverage list
-const DETAIL_ROW_HEIGHT = 40;
-const COVERAGE_LIST_TOP = 8; // pt-2 on the coverage list
-const DETAILS_LIST_TOP = 6; // pt-[6px] on the details list
-const CYCLE_MS = 4200;
+// ---------------------------------------------------------------------------
+// Layout geometry — single source of truth shared by DOM + SVG so the lines
+// always land on row centers exactly.
+// ---------------------------------------------------------------------------
+const PAD = 28;          // card inner padding
+const ROW_H = 44;        // every row (requirement / coverage / detail) is this tall
+const REQ_W = 140;       // Requirements column width
+const COL_GAP = 60;      // gap between columns
+const COV_W = 188;       // Coverage column width
+const DET_W = 548;       // Details column width
+const R = 8;             // rounded corner radius (per spec)
+const STUB = 22;         // how far past the trunk each row's horizontal stub extends
+
+// Column X edges (left → right)
+const REQ_LEFT = PAD;
+const REQ_RIGHT = REQ_LEFT + REQ_W;            // right edge of "Requirements" text box
+const COV_LEFT = REQ_RIGHT + COL_GAP;          // left edge of coverage column
+const COV_RIGHT = COV_LEFT + COV_W;            // right edge of coverage column
+const DET_LEFT = COV_RIGHT + COL_GAP;          // left edge of details column == trunk X
+const DET_RIGHT = DET_LEFT + DET_W;
+const CARD_W = DET_RIGHT + PAD;
+
+// The vertical "trunk" sits exactly at the left edge of the details column.
+const TRUNK_X = DET_LEFT;
+
+// Mid-X for the Requirements→Coverage L-bend (when active row > 0).
+const REQ_BEND_X = REQ_RIGHT + COL_GAP / 2;
+
+// Row Y centers (row 0 = the top row in every column).
+const rowY = (i: number) => PAD + i * ROW_H + ROW_H / 2;
+
+// Tallest possible card — keep height constant across coverages so the
+// card doesn't jump as we cycle.
+const MAX_ROWS = Math.max(
+  COVERAGES.length,
+  ...COVERAGES.map((c) => c.details.length)
+);
+const CARD_H = PAD * 2 + MAX_ROWS * ROW_H;
+
+// Animation
+const CYCLE_MS = 5000;
 const EASE_TECH: [number, number, number, number] = [0.65, 0, 0.35, 1];
 
 export default function ExpertsVerifyGraphic() {
@@ -88,15 +115,12 @@ export default function ExpertsVerifyGraphic() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
 
-  // Pause cycling when the graphic is off-screen — IntersectionObserver
-  // we own instead of useInView so behavior is explicit.
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const io = new IntersectionObserver(
-      ([entry]) => setIsVisible(entry.isIntersecting),
-      { threshold: 0.2 }
-    );
+    const io = new IntersectionObserver(([e]) => setIsVisible(e.isIntersecting), {
+      threshold: 0.2,
+    });
     io.observe(el);
     return () => io.disconnect();
   }, []);
@@ -110,209 +134,266 @@ export default function ExpertsVerifyGraphic() {
   }, [isVisible]);
 
   const coverage = COVERAGES[activeIndex];
-  // Y-center of the active coverage row inside the coverage column
-  const activeCoverageY = COVERAGE_LIST_TOP + activeIndex * COVERAGE_ROW_HEIGHT + COVERAGE_ROW_HEIGHT / 2;
+  const activeY = rowY(activeIndex);
 
   return (
     <div
       ref={ref}
-      className="relative w-full max-w-[920px] mx-auto rounded-xl border border-white/[0.06] bg-[#151515] shadow-[0_4px_7.1px_rgba(0,0,0,0.58),inset_0_0_1.9px_rgba(255,255,255,0.25)]"
-      style={{ fontFamily: "var(--font-dm-mono), monospace" }}
+      className="relative rounded-xl bg-[#151515] shadow-[0_4px_7.1px_rgba(0,0,0,0.58)] ring-1 ring-white/[0.08]"
+      style={{
+        width: CARD_W,
+        height: CARD_H,
+        fontFamily: "var(--font-dm-mono), monospace",
+        maxWidth: "100%",
+      }}
     >
-      <div className="flex items-start gap-12 md:gap-[59px] p-6">
-        {/* Column 1 — Requirements label */}
-        <div className="relative flex h-[51px] items-center px-4 py-[18px] shrink-0">
-          <p className="text-[15px] text-white whitespace-nowrap leading-tight">Requirements</p>
-        </div>
-
-        {/* Column 2 — Coverage list */}
-        <div className="relative flex flex-col pt-2 shrink-0 w-[180px]">
-          {COVERAGES.map((c, i) => {
-            const isActive = i === activeIndex;
-            return (
-              <div
-                key={c.name}
-                className="flex items-center px-4 py-2"
-                style={{ height: `${COVERAGE_ROW_HEIGHT}px` }}
-              >
-                <motion.p
-                  className="text-[15px] whitespace-nowrap leading-tight"
-                  animate={{
-                    color: isActive ? "rgb(255,255,255)" : "rgb(157,157,157)",
-                    fontWeight: isActive ? 500 : 400,
-                  }}
-                  transition={{ duration: 0.3, ease: EASE_TECH }}
-                >
-                  {c.name}
-                </motion.p>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Column 3 — Details list. Keyed on activeIndex so React fully replaces
-            the rows. Each row enters with a small stagger; no exit animation —
-            outgoing rows just disappear, so the new set starts drawing
-            immediately rather than waiting for an exit. */}
-        <div className="relative flex flex-col pt-[6px] flex-1 min-w-0 w-[549px]">
-          <div key={activeIndex} className="flex flex-col">
-            {coverage.details.map((d, i) => (
-              <motion.div
-                key={d.label}
-                className={`flex items-center justify-between px-4 py-2 ${
-                  d.missing ? "bg-[#ff4848]" : ""
-                }`}
-                style={{ height: `${DETAIL_ROW_HEIGHT}px` }}
-                initial={{ opacity: 0, x: 6 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.22, ease: EASE_TECH, delay: 0.2 + i * 0.055 }}
-              >
-                <p className="text-[15px] text-white whitespace-nowrap leading-tight">{d.label}</p>
-                {d.value && (
-                  <p
-                    className={`text-[15px] whitespace-nowrap leading-tight ${
-                      d.missing ? "text-white" : "text-[#22c55e]"
-                    }`}
-                  >
-                    {d.value}
-                  </p>
-                )}
-                {d.check && <CheckIcon className="h-5 w-5 text-[#22c55e]" strokeWidth={2.5} />}
-                {d.missing && !d.value && (
-                  <p className="text-[15px] text-white whitespace-nowrap leading-tight">Missing</p>
-                )}
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Lines overlay — absolutely positioned across the whole card */}
+      {/* Connectors under the labels */}
       <svg
         className="absolute inset-0 pointer-events-none"
-        width="100%"
-        height="100%"
-        preserveAspectRatio="none"
+        width={CARD_W}
+        height={CARD_H}
+        viewBox={`0 0 ${CARD_W} ${CARD_H}`}
       >
-        <defs>
-          <clipPath id="card-bounds">
-            <rect x="0" y="0" width="100%" height="100%" />
-          </clipPath>
-        </defs>
-
-        <ConnectorLines key={activeIndex} activeCoverageY={activeCoverageY} detailCount={coverage.details.length} />
+        <Connectors
+          key={activeIndex}
+          activeIndex={activeIndex}
+          activeY={activeY}
+          detailCount={coverage.details.length}
+        />
       </svg>
+
+      {/* "Requirements" label at row 0 */}
+      <Cell left={REQ_LEFT} width={REQ_W} top={rowY(0) - ROW_H / 2}>
+        <span className="text-[16px] text-white whitespace-nowrap leading-none">Requirements</span>
+      </Cell>
+
+      {/* Coverage column */}
+      {COVERAGES.map((c, i) => {
+        const isActive = i === activeIndex;
+        return (
+          <Cell
+            key={c.name}
+            left={COV_LEFT}
+            width={COV_W}
+            top={rowY(i) - ROW_H / 2}
+          >
+            <motion.span
+              className="text-[16px] whitespace-nowrap leading-none"
+              animate={{
+                color: isActive ? "rgb(255,255,255)" : "rgb(157,157,157)",
+                fontWeight: isActive ? 500 : 400,
+              }}
+              transition={{ duration: 0.3, ease: EASE_TECH }}
+            >
+              {c.name}
+            </motion.span>
+          </Cell>
+        );
+      })}
+
+      {/* Details column — keyed on activeIndex so rows fully replace */}
+      <div key={activeIndex} className="absolute" style={{ left: DET_LEFT, top: PAD }}>
+        {coverage.details.map((d, i) => (
+          <motion.div
+            key={d.label}
+            className={`flex items-center justify-between leading-none ${
+              d.missing ? "bg-[#ff4848]" : ""
+            }`}
+            style={{
+              width: DET_W,
+              height: ROW_H,
+              paddingLeft: STUB + 12, // leaves room for the stub line to reach into the row before the text
+              paddingRight: 16,
+            }}
+            initial={{ opacity: 0, x: 4 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{
+              duration: 0.22,
+              ease: EASE_TECH,
+              delay: 0.7 + i * 0.06,
+            }}
+          >
+            <span className="text-[16px] text-white whitespace-nowrap">{d.label}</span>
+            {d.value && (
+              <span
+                className={`text-[16px] whitespace-nowrap ${
+                  d.missing ? "text-white" : "text-[#22c55e]"
+                }`}
+              >
+                {d.value}
+              </span>
+            )}
+            {d.check && <CheckIcon className="h-5 w-5 text-[#22c55e]" strokeWidth={2.5} />}
+            {d.missing && !d.value && (
+              <span className="text-[16px] text-white whitespace-nowrap">Missing</span>
+            )}
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Inset highlight ring per Figma */}
+      <div className="absolute inset-0 pointer-events-none rounded-xl shadow-[inset_0_0_1.9px_rgba(255,255,255,0.25)]" />
     </div>
   );
 }
 
-/**
- * The animated connector lines. Re-keyed on activeIndex so each transition replays.
- *
- * Geometry (matched to the layout above with p-6 = 24px outer padding, 59px gap):
- *   - Card padding-left: 24
- *   - "Requirements" column: 0..~140 (px-4 + text)
- *   - Gap to coverage: 59
- *   - Coverage col left: 24 + 140 + 59 = ~223
- *   - Coverage col width: 180
- *   - Coverage col right: ~403
- *   - Gap to details: 59
- *   - Details col left: ~462
- *
- * In practice we draw lines that hit the visible coverage label text. The
- * exact pixels are tuned to match the rendered layout.
- */
-function ConnectorLines({
-  activeCoverageY,
+/* ----------------------------------------------------------------------- */
+
+function Cell({
+  left,
+  width,
+  top,
+  children,
+}: {
+  left: number;
+  width: number;
+  top: number;
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      className="absolute flex items-center"
+      style={{ left, top, width, height: ROW_H, paddingLeft: 16, paddingRight: 16 }}
+    >
+      {children}
+    </div>
+  );
+}
+
+/* --------------------------------- Connectors ------------------------------ */
+
+function Connectors({
+  activeIndex,
+  activeY,
   detailCount,
 }: {
-  activeCoverageY: number;
+  activeIndex: number;
+  activeY: number;
   detailCount: number;
 }) {
-  // X positions in px, relative to the outer svg (which spans the whole card).
-  // Card padding-top is 24, so add it.
-  const REQ_X = 138; // approx right edge of "Requirements" text
-  const COV_LEFT_X = 197;
-  const COV_RIGHT_X = 405;
-  const DETAILS_LEFT_X = 464;
-  const DETAILS_INNER_X = 480; // where the row's small left stub begins
-  const REQ_ROW_Y = 24 + 25; // 24 padding + 51/2
-
-  const activeY = 24 + activeCoverageY;
-  const detailsTopY = 24 + DETAILS_LIST_TOP + DETAIL_ROW_HEIGHT / 2;
-  const detailsBottomY = detailsTopY + (detailCount - 1) * DETAIL_ROW_HEIGHT;
-
   const stroke = "rgba(255,255,255,0.55)";
   const sw = 1;
 
+  // -------------------------------------------------------------------------
+  // PATH A — Requirements → Active Coverage
+  //   active = 0:  straight horizontal at row 0
+  //   active > 0:  horizontal right → 8px arc DOWN → vertical → 8px arc RIGHT
+  //                → horizontal to coverage label
+  // -------------------------------------------------------------------------
+  const reqY = rowY(0);
+  const pathA = useMemo(() => {
+    if (activeIndex === 0) {
+      return `M ${REQ_RIGHT} ${reqY} L ${COV_LEFT} ${reqY}`;
+    }
+    return [
+      `M ${REQ_RIGHT} ${reqY}`,
+      // Horizontal right toward the bend (stop R px before so the arc fits)
+      `L ${REQ_BEND_X - R} ${reqY}`,
+      // 90° clockwise arc: turning from going-right to going-down
+      `A ${R} ${R} 0 0 1 ${REQ_BEND_X} ${reqY + R}`,
+      // Vertical drop to just above the next bend
+      `L ${REQ_BEND_X} ${activeY - R}`,
+      // 90° counter-clockwise arc: turning from going-down to going-right
+      `A ${R} ${R} 0 0 0 ${REQ_BEND_X + R} ${activeY}`,
+      // Horizontal to the coverage label
+      `L ${COV_LEFT} ${activeY}`,
+    ].join(" ");
+  }, [activeIndex, reqY, activeY]);
+
+  // -------------------------------------------------------------------------
+  // PATH B — Incoming horizontal from coverage to the trunk.
+  // Always ends at (TRUNK_X + STUB, activeY) so it doubles as the row stub
+  // for the active row.
+  // -------------------------------------------------------------------------
+  const pathB = `M ${COV_RIGHT} ${activeY} L ${TRUNK_X + STUB} ${activeY}`;
+
+  // -------------------------------------------------------------------------
+  // PATH C — Details trunk (comb spine).
+  // The trunk is drawn as ONE continuous path that traces:
+  //   row 0 stub end ← left ← arc DOWN ← vertical ← arc RIGHT → row N-1 stub end
+  // The top + bottom 8px rounded corners are the row 0 and row N-1 stubs'
+  // transition into the vertical spine.
+  // -------------------------------------------------------------------------
+  const topY = rowY(0);
+  const bottomY = rowY(detailCount - 1);
+  const pathC = useMemo(
+    () =>
+      [
+        `M ${TRUNK_X + STUB} ${topY}`,
+        `L ${TRUNK_X + R} ${topY}`,
+        // 90° arc — going LEFT then DOWN (sweep-flag 0 = counter-clockwise)
+        `A ${R} ${R} 0 0 0 ${TRUNK_X} ${topY + R}`,
+        `L ${TRUNK_X} ${bottomY - R}`,
+        // 90° arc — going DOWN then RIGHT
+        `A ${R} ${R} 0 0 0 ${TRUNK_X + R} ${bottomY}`,
+        `L ${TRUNK_X + STUB} ${bottomY}`,
+      ].join(" "),
+    [topY, bottomY]
+  );
+
+  // -------------------------------------------------------------------------
+  // PATH D — straight perpendicular stubs for every intermediate row that
+  // is not the active coverage row (active row's stub is part of Path B,
+  // first + last row stubs are part of Path C's rounded corners).
+  // -------------------------------------------------------------------------
+  const stubPaths = useMemo(() => {
+    const out: { d: string; i: number }[] = [];
+    for (let i = 1; i < detailCount - 1; i++) {
+      if (i === activeIndex) continue;
+      out.push({
+        d: `M ${TRUNK_X} ${rowY(i)} L ${TRUNK_X + STUB} ${rowY(i)}`,
+        i,
+      });
+    }
+    return out;
+  }, [activeIndex, detailCount]);
+
   return (
-    <g>
-      {/* 1. Horizontal from Requirements right edge to coverage column left.
-            Y always at the active coverage row's center. Drawn first. */}
-      <motion.line
-        x1={REQ_X}
-        x2={COV_LEFT_X}
-        y1={activeY}
-        y2={activeY}
-        stroke={stroke}
-        strokeWidth={sw}
+    <g
+      fill="none"
+      stroke={stroke}
+      strokeWidth={sw}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      {/* A — Requirements → Active Coverage */}
+      <motion.path
+        d={pathA}
         initial={{ pathLength: 0, opacity: 0 }}
         animate={{ pathLength: 1, opacity: 1 }}
-        transition={{ duration: 0.22, ease: EASE_TECH }}
+        transition={{ duration: 0.5, ease: EASE_TECH }}
       />
 
-      {/* 1b. Tiny vertical drop from Requirements label height down to active row,
-              only if not already on row 0 — keeps "Requirements →" pointing at
-              the right coverage even visually. We skip this in v1: the horiz
-              line already shifts vertically per active. */}
-
-      {/* 2. Horizontal from coverage column right edge to details column left.
-             At active row Y. */}
-      <motion.line
-        x1={COV_RIGHT_X}
-        x2={DETAILS_LEFT_X}
-        y1={activeY}
-        y2={activeY}
-        stroke={stroke}
-        strokeWidth={sw}
+      {/* B — Active Coverage → Trunk (also acts as active row's stub) */}
+      <motion.path
+        d={pathB}
         initial={{ pathLength: 0, opacity: 0 }}
         animate={{ pathLength: 1, opacity: 1 }}
-        transition={{ duration: 0.22, ease: EASE_TECH, delay: 0.18 }}
+        transition={{ duration: 0.3, ease: EASE_TECH, delay: 0.4 }}
       />
 
-      {/* 3. Vertical line in the details column connecting all rows */}
-      <motion.line
-        x1={DETAILS_LEFT_X}
-        x2={DETAILS_LEFT_X}
-        y1={Math.min(activeY, detailsTopY)}
-        y2={detailsBottomY}
-        stroke={stroke}
-        strokeWidth={sw}
+      {/* C — Trunk spine */}
+      <motion.path
+        d={pathC}
         initial={{ pathLength: 0, opacity: 0 }}
         animate={{ pathLength: 1, opacity: 1 }}
-        transition={{ duration: 0.35, ease: EASE_TECH, delay: 0.34 }}
-        style={{ transformOrigin: `${DETAILS_LEFT_X}px ${Math.min(activeY, detailsTopY)}px` }}
+        transition={{ duration: 0.5, ease: EASE_TECH, delay: 0.55 }}
       />
 
-      {/* 4. Small horizontal stubs from the vertical line into each detail row.
-             Sequential — top-to-bottom. */}
-      {Array.from({ length: detailCount }).map((_, i) => {
-        const y = detailsTopY + i * DETAIL_ROW_HEIGHT;
-        return (
-          <motion.line
-            key={i}
-            x1={DETAILS_LEFT_X}
-            x2={DETAILS_INNER_X}
-            y1={y}
-            y2={y}
-            stroke={stroke}
-            strokeWidth={sw}
-            initial={{ pathLength: 0, opacity: 0 }}
-            animate={{ pathLength: 1, opacity: 1 }}
-            transition={{ duration: 0.18, ease: EASE_TECH, delay: 0.4 + i * 0.06 }}
-          />
-        );
-      })}
+      {/* D — intermediate stubs (drawn in order, top-to-bottom) */}
+      {stubPaths.map(({ d, i }) => (
+        <motion.path
+          key={i}
+          d={d}
+          initial={{ pathLength: 0, opacity: 0 }}
+          animate={{ pathLength: 1, opacity: 1 }}
+          transition={{
+            duration: 0.18,
+            ease: EASE_TECH,
+            delay: 0.7 + i * 0.06,
+          }}
+        />
+      ))}
     </g>
   );
 }
