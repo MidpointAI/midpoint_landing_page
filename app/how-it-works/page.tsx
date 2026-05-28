@@ -61,54 +61,31 @@ export default function HowItWorksPage() {
 
   return (
     <main className="relative bg-white dark:bg-zinc-950 text-zinc-900 dark:text-white min-h-screen">
-      {/* Hero */}
-      <section className="w-full pt-32 pb-20 px-6">
-        <div className="max-w-4xl mx-auto text-center">
-          <p
-            className="text-zinc-400 dark:text-zinc-500 text-xs tracking-[0.2em] uppercase mb-6"
-            style={{ fontFamily: "var(--font-dm-mono), monospace" }}
-          >
-            How it works
-          </p>
-          <h1
-            className="text-4xl md:text-5xl lg:text-6xl font-bold text-zinc-900 dark:text-white tracking-tight leading-[1.05] mb-8"
-            style={{ fontFamily: "var(--font-display), sans-serif" }}
-          >
-            Send us the signed agreement.
-            <br />
-            <span className="text-lime-600 dark:text-lime-400">We handle the rest.</span>
-          </h1>
-          <p className="text-zinc-500 dark:text-zinc-400 text-lg md:text-xl leading-relaxed max-w-2xl mx-auto">
-            Midpoint is a managed service, not software you have to learn. A team of
-            insurance experts handles the verification, follow-up, and audits — so the
-            only thing you have to do is forward the contract.
-          </p>
-        </div>
-      </section>
-
-      {/* Step 1 */}
-      <section className="w-full py-16 md:py-28 px-6 bg-[#f4ffe0] dark:bg-zinc-900">
-        <div className="max-w-5xl mx-auto flex flex-col items-center gap-10 md:gap-12">
+      {/* Hero — Step 1 */}
+      <section className="w-full pt-36 pb-24 md:pt-44 md:pb-32 px-6 bg-[#f4ffe0] dark:bg-zinc-900">
+        <div className="max-w-5xl mx-auto flex flex-col items-center gap-10 md:gap-14">
           <div className="flex flex-col items-center gap-10 md:gap-12 max-w-[794px]">
             <div className="flex flex-col items-center gap-5 md:gap-6">
-              {/* Step pill */}
-              <div className="border border-zinc-900 dark:border-zinc-300 rounded-full px-5 py-2.5 md:px-6 md:py-3">
+              {/* Step pill — matches the StepPill component on steps 2–5 (active state) */}
+              <div
+                className="relative inline-flex items-center justify-center rounded-full border-[0.5px] border-zinc-900/80 dark:border-white px-6 py-1.5 backdrop-blur-md bg-zinc-900/[0.04] dark:bg-white/[0.08] shadow-[inset_0_4px_12.6px_0_rgba(255,255,255,0.25)]"
+              >
                 <span
-                  className="text-zinc-900 dark:text-white text-lg md:text-[28px] tracking-[8.96px] text-center"
+                  className="text-[18px] font-medium tracking-[5.76px] leading-[1.5] whitespace-nowrap text-zinc-900 dark:text-[#c9ff64]"
                   style={{ fontFamily: "var(--font-dm-mono), monospace" }}
                 >
                   STEP 1
                 </span>
               </div>
               {/* Heading */}
-              <h2
+              <h1
                 className="text-4xl md:text-6xl lg:text-[72px] font-bold text-black dark:text-white tracking-tight text-center leading-[1.2]"
                 style={{ fontFamily: "var(--font-display), sans-serif" }}
               >
                 Sign the sub. CC us.
                 <br />
                 Go back to building.
-              </h2>
+              </h1>
             </div>
             {/* Body */}
             <p className="text-[#001512] dark:text-zinc-300 text-base md:text-lg lg:text-[22px] leading-relaxed text-center">
