@@ -31,6 +31,24 @@ html::-webkit-scrollbar {
   display: block;
 }
 
+/* =============================================
+   TYPOGRAPHY — prevent orphans/widows
+   Modern browsers (Chrome 117+, Firefox 121+, Safari 17.5+) apply a
+   widow/orphan-prevention algorithm when text-wrap is `pretty`. Combined
+   with the `<NoOrphans>` component for explicit control on important
+   body copy, no line should end up with ≤2 words.
+   ============================================= */
+p,
+li,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  text-wrap: pretty;
+}
+
 :root,
 .light {
   color-scheme: light;

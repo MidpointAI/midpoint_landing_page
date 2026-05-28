@@ -1,8 +1,8 @@
 "use client";
 
-import { forwardRef, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import ExpertsVerifyGraphic from "@/components/v2/experts-verify-graphic";
+import { useStepActivity } from "@/components/v2/step-activity";
 
 // Layout per Figma (node 11133:1164):
 //   Step 2 — text left, papers image right
@@ -99,10 +99,11 @@ function StepBody({ children, isActive }: { children: React.ReactNode; isActive:
 }
 
 /* ---------------------------------- StepItem -------------------------------- */
-const StepItem = forwardRef<HTMLDivElement, { step: StepDef; isActive: boolean }>(
-  function StepItem({ step, isActive }, ref) {
-    return (
-      <div ref={ref} className="relative w-full">
+function StepItem({ step }: { step: StepDef }) {
+  const { ref, isActive } = useStepActivity(`step-${step.step}`);
+
+  return (
+    <div ref={ref} className="relative w-full">
         {/* Step 2 — text left, image right (Figma spec: p-[112px], gap-[43px]) */}
         {step.layout === "text-and-image" && (
           <div className="px-8 md:px-16 lg:px-28 py-16 md:py-20 lg:py-28 flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-[43px]">
@@ -185,44 +186,11 @@ const StepItem = forwardRef<HTMLDivElement, { step: StepDef; isActive: boolean }
           </div>
         )}
       </div>
-    );
-  }
-);
+  );
+}
 
 /* -------------------------------- Container --------------------------------- */
 export default function WhatWeDoSteps() {
-  const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const [activeIndex, setActiveIndex] = useState<number | null>(null);
-
-  useEffect(() => {
-    const pickClosest = () => {
-      const viewportMid = window.innerHeight / 2;
-      let best: number | null = null;
-      let bestDist = Infinity;
-
-      stepRefs.current.forEach((el, i) => {
-        if (!el) return;
-        const rect = el.getBoundingClientRect();
-        if (rect.bottom < 0 || rect.top > window.innerHeight) return;
-        const dist = Math.abs(rect.top + rect.height / 2 - viewportMid);
-        if (dist < bestDist) {
-          bestDist = dist;
-          best = i;
-        }
-      });
-
-      setActiveIndex(best);
-    };
-
-    pickClosest();
-    window.addEventListener("scroll", pickClosest, { passive: true });
-    window.addEventListener("resize", pickClosest);
-    return () => {
-      window.removeEventListener("scroll", pickClosest);
-      window.removeEventListener("resize", pickClosest);
-    };
-  }, []);
-
   return (
     <section className="w-full bg-[#001512] py-16 md:py-28 px-6 md:px-12 lg:px-28">
       <div className="max-w-7xl mx-auto flex flex-col items-center gap-10 md:gap-12">
@@ -234,17 +202,12 @@ export default function WhatWeDoSteps() {
           WHAT WE DO.
         </p>
 
-        {/* Steps — free-floating, no outer box */}
+        {/* Steps — free-floating, no outer box. Each StepItem registers
+            itself with the shared StepActivityProvider so only one step
+            across the whole page is active at a time. */}
         <div className="w-full flex flex-col">
-          {STEPS.map((step, index) => (
-            <StepItem
-              key={step.step}
-              step={step}
-              isActive={activeIndex === index}
-              ref={(el) => {
-                stepRefs.current[index] = el;
-              }}
-            />
+          {STEPS.map((step) => (
+            <StepItem key={step.step} step={step} />
           ))}
         </div>
       </div>

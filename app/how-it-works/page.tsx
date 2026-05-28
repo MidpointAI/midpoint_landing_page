@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import {
   ArrowRightIcon,
   ShieldCheckIcon,
@@ -12,6 +13,11 @@ import { Button } from "@/components/v2/ui/button";
 import { useQuoteModal } from "@/components/v2/site-chrome";
 import WhatWeDoSteps from "@/components/v2/what-we-do-steps";
 import FooterV2 from "@/components/v2/footer-v2";
+import NoOrphans from "@/components/v2/no-orphans";
+import {
+  StepActivityProvider,
+  useStepActivity,
+} from "@/components/v2/step-activity";
 
 const expertWork = [
   {
@@ -56,46 +62,79 @@ const youGet = [
   },
 ];
 
-export default function HowItWorksPage() {
+function Step1Hero() {
   const { openQuote } = useQuoteModal();
+  const { ref, isActive } = useStepActivity("step-1");
 
+  // Same easing as the rest of the steps for visual continuity.
+  const EASE = [0.25, 0.1, 0.25, 1] as const;
+
+  // We use OPACITY-based animation (not color) so the underlying Tailwind
+  // dark-mode color classes (text-black dark:text-white, etc.) still apply.
+  // motion.animate.color would override Tailwind in both modes.
   return (
-    <main className="relative bg-white dark:bg-zinc-950 text-zinc-900 dark:text-white min-h-screen">
-      {/* Hero — Step 1 */}
-      <section className="w-full pt-36 pb-24 md:pt-44 md:pb-32 px-6 bg-[#f4ffe0] dark:bg-zinc-900">
-        <div className="max-w-5xl mx-auto flex flex-col items-center gap-10 md:gap-14">
-          <div className="flex flex-col items-center gap-10 md:gap-12 max-w-[794px]">
-            <div className="flex flex-col items-center gap-5 md:gap-6">
-              {/* Step pill — matches the StepPill component on steps 2–5 (active state) */}
-              <div
-                className="relative inline-flex items-center justify-center rounded-full border-[0.5px] border-zinc-900/80 dark:border-white px-6 py-1.5 backdrop-blur-md bg-zinc-900/[0.04] dark:bg-white/[0.08] shadow-[inset_0_4px_12.6px_0_rgba(255,255,255,0.25)]"
+    <section
+      ref={ref}
+      className="w-full pt-36 pb-24 md:pt-44 md:pb-32 px-6 bg-[#f4ffe0] dark:bg-zinc-900"
+    >
+      <div className="max-w-5xl mx-auto flex flex-col items-center gap-10 md:gap-14">
+        <div className="flex flex-col items-center gap-10 md:gap-12 max-w-[794px]">
+          <div className="flex flex-col items-center gap-5 md:gap-6">
+            {/* Step pill — frosted glass when active, fades to outline when inactive */}
+            <motion.div
+              className="relative inline-flex items-center justify-center rounded-full border-[0.5px] border-zinc-900/80 dark:border-white px-6 py-1.5 backdrop-blur-md"
+              animate={{
+                backgroundColor: isActive
+                  ? "rgba(24,24,27,0.04)"
+                  : "rgba(24,24,27,0)",
+                boxShadow: isActive
+                  ? "inset 0 4px 12.6px 0 rgba(255,255,255,0.25)"
+                  : "inset 0 0 0 0 rgba(255,255,255,0)",
+                opacity: isActive ? 1 : 0.4,
+              }}
+              transition={{ duration: 0.5, ease: EASE }}
+            >
+              <span
+                className="text-[18px] font-medium tracking-[5.76px] leading-[1.5] whitespace-nowrap text-zinc-900 dark:text-[#c9ff64]"
+                style={{ fontFamily: "var(--font-dm-mono), monospace" }}
               >
-                <span
-                  className="text-[18px] font-medium tracking-[5.76px] leading-[1.5] whitespace-nowrap text-zinc-900 dark:text-[#c9ff64]"
-                  style={{ fontFamily: "var(--font-dm-mono), monospace" }}
-                >
-                  STEP 1
-                </span>
-              </div>
-              {/* Heading */}
-              <h1
-                className="text-4xl md:text-6xl lg:text-[72px] font-bold text-black dark:text-white tracking-tight text-center leading-[1.2]"
-                style={{ fontFamily: "var(--font-display), sans-serif" }}
-              >
-                Sign the sub. CC us.
-                <br />
-                Go back to building.
-              </h1>
-            </div>
-            {/* Body */}
-            <p className="text-[#001512] dark:text-zinc-300 text-base md:text-lg lg:text-[22px] leading-relaxed text-center">
+                STEP 1
+              </span>
+            </motion.div>
+
+            {/* Heading */}
+            <motion.h1
+              className="text-4xl md:text-6xl lg:text-[72px] font-bold text-black dark:text-white tracking-tight text-center leading-[1.2]"
+              style={{ fontFamily: "var(--font-display), sans-serif" }}
+              animate={{ opacity: isActive ? 1 : 0.3 }}
+              transition={{ duration: 0.5, ease: EASE }}
+            >
+              Sign the sub. CC us.
+              <br />
+              Go back to building.
+            </motion.h1>
+          </div>
+
+          {/* Body */}
+          <motion.p
+            className="text-[#001512] dark:text-zinc-300 text-base md:text-lg lg:text-[22px] leading-relaxed text-center"
+            animate={{ opacity: isActive ? 1 : 0.3 }}
+            transition={{ duration: 0.5, ease: EASE }}
+          >
+            <NoOrphans>
               After a subcontractor signs, you CC us on the agreement. From that
               moment on, we collect every certificate, chase every renewal, verify
               every endorsement, flag every gap, and stand behind your risk transfer
               when a claim shows up. You read one weekly report. We handle the rest.
-            </p>
-          </div>
-          {/* CTA Button */}
+            </NoOrphans>
+          </motion.p>
+        </div>
+
+        {/* CTA Button */}
+        <motion.div
+          animate={{ opacity: isActive ? 1 : 0.4 }}
+          transition={{ duration: 0.5, ease: EASE }}
+        >
           <Button
             size="lg"
             onClick={openQuote}
@@ -103,8 +142,26 @@ export default function HowItWorksPage() {
           >
             See if your file holds up <ArrowRightIcon className="h-4 w-4" />
           </Button>
-        </div>
-      </section>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+export default function HowItWorksPage() {
+  return (
+    <StepActivityProvider>
+      <HowItWorksContent />
+    </StepActivityProvider>
+  );
+}
+
+function HowItWorksContent() {
+  const { openQuote } = useQuoteModal();
+
+  return (
+    <main className="relative bg-white dark:bg-zinc-950 text-zinc-900 dark:text-white min-h-screen">
+      <Step1Hero />
 
       {/* Steps 2–5: What we do */}
       <WhatWeDoSteps />
