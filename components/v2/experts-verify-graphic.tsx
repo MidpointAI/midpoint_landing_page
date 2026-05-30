@@ -282,19 +282,25 @@ function DesktopCard({
  *      ╰──── Last Detail        <- 8px arc RIGHT at trunk bottom
  */
 
-// Mobile layout constants
-const M_PAD = 20;
+// Mobile layout constants. M_W is the SVG viewBox width that everything
+// is measured against; the actual rendered card width is capped at
+// M_W via max-width but allowed to scale down to fit narrower viewports.
+const M_PAD = 16;
 const M_COV_ROW_H = 38; // coverage rows are single-line
 const M_DET_ROW_H = 52; // detail rows can wrap to 2 lines
 const M_REQ_H = 32;
 const M_SECTION_GAP = 24;
-const M_W = 340; // card width on mobile
-const M_TRUNK_X = 32;
-const M_LABEL_X = 52; // where coverage / detail labels start
+const M_W = 320; // SVG viewBox + max card width
+const M_TRUNK_X = 28;
+const M_LABEL_X = 48; // where coverage / detail labels start
 const M_STUB_END_X = M_LABEL_X - 4;
 const M_CENTER_X = M_W / 2;
 // Backwards-compat alias used below
 const M_ROW_H = M_COV_ROW_H;
+
+// Helpers: convert a viewBox X coordinate to a percentage of M_W so the
+// HTML labels stay aligned with the SVG as the card scales.
+const pctX = (x: number) => `${(x / M_W) * 100}%`;
 
 const mRowY_cov = (i: number) =>
   M_PAD + M_REQ_H + M_SECTION_GAP + i * M_COV_ROW_H + M_COV_ROW_H / 2;
@@ -310,52 +316,63 @@ function MobileTree({
   coverage: Coverage;
 }) {
   const detailCount = coverage.details.length;
-  const activeY = mRowY_cov(activeIndex);
   const lastDetY = mRowY_det(detailCount - 1);
   const cardH = mDetStartY + detailCount * M_DET_ROW_H + M_PAD;
 
   const reqBottomY = M_PAD + M_REQ_H;
+  // The trunk's top sits in the gap BETWEEN Requirements and the first
+  // coverage row, so Path A's horizontal segment never crosses a label.
+  const trunkTopY = M_PAD + M_REQ_H + M_SECTION_GAP / 2;
 
   // -------------------------------------------------------------------------
-  // PATH A — Requirements → Active Coverage
-  // Mirrors desktop's L-bend: from Req center going down, 8px arc LEFT,
-  // then horizontal to the active coverage's marker on the trunk line.
+  // PATH A — Requirements → top of trunk (L-bend)
+  //   Down from Req center → 8px arc LEFT → horizontal → 8px arc DOWN into
+  //   the trunk. Lives entirely above the coverage list so it never
+  //   visually crosses any coverage label.
   // -------------------------------------------------------------------------
   const pathA = [
     `M ${M_CENTER_X} ${reqBottomY}`,
-    // down to just before the bend
-    `L ${M_CENTER_X} ${activeY - R}`,
-    // 90° arc — going-down → going-left (clockwise visually, sweep 1)
-    `A ${R} ${R} 0 0 1 ${M_CENTER_X - R} ${activeY}`,
-    // left to the active coverage marker
-    `L ${M_TRUNK_X} ${activeY}`,
+    `L ${M_CENTER_X} ${trunkTopY - R}`,
+    // going-down → going-left (sweep 1 = clockwise visually)
+    `A ${R} ${R} 0 0 1 ${M_CENTER_X - R} ${trunkTopY}`,
+    `L ${M_TRUNK_X + R} ${trunkTopY}`,
+    // going-left → going-down (sweep 0 = counter-clockwise visually)
+    `A ${R} ${R} 0 0 0 ${M_TRUNK_X} ${trunkTopY + R}`,
   ].join(" ");
 
   // -------------------------------------------------------------------------
-  // PATH B — Trunk from active coverage down through every detail row,
-  // ending with an 8px arc into the last row's stub. Same structure as
-  // the desktop "comb spine," just running top-to-bottom instead of being
-  // the right-side spine.
+  // PATH B — The trunk spine. Runs from just below the top arc all the way
+  // down to the last detail row, then arcs RIGHT into the last row's stub.
   // -------------------------------------------------------------------------
   const pathB = [
-    `M ${M_TRUNK_X} ${activeY}`,
-    // vertical drop to just above the bottom corner
+    `M ${M_TRUNK_X} ${trunkTopY + R}`,
     `L ${M_TRUNK_X} ${lastDetY - R}`,
-    // 90° arc — going-down → going-right (CCW visually, sweep 0)
+    // going-down → going-right (sweep 0 = counter-clockwise visually)
     `A ${R} ${R} 0 0 0 ${M_TRUNK_X + R} ${lastDetY}`,
-    // horizontal to the last row label stub end
     `L ${M_STUB_END_X} ${lastDetY}`,
   ].join(" ");
 
   // -------------------------------------------------------------------------
-  // PATH C — perpendicular stubs from the trunk to each detail row label
-  // (skipping the last row, which is part of Path B's rounded bottom).
+  // PATH C — perpendicular stubs from the trunk to every coverage label
+  // (all four) and every detail label except the last (which is part of
+  // Path B's rounded bottom corner). Mirrors the desktop "comb stubs".
   // -------------------------------------------------------------------------
-  const stubPaths: { d: string; i: number }[] = [];
+  type Stub = { d: string; key: string; orderDelay: number };
+  const stubPaths: Stub[] = [];
+  // Coverage stubs first, top-to-bottom
+  COVERAGES.forEach((_, i) => {
+    stubPaths.push({
+      d: `M ${M_TRUNK_X} ${mRowY_cov(i)} L ${M_STUB_END_X} ${mRowY_cov(i)}`,
+      key: `cov-${i}`,
+      orderDelay: 0.55 + i * 0.05,
+    });
+  });
+  // Detail stubs (skip last — it's part of Path B)
   for (let i = 0; i < detailCount - 1; i++) {
     stubPaths.push({
       d: `M ${M_TRUNK_X} ${mRowY_det(i)} L ${M_STUB_END_X} ${mRowY_det(i)}`,
-      i,
+      key: `det-${i}`,
+      orderDelay: 0.85 + i * 0.05,
     });
   }
 
@@ -363,20 +380,21 @@ function MobileTree({
 
   return (
     <div
-      className="md:hidden relative rounded-xl bg-[#151515] shadow-[0_4px_7.1px_rgba(0,0,0,0.58)] ring-1 ring-white/[0.08]"
+      className="md:hidden relative rounded-xl bg-[#151515] shadow-[0_4px_7.1px_rgba(0,0,0,0.58)] ring-1 ring-white/[0.08] w-full"
       style={{
-        width: M_W,
+        maxWidth: M_W,
         height: cardH,
-        maxWidth: "100%",
         fontFamily: "var(--font-dm-mono), monospace",
       }}
     >
-      {/* SVG connectors */}
+      {/* SVG connectors — scale X with the card, keep Y in pixels so arc
+          radii stay circular. preserveAspectRatio="none" stretches X. */}
       <svg
         className="absolute inset-0 pointer-events-none"
-        width={M_W}
-        height={cardH}
+        width="100%"
+        height="100%"
         viewBox={`0 0 ${M_W} ${cardH}`}
+        preserveAspectRatio="none"
       >
         <g
           key={activeIndex}
@@ -398,17 +416,13 @@ function MobileTree({
             animate={{ pathLength: 1, opacity: 1 }}
             transition={{ duration: 0.5, ease: EASE_TECH, delay: 0.45 }}
           />
-          {stubPaths.map(({ d, i }) => (
+          {stubPaths.map(({ d, key, orderDelay }) => (
             <motion.path
-              key={i}
+              key={key}
               d={d}
               initial={{ pathLength: 0, opacity: 0 }}
               animate={{ pathLength: 1, opacity: 1 }}
-              transition={{
-                duration: 0.18,
-                ease: EASE_TECH,
-                delay: 0.7 + i * 0.06,
-              }}
+              transition={{ duration: 0.18, ease: EASE_TECH, delay: orderDelay }}
             />
           ))}
         </g>
@@ -416,10 +430,8 @@ function MobileTree({
 
       {/* Requirements label — centered horizontally at the top */}
       <div
-        className="absolute flex items-center justify-center"
+        className="absolute left-0 right-0 flex items-center justify-center"
         style={{
-          left: 0,
-          right: 0,
           top: M_PAD,
           height: M_REQ_H,
         }}
@@ -437,8 +449,8 @@ function MobileTree({
             key={c.name}
             className="absolute flex items-center"
             style={{
-              left: M_LABEL_X,
-              right: M_PAD,
+              left: pctX(M_LABEL_X),
+              right: pctX(M_PAD),
               top: mRowY_cov(i) - M_COV_ROW_H / 2,
               height: M_COV_ROW_H,
             }}
@@ -462,12 +474,12 @@ function MobileTree({
         {coverage.details.map((d, i) => (
           <motion.div
             key={d.label}
-            className={`absolute flex items-center justify-between gap-3 ${
+            className={`absolute flex items-center justify-between gap-2 ${
               d.missing ? "bg-[#ff4848]" : ""
             }`}
             style={{
-              left: M_LABEL_X,
-              right: M_PAD,
+              left: pctX(M_LABEL_X),
+              right: pctX(M_PAD),
               top: mRowY_det(i) - M_DET_ROW_H / 2,
               height: M_DET_ROW_H,
               paddingLeft: d.missing ? 8 : 0,
