@@ -6,10 +6,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   FileTextIcon,
   ChevronDownIcon,
-  BookOpenIcon,
-  NewspaperIcon,
-  VideoIcon,
-  CalculatorIcon,
   ClipboardCheckIcon,
   MenuIcon,
   XIcon,
@@ -29,15 +25,8 @@ interface MenuSection {
 }
 
 const resourcesMenu: MenuSection[] = [
-  {
-    category: "Learn",
-    items: [
-      { label: "Blog", icon: NewspaperIcon, description: "Latest insights and updates" },
-      { label: "Success Stories", icon: BookOpenIcon, description: "See how we've saved thousands" },
-      { label: "Video Walkthroughs", icon: VideoIcon, description: "See Midpoint in action" },
-      { label: "ROI Calculator", icon: CalculatorIcon, description: "Estimate your savings" },
-    ],
-  },
+  // The "Learn" category (Blog / Success Stories / Video Walkthroughs /
+  // ROI Calculator) is hidden until those pages exist.
   {
     category: "Materials",
     items: [
@@ -48,10 +37,12 @@ const resourcesMenu: MenuSection[] = [
 ];
 
 interface NavbarV2Props {
-  onQuoteClick: () => void;
+  // Kept on the prop signature so callers don't have to change; the
+  // CTA itself is hidden until we're ready to go live with quoting.
+  onQuoteClick?: () => void;
 }
 
-export default function NavbarV2({ onQuoteClick }: NavbarV2Props) {
+export default function NavbarV2(_props: NavbarV2Props) {
   const [resourcesOpen, setResourcesOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileResourcesOpen, setMobileResourcesOpen] = useState(false);
@@ -224,12 +215,7 @@ export default function NavbarV2({ onQuoteClick }: NavbarV2Props) {
           >
             Contact
           </Link>
-          <button
-            onClick={onQuoteClick}
-            className="ml-3 px-4 py-1.5 text-sm font-medium text-zinc-900 dark:text-white border border-zinc-300 dark:border-zinc-700 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
-          >
-            Get a quote
-          </button>
+          {/* "Get a quote" CTA hidden site-wide until we're ready to go live */}
         </div>
       </div>
     </header>
@@ -320,20 +306,7 @@ export default function NavbarV2({ onQuoteClick }: NavbarV2Props) {
                   Contact
                 </Link>
               </div>
-
-              {/* Get a quote CTA — lives inside the menu on mobile so the
-                  collapsed header stays minimal. */}
-              <div className="pt-4">
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    onQuoteClick();
-                  }}
-                  className="block w-full text-center px-6 py-4 text-base font-medium text-zinc-950 bg-lime-400 rounded-full hover:bg-lime-300 transition-colors"
-                >
-                  Get a quote
-                </button>
-              </div>
+              {/* Get a quote CTA hidden until we're ready to go live */}
             </div>
           </motion.div>
         )}

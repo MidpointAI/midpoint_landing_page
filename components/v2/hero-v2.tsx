@@ -4,7 +4,6 @@ import { useRef } from "react";
 import Link from "next/link";
 import { motion, useInView, useScroll, useTransform } from "framer-motion";
 import { ArrowRightIcon } from "lucide-react";
-import { useQuoteModal } from "@/components/v2/site-chrome";
 
 const HERO_BG_URL =
   "https://cdn.magicpatterns.com/uploads/aYGrNQuUPNdajTBmWkC5Wu/Hero.svg";
@@ -12,7 +11,6 @@ const HERO_BG_URL =
 const ease = [0.16, 1, 0.3, 1];
 
 export default function HeroV2() {
-  const { openQuote } = useQuoteModal();
   const sectionRef = useRef<HTMLDivElement>(null);
 
   const { scrollYProgress } = useScroll({
@@ -138,12 +136,7 @@ export default function HeroV2() {
             transition={{ duration: 0.9, ease, delay: 0.85 }}
             className="flex flex-col sm:flex-row items-center gap-4"
           >
-            <button
-              onClick={openQuote}
-              className="px-6 py-2 bg-lime-400 text-zinc-950 text-sm font-medium rounded-full hover:bg-lime-500 hover:scale-105 transition-all duration-200"
-            >
-              Get a Quote
-            </button>
+            {/* "Get a Quote" CTA hidden until we're ready to go live. */}
             <Link
               href="/resources"
               className="inline-flex items-center gap-2 text-sm font-medium text-zinc-400 hover:text-white transition-colors"

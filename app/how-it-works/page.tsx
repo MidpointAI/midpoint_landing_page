@@ -1,9 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRightIcon } from "lucide-react";
-import { Button } from "@/components/v2/ui/button";
-import { useQuoteModal } from "@/components/v2/site-chrome";
 import WhatWeDoSteps from "@/components/v2/what-we-do-steps";
 import FooterV2 from "@/components/v2/footer-v2";
 import NoOrphans from "@/components/v2/no-orphans";
@@ -28,7 +25,6 @@ const youGet = [
 ];
 
 function Step1Hero() {
-  const { openQuote } = useQuoteModal();
   const { ref, isActive } = useStepActivity("step-1");
 
   // Same easing as the rest of the steps for visual continuity.
@@ -107,19 +103,8 @@ function Step1Hero() {
           </motion.p>
         </div>
 
-        {/* CTA Button */}
-        <motion.div
-          animate={{ opacity: isActive ? 1 : 0.4 }}
-          transition={{ duration: 0.5, ease: EASE }}
-        >
-          <Button
-            size="lg"
-            onClick={openQuote}
-            className="bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200 gap-2 text-sm px-8 rounded-xl"
-          >
-            See if your file holds up <ArrowRightIcon className="h-4 w-4" />
-          </Button>
-        </motion.div>
+        {/* "See if your file holds up" CTA (opens the quote modal) hidden
+            until we're ready to go live with quoting. */}
       </div>
     </section>
   );
@@ -134,8 +119,6 @@ export default function HowItWorksPage() {
 }
 
 function HowItWorksContent() {
-  const { openQuote } = useQuoteModal();
-
   return (
     <main className="relative bg-white dark:bg-zinc-950 text-zinc-900 dark:text-white min-h-screen">
       <Step1Hero />
@@ -198,21 +181,8 @@ function HowItWorksContent() {
         </div>
       </section>
 
-      {/* Final CTA */}
-      <section className="w-full px-4 md:px-6 py-20 text-center bg-white dark:bg-zinc-950 border-t border-zinc-200 dark:border-zinc-900">
-        <h2
-          className="text-4xl font-bold text-zinc-900 dark:text-white mb-4 tracking-tight"
-          style={{ fontFamily: "var(--font-display), sans-serif" }}
-        >
-          Ready to stop collecting COIs?
-        </h2>
-        <p className="text-zinc-500 dark:text-zinc-400 text-lg mb-8 max-w-xl mx-auto">
-          Get a custom quote in under 60 seconds. No sales call required.
-        </p>
-        <Button size="lg" onClick={openQuote} className="gap-2 text-base px-10">
-          Get a Quote Now <ArrowRightIcon className="h-4 w-4" />
-        </Button>
-      </section>
+      {/* Final "Ready to stop collecting COIs?" / "Get a Quote Now" CTA
+          hidden until we're ready to go live with quoting. */}
 
       <FooterV2 />
     </main>
