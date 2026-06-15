@@ -89,6 +89,12 @@ const DET_LEFT = COV_RIGHT + COL_GAP;          // left edge of details column ==
 const DET_RIGHT = DET_LEFT + DET_W;
 const CARD_W = DET_RIGHT + PAD;
 
+// Desktop helper: convert a viewBox X to a percentage of CARD_W. Same idea
+// as the mobile pctX — keeps HTML labels aligned with the SVG when the
+// card scales down to fit a narrower viewport.
+const pctXD = (x: number) => `${(x / CARD_W) * 100}%`;
+const pctWD = (w: number) => `${(w / CARD_W) * 100}%`;
+
 // The vertical "trunk" sits exactly at the left edge of the details column.
 const TRUNK_X = DET_LEFT;
 
@@ -138,10 +144,12 @@ export default function ExpertsVerifyGraphic() {
 
   return (
     <div ref={ref} className="w-full flex justify-center">
-      {/* Mobile (< md): vertical tree */}
+      {/* < xl (mobile + tablet + small desktop): vertical tree. The
+          horizontal card is only used when there's enough room for it to
+          render at full size without crushing the labels. */}
       <MobileTree activeIndex={activeIndex} coverage={coverage} />
 
-      {/* Desktop (md+): horizontal card */}
+      {/* xl and up: horizontal card */}
       <DesktopCard activeIndex={activeIndex} activeY={activeY} coverage={coverage} />
     </div>
   );
@@ -160,15 +168,15 @@ function DesktopCard({
 }) {
   return (
     <div
-      className="hidden md:block relative rounded-xl bg-[#151515] shadow-[0_4px_7.1px_rgba(0,0,0,0.58)] ring-1 ring-white/[0.08]"
+      className="hidden xl:block relative rounded-xl bg-[#151515] shadow-[0_4px_7.1px_rgba(0,0,0,0.58)] ring-1 ring-white/[0.08]"
       style={{
         width: CARD_W,
         height: CARD_H,
         fontFamily: "var(--font-dm-mono), monospace",
-        maxWidth: "100%",
       }}
     >
-      {/* Connectors under the labels */}
+      {/* Connectors under the labels — fixed size since the card itself
+          only renders when there's room for the full CARD_W. */}
       <svg
         className="absolute inset-0 pointer-events-none"
         width={CARD_W}
@@ -388,9 +396,8 @@ function MobileTree({
 
   return (
     <div
-      className="md:hidden relative rounded-xl bg-[#151515] shadow-[0_4px_7.1px_rgba(0,0,0,0.58)] ring-1 ring-white/[0.08] w-full"
+      className="xl:hidden relative rounded-xl bg-[#151515] shadow-[0_4px_7.1px_rgba(0,0,0,0.58)] ring-1 ring-white/[0.08] w-full max-w-md md:max-w-xl"
       style={{
-        maxWidth: M_W,
         height: cardH,
         fontFamily: "var(--font-dm-mono), monospace",
       }}
