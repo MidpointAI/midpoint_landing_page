@@ -14,7 +14,12 @@ export default function ThemeToggle() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => setMounted(true), []);
+  // Deferred so we don't synchronously setState in the mount effect (the
+  // standard next-themes hydration guard).
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(raf);
+  }, []);
 
   if (!mounted) return null;
 

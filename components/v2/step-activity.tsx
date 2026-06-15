@@ -75,10 +75,13 @@ export function StepActivityProvider({ children }: { children: React.ReactNode }
   );
 
   useEffect(() => {
-    pickClosest();
+    // Defer the initial pick to the next frame so we don't trigger a
+    // cascading render on mount (children haven't registered yet anyway).
+    const raf = requestAnimationFrame(pickClosest);
     window.addEventListener("scroll", pickClosest, { passive: true });
     window.addEventListener("resize", pickClosest);
     return () => {
+      cancelAnimationFrame(raf);
       window.removeEventListener("scroll", pickClosest);
       window.removeEventListener("resize", pickClosest);
     };

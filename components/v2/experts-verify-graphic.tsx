@@ -89,12 +89,6 @@ const DET_LEFT = COV_RIGHT + COL_GAP;          // left edge of details column ==
 const DET_RIGHT = DET_LEFT + DET_W;
 const CARD_W = DET_RIGHT + PAD;
 
-// Desktop helper: convert a viewBox X to a percentage of CARD_W. Same idea
-// as the mobile pctX — keeps HTML labels aligned with the SVG when the
-// card scales down to fit a narrower viewport.
-const pctXD = (x: number) => `${(x / CARD_W) * 100}%`;
-const pctWD = (w: number) => `${(w / CARD_W) * 100}%`;
-
 // The vertical "trunk" sits exactly at the left edge of the details column.
 const TRUNK_X = DET_LEFT;
 

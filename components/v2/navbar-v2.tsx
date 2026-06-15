@@ -42,7 +42,7 @@ interface NavbarV2Props {
   onQuoteClick?: () => void;
 }
 
-export default function NavbarV2(_props: NavbarV2Props) {
+export default function NavbarV2({}: NavbarV2Props) {
   const [resourcesOpen, setResourcesOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileResourcesOpen, setMobileResourcesOpen] = useState(false);
