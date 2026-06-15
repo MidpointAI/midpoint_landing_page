@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { motion, useInView, useScroll, useTransform } from "framer-motion";
 
 const testimonials = [
   {
@@ -43,6 +43,20 @@ const positionConfig = {
 export default function BuilderTestimonials() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
+  const isInView = useInView(sectionRef, { once: true, amount: 0.3 });
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+
+  // Parallax layers at different rates
+  const carouselY = useTransform(scrollYProgress, [0, 1], [80, -80]);
+  const titleY = useTransform(scrollYProgress, [0, 1], [40, -40]);
+  // Exit: scale down + blur as you leave
+  const sectionScale = useTransform(scrollYProgress, [0.7, 1], [1, 0.92]);
+  const sectionOpacity = useTransform(scrollYProgress, [0.75, 1], [1, 0]);
 
   const advance = useCallback(() => {
     setActiveIndex((prev) => (prev + 1) % testimonials.length);
@@ -61,17 +75,29 @@ export default function BuilderTestimonials() {
   };
 
   return (
-    <section className="w-full bg-zinc-950 py-24 pt-[110px] pb-[110px]">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="text-center mb-16">
-          <p className="text-zinc-400 text-base md:text-lg">
+    <section ref={sectionRef} className="w-full bg-white dark:bg-zinc-950 py-24 pt-[110px] pb-[110px] md:min-h-[100dvh] md:snap-start md:flex md:flex-col md:justify-center overflow-hidden">
+      <motion.div
+        className="max-w-7xl mx-auto px-4 md:px-6"
+        style={{ scale: sectionScale, opacity: sectionOpacity }}
+      >
+        <motion.div
+          className="text-center mb-16"
+          style={{ y: titleY }}
+          initial={{ opacity: 0, y: 60, filter: "blur(8px)" }}
+          animate={isInView ? { opacity: 1, y: 0, filter: "blur(0px)" } : { opacity: 0, y: 60, filter: "blur(8px)" }}
+          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <p className="text-zinc-500 dark:text-zinc-400 text-base md:text-lg">
             Real stories from contractors who transformed their risk management
           </p>
-        </div>
+        </motion.div>
 
-        <div
+        <motion.div
           className="relative w-full max-w-2xl mx-auto"
-          style={{ perspective: "1200px", perspectiveOrigin: "50% 50%" }}
+          style={{ perspective: "1200px", perspectiveOrigin: "50% 50%", y: carouselY }}
+          initial={{ opacity: 0, scale: 0.7, filter: "blur(12px)" }}
+          animate={isInView ? { opacity: 1, scale: 1, filter: "blur(0px)" } : { opacity: 0, scale: 0.7, filter: "blur(12px)" }}
+          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
         >
           <div className="relative" style={{ minHeight: "320px" }}>
             {testimonials.map((testimonial, index) => {
@@ -94,10 +120,10 @@ export default function BuilderTestimonials() {
                   style={{ transformStyle: "preserve-3d", willChange: "transform" }}
                   onClick={() => handleClick(index)}
                 >
-                  <div className="rounded-xl bg-zinc-900/90 border border-zinc-800/50 p-8 md:p-10 h-full flex flex-col justify-center">
+                  <div className="rounded-xl bg-zinc-50/90 dark:bg-zinc-900/90 border border-zinc-200/50 dark:border-zinc-800/50 p-8 md:p-10 h-full flex flex-col justify-center">
                     <p
                       className={`italic text-base md:text-lg leading-relaxed mb-6 text-center ${
-                        isActive ? "text-zinc-200" : "text-zinc-500"
+                        isActive ? "text-zinc-700 dark:text-zinc-200" : "text-zinc-400 dark:text-zinc-500"
                       }`}
                     >
                       &ldquo;{testimonial.quote}&rdquo;
@@ -105,17 +131,17 @@ export default function BuilderTestimonials() {
                     <div className="text-center">
                       <p
                         className={`text-base font-medium mb-1 ${
-                          isActive ? "text-lime-400" : "text-zinc-600"
+                          isActive ? "text-lime-600 dark:text-lime-400" : "text-zinc-400 dark:text-zinc-600"
                         }`}
                       >
                         {testimonial.name}
                       </p>
-                      <p className="text-xs font-medium tracking-wider uppercase text-zinc-500">
+                      <p className="text-xs font-medium tracking-wider uppercase text-zinc-400 dark:text-zinc-500">
                         {testimonial.title}
                       </p>
                       <p
                         className={`text-xs font-medium tracking-wider uppercase ${
-                          isActive ? "text-lime-400/60" : "text-zinc-700"
+                          isActive ? "text-lime-600/60 dark:text-lime-400/60" : "text-zinc-300 dark:text-zinc-700"
                         }`}
                       >
                         {testimonial.company}
@@ -126,9 +152,14 @@ export default function BuilderTestimonials() {
               );
             })}
           </div>
-        </div>
+        </motion.div>
 
-        <div className="flex justify-center gap-2 mt-10">
+        <motion.div
+          className="flex justify-center gap-2 mt-10"
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+          transition={{ duration: 0.6, delay: 0.6 }}
+        >
           {testimonials.map((_, index) => (
             <button
               key={index}
@@ -136,13 +167,13 @@ export default function BuilderTestimonials() {
               className={`h-2 rounded-full transition-all duration-500 ${
                 index === activeIndex
                   ? "w-6 bg-lime-400"
-                  : "w-2 bg-zinc-700 hover:bg-zinc-500"
+                  : "w-2 bg-zinc-300 dark:bg-zinc-700 hover:bg-zinc-400 dark:hover:bg-zinc-500"
               }`}
               aria-label={`Show testimonial ${index + 1}`}
             />
           ))}
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </section>
   );
 }

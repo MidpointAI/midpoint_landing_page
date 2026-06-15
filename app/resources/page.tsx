@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Footer from "@/components/footer";
-import { ResourcesHero } from "@/components/resources/resources-hero";
+import Footer from "@/components/v2/footer-v2";
 import {
   ResourcesSidebar,
   GradientDivider,
@@ -20,14 +19,11 @@ export default function ResourcesPage() {
 
   return (
     <div className="min-h-svh bg-background text-foreground">
-      {/* Hero Section */}
-      <ResourcesHero />
-
       {/* Mobile Navigation */}
       <ResourcesMobileNav activePage={activePage} onNavigate={handleNavigate} />
 
       {/* Docs Body */}
-      <div className="max-w-[1400px] mx-auto px-6 lg:px-8 xl:px-12">
+      <div className="max-w-[1400px] mx-auto px-4 md:px-6 lg:px-8 xl:px-12">
         <div className="flex">
           {/* Desktop Sidebar */}
           <ResourcesSidebar

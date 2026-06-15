@@ -19,9 +19,11 @@ export const BoxesCore = ({ className, ...rest }: { className?: string }) => {
     "oklch(0.70 0.10 50 / 0.3)",   // amber
   ];
 
-  const getRandomColor = () => {
-    return colors[Math.floor(Math.random() * colors.length)];
-  };
+  // Deterministic per-cell color so the palette stays varied without calling
+  // an impure function (Math.random) during render — the two coprime strides
+  // spread colors across the grid without an obvious repeating pattern.
+  const colorFor = (i: number, j: number) =>
+    colors[(i * 7 + j * 13) % colors.length];
 
   return (
     <div
@@ -42,7 +44,7 @@ export const BoxesCore = ({ className, ...rest }: { className?: string }) => {
           {cols.map((_, j) => (
             <motion.div
               whileHover={{
-                backgroundColor: `${getRandomColor()}`,
+                backgroundColor: colorFor(i, j),
                 transition: { duration: 0 },
               }}
               animate={{

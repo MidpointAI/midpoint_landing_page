@@ -8,7 +8,7 @@ export default function FinalCta() {
   const { openQuote } = useQuoteModal();
 
   return (
-    <section className="w-full px-6 py-20 text-center bg-zinc-950">
+    <section className="w-full px-4 md:px-6 py-20 text-center bg-zinc-950">
       <h2
         className="text-4xl font-bold text-white mb-4 tracking-tight"
         style={{ fontFamily: "var(--font-display), sans-serif" }}
