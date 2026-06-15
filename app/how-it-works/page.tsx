@@ -43,6 +43,18 @@ function Step1Hero() {
       className="w-full pt-36 pb-24 md:pt-44 md:pb-32 px-4 md:px-6 bg-[#f4ffe0] dark:bg-zinc-900"
     >
       <div className="max-w-5xl mx-auto flex flex-col items-center gap-10 md:gap-14">
+        {/* Section subhead — matches the "WHAT WE DO." subhead on the
+            WhatWeDoSteps section below, just inverted for the lighter
+            background here. */}
+        <motion.p
+          className="text-zinc-700 dark:text-[#dadad9] text-[18px] tracking-[5.76px] text-center leading-[1.5]"
+          style={{ fontFamily: "var(--font-dm-mono), monospace" }}
+          animate={{ opacity: isActive ? 1 : 0.4 }}
+          transition={{ duration: 0.5, ease: EASE }}
+        >
+          WHAT YOU DO.
+        </motion.p>
+
         <div className="flex flex-col items-center gap-10 md:gap-12 max-w-[794px]">
           <div className="flex flex-col items-center gap-5 md:gap-6">
             {/* Step pill — frosted glass when active, fades to outline when inactive */}
