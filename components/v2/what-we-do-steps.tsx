@@ -49,7 +49,7 @@ const EASE: [number, number, number, number] = [0.25, 0.1, 0.25, 1];
 function StepPill({ step, isActive }: { step: number; isActive: boolean }) {
   return (
     <motion.div
-      className="relative inline-flex items-center justify-center rounded-full border-[0.5px] px-6 py-1.5 backdrop-blur-md"
+      className="relative inline-flex items-center justify-center rounded-full border-[0.5px] px-4 py-1 md:px-6 md:py-1.5 backdrop-blur-md"
       animate={{
         borderColor: isActive ? "rgba(242,242,242,1)" : "rgba(242,242,242,0.3)",
         backgroundColor: isActive ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0)",
@@ -60,7 +60,7 @@ function StepPill({ step, isActive }: { step: number; isActive: boolean }) {
       transition={{ duration: 0.4, ease: EASE }}
     >
       <motion.span
-        className="text-[18px] font-medium tracking-[5.76px] leading-[1.5] whitespace-nowrap"
+        className="text-[13px] tracking-[3.5px] md:text-[18px] md:tracking-[5.76px] font-medium leading-[1.5] whitespace-nowrap"
         style={{ fontFamily: "var(--font-dm-mono), monospace" }}
         animate={{ color: isActive ? "rgb(201,255,100)" : "rgba(201,255,100,0.35)" }}
         transition={{ duration: 0.4 }}
@@ -106,7 +106,7 @@ function StepItem({ step }: { step: StepDef }) {
     <div ref={ref} className="relative w-full">
         {/* Step 2 — text left, image right (Figma spec: p-[112px], gap-[43px]) */}
         {step.layout === "text-and-image" && (
-          <div className="px-8 md:px-16 lg:px-28 py-16 md:py-20 lg:py-28 flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-[43px]">
+          <div className="px-4 md:px-16 lg:px-28 py-16 md:py-20 lg:py-28 flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-[43px]">
             <div className="flex flex-col gap-[43px] w-full lg:w-[500px] flex-shrink-0">
               <div className="flex flex-col gap-6 items-start">
                 <StepPill step={step.step} isActive={isActive} />
@@ -131,7 +131,7 @@ function StepItem({ step }: { step: StepDef }) {
 
         {/* Step 3 — centered headline + animated graphic (p-[112px], gap-[48px]) */}
         {step.layout === "centered-graphic" && (
-          <div className="px-6 md:px-16 lg:px-28 py-16 md:py-20 lg:py-28 flex flex-col items-center gap-12">
+          <div className="px-0 md:px-16 lg:px-28 py-16 md:py-20 lg:py-28 flex flex-col items-center gap-12">
             <div className="flex flex-col gap-4 items-center text-center max-w-5xl">
               <StepPill step={step.step} isActive={isActive} />
               <h3
@@ -158,7 +158,7 @@ function StepItem({ step }: { step: StepDef }) {
 
         {/* Step 4 — right-aligned text, large gap between title and body */}
         {step.layout === "text-right" && (
-          <div className="px-8 md:px-16 lg:px-20 py-16 md:py-20 lg:py-28 flex flex-col items-end">
+          <div className="px-4 md:px-16 lg:px-20 py-16 md:py-20 lg:py-28 flex flex-col items-end">
             <div className="flex flex-col gap-[80px] lg:gap-[109px] w-full max-w-[529px]">
               <div className="flex flex-col gap-4 items-start w-full">
                 <StepPill step={step.step} isActive={isActive} />
@@ -173,7 +173,7 @@ function StepItem({ step }: { step: StepDef }) {
 
         {/* Step 5 — right-aligned text with radial gradient highlight on active */}
         {step.layout === "text-right-highlight" && (
-          <div className="px-8 md:px-16 lg:px-20 py-16 md:py-20 lg:py-28 flex flex-col items-end">
+          <div className="px-4 md:px-16 lg:px-20 py-16 md:py-20 lg:py-28 flex flex-col items-end">
             <div className="flex flex-col gap-[70px] lg:gap-[94px] w-full max-w-[512px]">
               <div className="flex flex-col gap-4 items-start w-full">
                 <StepPill step={step.step} isActive={isActive} />
@@ -192,7 +192,7 @@ function StepItem({ step }: { step: StepDef }) {
 /* -------------------------------- Container --------------------------------- */
 export default function WhatWeDoSteps() {
   return (
-    <section className="w-full bg-[#001512] py-16 md:py-28 px-6 md:px-12 lg:px-28">
+    <section className="w-full bg-[#001512] py-16 md:py-28 px-4 md:px-12 lg:px-28">
       <div className="max-w-7xl mx-auto flex flex-col items-center gap-10 md:gap-12">
         {/* Header */}
         <p

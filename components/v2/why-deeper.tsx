@@ -40,7 +40,7 @@ export default function WhyDeeper() {
   return (
     <section className="w-full bg-white dark:bg-zinc-950 py-32 overflow-hidden md:min-h-[100dvh] md:snap-start md:flex md:flex-col md:justify-center" ref={sectionRef}>
       <motion.div
-        className="max-w-7xl mx-auto px-6"
+        className="max-w-7xl mx-auto px-4 md:px-6"
         style={{ scale: sectionScale, opacity: sectionOpacity }}
       >
         <motion.p
@@ -141,7 +141,7 @@ export default function WhyDeeper() {
                   even know to look for.
                 </motion.p>
                 <motion.a
-                  href="#how-it-works"
+                  href="/how-it-works"
                   className="inline-flex items-center gap-2 text-lime-600 dark:text-lime-400 font-medium text-base hover:text-lime-700 dark:hover:text-lime-300 transition-colors w-fit"
                   initial={{ opacity: 0, x: -20 }}
                   animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}

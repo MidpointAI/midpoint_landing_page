@@ -14,19 +14,9 @@ interface FooterColumn {
 
 const footerColumns: FooterColumn[] = [
   {
-    title: "Services",
-    links: [
-      { label: "COI Verification" },
-      { label: "Endorsement Review" },
-      { label: "Compliance Monitoring" },
-      { label: "Audit Support" },
-      { label: "Sub Outreach" },
-    ],
-  },
-  {
     title: "Resources",
     links: [
-      { label: "How It Works", href: "/pricing/how-it-works" },
+      { label: "How It Works", href: "/how-it-works" },
       { label: "Risk Transfer Process", href: "/resources" },
       { label: "Success Stories" },
       { label: "Blog" },
@@ -55,38 +45,46 @@ const footerColumns: FooterColumn[] = [
 
 export default function FooterV2() {
   return (
-    <footer className="w-full bg-zinc-950 border-t border-white/[0.06]">
-      <div className="max-w-7xl mx-auto px-6 pt-16 pb-12">
+    <footer className="w-full bg-zinc-50 dark:bg-zinc-950 border-t border-zinc-200/60 dark:border-white/[0.06]">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 pt-16 pb-12">
         <div className="flex flex-col lg:flex-row gap-12 lg:gap-0">
           <div className="lg:w-[200px] flex-shrink-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/v2/Mark.svg"
               alt="Midpoint"
-              className="h-8 w-8"
+              className="h-8 w-8 hidden dark:block"
               style={{
                 filter:
                   "brightness(0) saturate(100%) invert(85%) sepia(47%) saturate(419%) hue-rotate(36deg) brightness(104%) contrast(101%)",
               }}
             />
+            <img
+              src="/v2/Mark.svg"
+              alt="Midpoint"
+              className="h-8 w-8 dark:hidden block"
+              style={{
+                filter: "brightness(0) saturate(100%)",
+              }}
+            />
           </div>
 
-          <div className="flex-1 grid grid-cols-2 sm:grid-cols-4 gap-8 lg:gap-12">
+          <div className="flex-1 grid grid-cols-2 sm:grid-cols-3 gap-8 lg:gap-12">
             {footerColumns.map((column) => (
               <div key={column.title}>
-                <p className="text-sm font-medium text-white mb-5">{column.title}</p>
+                <p className="text-sm font-medium text-zinc-900 dark:text-white mb-5">{column.title}</p>
                 <ul className="space-y-3">
                   {column.links.map((link) => (
                     <li key={link.label}>
                       {link.href ? (
                         <Link
                           href={link.href}
-                          className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors"
+                          className="text-sm text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
                         >
                           {link.label}
                         </Link>
                       ) : (
-                        <span className="text-sm text-zinc-500 cursor-default">
+                        <span className="text-sm text-zinc-400 dark:text-zinc-500 cursor-default">
                           {link.label}
                         </span>
                       )}
@@ -98,13 +96,13 @@ export default function FooterV2() {
           </div>
         </div>
 
-        <div className="mt-16 pt-6 border-t border-white/[0.06] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="mt-16 pt-6 border-t border-zinc-200/60 dark:border-white/[0.06] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-6">
-            <span className="text-sm text-zinc-600">Privacy</span>
-            <span className="text-sm text-zinc-600">Terms</span>
-            <span className="text-sm text-zinc-600">DPA</span>
+            <span className="text-sm text-zinc-400 dark:text-zinc-600">Privacy</span>
+            <span className="text-sm text-zinc-400 dark:text-zinc-600">Terms</span>
+            <span className="text-sm text-zinc-400 dark:text-zinc-600">DPA</span>
           </div>
-          <p className="text-sm text-zinc-600">
+          <p className="text-sm text-zinc-400 dark:text-zinc-600">
             © {new Date().getFullYear()} Midpoint Verified. All rights reserved.
           </p>
         </div>

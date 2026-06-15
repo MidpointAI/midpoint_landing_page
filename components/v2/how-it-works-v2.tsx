@@ -103,7 +103,7 @@ export default function HowItWorksV2() {
 
   return (
     <section ref={sectionRef} id="how-it-works" className="w-full bg-white dark:bg-zinc-950 py-24 overflow-hidden scroll-mt-24 md:flex-1">
-      <div className="max-w-7xl mx-auto px-6 pb-[80px]">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 pb-[80px]">
         <motion.div
           className="text-center mb-16 max-w-3xl mx-auto"
           style={{ y: headerY }}

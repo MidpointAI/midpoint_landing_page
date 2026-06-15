@@ -79,7 +79,7 @@ export default function HeroV2() {
       <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-zinc-950 to-transparent pointer-events-none" />
 
       <motion.main
-        className="relative z-10 flex flex-col px-6 text-center items-center justify-center flex-1"
+        className="relative z-10 flex flex-col px-4 md:px-6 text-center items-center justify-center flex-1"
         style={{ scale: contentScale, opacity: contentOpacity, y: contentY }}
       >
         <div className="flex flex-col items-center">

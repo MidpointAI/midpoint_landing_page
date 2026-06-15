@@ -51,7 +51,7 @@ export default function BuiltForBuilders() {
   return (
     <section ref={sectionRef} className="w-full bg-white dark:bg-zinc-950 py-36 relative overflow-hidden md:min-h-[100dvh] md:snap-start md:flex md:flex-col md:justify-center">
       <motion.div
-        className="relative max-w-7xl mx-auto px-6"
+        className="relative max-w-7xl mx-auto px-4 md:px-6"
         style={{ scale: sectionScale, opacity: sectionOpacity }}
       >
         <div className="flex flex-col md:flex-row md:gap-20 items-center gap-[0px]">

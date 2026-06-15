@@ -2,6 +2,7 @@
 
 import { ThemeProvider, useTheme } from "next-themes";
 import { Toaster } from "sonner";
+import ThemeToggle from "@/components/v2/theme-toggle";
 
 function ThemedToaster() {
   const { resolvedTheme } = useTheme();
@@ -25,6 +26,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     >
       {children}
       <ThemedToaster />
+      <ThemeToggle />
     </ThemeProvider>
   );
 }

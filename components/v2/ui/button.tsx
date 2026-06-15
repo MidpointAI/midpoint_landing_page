@@ -14,11 +14,11 @@ const buttonVariants = cva(
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
-          "border border-zinc-700 bg-transparent text-white hover:bg-zinc-900",
+          "border border-zinc-300 dark:border-zinc-700 bg-transparent text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-900",
         secondary:
-          "bg-zinc-800 text-white hover:bg-zinc-700",
-        ghost: "hover:bg-zinc-900 text-white",
-        link: "text-lime-400 underline-offset-4 hover:underline",
+          "bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white hover:bg-zinc-200 dark:hover:bg-zinc-700",
+        ghost: "hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-900 dark:text-white",
+        link: "text-lime-600 dark:text-lime-400 underline-offset-4 hover:underline",
       },
       size: {
         default: "h-10 px-4 py-2",

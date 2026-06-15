@@ -77,7 +77,7 @@ export default function BuilderTestimonials() {
   return (
     <section ref={sectionRef} className="w-full bg-white dark:bg-zinc-950 py-24 pt-[110px] pb-[110px] md:min-h-[100dvh] md:snap-start md:flex md:flex-col md:justify-center overflow-hidden">
       <motion.div
-        className="max-w-7xl mx-auto px-6"
+        className="max-w-7xl mx-auto px-4 md:px-6"
         style={{ scale: sectionScale, opacity: sectionOpacity }}
       >
         <motion.div

@@ -260,53 +260,67 @@ function DesktopCard({
 
 /* --------------------------------- MobileTree ------------------------------ */
 /**
- * Mobile vertical-tree layout. Mirrors the desktop card visually — same
- * borderless columns, same SVG connectors with 8px rounded corners, same
- * pathLength animations — just rotated for vertical flow.
+ * Mobile vertical-tree layout — file-explorer style.
  *
- * Structure:
- *   Requirements (centered, top)
- *           │
- *           │  (vertical drop, then 8px arc LEFT)
- *           │
- *      ╭───┘
- *      │
- *      ●  Active Coverage      <- coverage list (active row connects to trunk)
- *      ○  ...
- *      │
- *      │  (trunk continues down through the details)
- *      │
- *      ├──── Detail 1
- *      ├──── Detail 2
- *      ├──── …
- *      ╰──── Last Detail        <- 8px arc RIGHT at trunk bottom
+ *   Requirements
+ *   │
+ *   ├── General Liability             <- coverage row (active = bold white)
+ *   │   │
+ *   │   ├── Policy Basis    Occurrence
+ *   │   ├── Per Occurrence  $1,000,000
+ *   │   ├── …
+ *   │   └── Last Detail     ✓         <- bottom rounded corner on sub-trunk
+ *   │
+ *   ├── Auto
+ *   ├── Worker's Comp
+ *   └── Umbrella                      <- last coverage = main trunk bottom corner
+ *
+ * Requirements is the parent. The main trunk spans all four coverage types.
+ * The active coverage's endorsement details nest under it via a sub-trunk
+ * (one indent level deeper), with their values on the same line.
  */
 
-// Mobile layout constants. M_W is the SVG viewBox width that everything
-// is measured against; the actual rendered card width is capped at
-// M_W via max-width but allowed to scale down to fit narrower viewports.
-const M_PAD = 16;
-const M_COV_ROW_H = 38; // coverage rows are single-line
-const M_DET_ROW_H = 52; // detail rows can wrap to 2 lines
-const M_REQ_H = 32;
-const M_SECTION_GAP = 24;
-const M_W = 320; // SVG viewBox + max card width
-const M_TRUNK_X = 28;
-const M_LABEL_X = 48; // where coverage / detail labels start
-const M_STUB_END_X = M_LABEL_X - 4;
-const M_CENTER_X = M_W / 2;
-// Backwards-compat alias used below
-const M_ROW_H = M_COV_ROW_H;
+const M_PAD = 16; // outer card padding (= 16px outside margin per user spec)
+const M_REQ_H = 32; // Requirements row height
+const M_COV_ROW_H = 30; // coverage rows are tighter on mobile
+const M_DET_ROW_H = 42; // detail rows allow ~2 lines of wrap
+const M_SECTION_GAP = 8; // gap between Requirements and the tree below
+const M_W = 360; // SVG viewBox width — content scales to fit
+const M_R = 6; // rounded corner radius (smaller to match the smaller scale)
 
-// Helpers: convert a viewBox X coordinate to a percentage of M_W so the
-// HTML labels stay aligned with the SVG as the card scales.
+// X positions in viewBox units
+const M_TRUNK_1_X = M_PAD + 6; // main trunk descends just inside the card
+const M_LABEL_1_X = M_TRUNK_1_X + 16; // coverage label start
+const M_TRUNK_2_X = M_LABEL_1_X + 6; // sub-trunk for active coverage's children
+const M_LABEL_2_X = M_TRUNK_2_X + 16; // detail label start
+
+// Helpers
 const pctX = (x: number) => `${(x / M_W) * 100}%`;
 
-const mRowY_cov = (i: number) =>
-  M_PAD + M_REQ_H + M_SECTION_GAP + i * M_COV_ROW_H + M_COV_ROW_H / 2;
-const mDetStartY =
-  M_PAD + M_REQ_H + M_SECTION_GAP + COVERAGES.length * M_COV_ROW_H + M_SECTION_GAP;
-const mRowY_det = (i: number) => mDetStartY + i * M_DET_ROW_H + M_DET_ROW_H / 2;
+/**
+ * Compute Y centers for every row in the tree given which coverage is
+ * active. Detail rows are inserted UNDER the active coverage row, pushing
+ * subsequent coverage rows down. Returns row centers and the total card
+ * height so the SVG can be sized exactly.
+ */
+function mobileLayout(activeIndex: number, detailCount: number) {
+  const covY: number[] = [];
+  const detY: number[] = [];
+
+  let y = M_PAD + M_REQ_H + M_SECTION_GAP;
+  for (let i = 0; i < COVERAGES.length; i++) {
+    covY.push(y + M_COV_ROW_H / 2);
+    y += M_COV_ROW_H;
+    if (i === activeIndex) {
+      for (let j = 0; j < detailCount; j++) {
+        detY.push(y + M_DET_ROW_H / 2);
+        y += M_DET_ROW_H;
+      }
+    }
+  }
+  const cardH = y + M_PAD;
+  return { covY, detY, cardH };
+}
 
 function MobileTree({
   activeIndex,
@@ -316,65 +330,59 @@ function MobileTree({
   coverage: Coverage;
 }) {
   const detailCount = coverage.details.length;
-  const lastDetY = mRowY_det(detailCount - 1);
-  const cardH = mDetStartY + detailCount * M_DET_ROW_H + M_PAD;
-
-  const reqBottomY = M_PAD + M_REQ_H;
-  // The trunk's top sits in the gap BETWEEN Requirements and the first
-  // coverage row, so Path A's horizontal segment never crosses a label.
-  const trunkTopY = M_PAD + M_REQ_H + M_SECTION_GAP / 2;
+  const { covY, detY, cardH } = mobileLayout(activeIndex, detailCount);
+  const activeCovY = covY[activeIndex];
+  const lastCovY = covY[covY.length - 1];
 
   // -------------------------------------------------------------------------
-  // PATH A — Requirements → top of trunk (L-bend)
-  //   Down from Req center → 8px arc LEFT → horizontal → 8px arc DOWN into
-  //   the trunk. Lives entirely above the coverage list so it never
-  //   visually crosses any coverage label.
+  // MAIN TRUNK (Requirements → all coverage types)
+  // Descends from just below Requirements row down to the LAST coverage row,
+  // ending with a rounded "└" corner into that coverage's stub.
   // -------------------------------------------------------------------------
-  const pathA = [
-    `M ${M_CENTER_X} ${reqBottomY}`,
-    `L ${M_CENTER_X} ${trunkTopY - R}`,
-    // going-down → going-left (sweep 1 = clockwise visually)
-    `A ${R} ${R} 0 0 1 ${M_CENTER_X - R} ${trunkTopY}`,
-    `L ${M_TRUNK_X + R} ${trunkTopY}`,
-    // going-left → going-down (sweep 0 = counter-clockwise visually)
-    `A ${R} ${R} 0 0 0 ${M_TRUNK_X} ${trunkTopY + R}`,
+  const mainTrunkTopY = M_PAD + M_REQ_H + M_SECTION_GAP / 2;
+  const mainTrunkPath = [
+    `M ${M_TRUNK_1_X} ${mainTrunkTopY}`,
+    `L ${M_TRUNK_1_X} ${lastCovY - M_R}`,
+    // going-down → going-right (└ corner, sweep 0 = CCW)
+    `A ${M_R} ${M_R} 0 0 0 ${M_TRUNK_1_X + M_R} ${lastCovY}`,
+    `L ${M_LABEL_1_X - 2} ${lastCovY}`,
   ].join(" ");
 
-  // -------------------------------------------------------------------------
-  // PATH B — The trunk spine. Runs from just below the top arc all the way
-  // down to the last detail row, then arcs RIGHT into the last row's stub.
-  // -------------------------------------------------------------------------
-  const pathB = [
-    `M ${M_TRUNK_X} ${trunkTopY + R}`,
-    `L ${M_TRUNK_X} ${lastDetY - R}`,
-    // going-down → going-right (sweep 0 = counter-clockwise visually)
-    `A ${R} ${R} 0 0 0 ${M_TRUNK_X + R} ${lastDetY}`,
-    `L ${M_STUB_END_X} ${lastDetY}`,
-  ].join(" ");
-
-  // -------------------------------------------------------------------------
-  // PATH C — perpendicular stubs from the trunk to every coverage label
-  // (all four) and every detail label except the last (which is part of
-  // Path B's rounded bottom corner). Mirrors the desktop "comb stubs".
-  // -------------------------------------------------------------------------
-  type Stub = { d: string; key: string; orderDelay: number };
-  const stubPaths: Stub[] = [];
-  // Coverage stubs first, top-to-bottom
-  COVERAGES.forEach((_, i) => {
-    stubPaths.push({
-      d: `M ${M_TRUNK_X} ${mRowY_cov(i)} L ${M_STUB_END_X} ${mRowY_cov(i)}`,
+  // Coverage stubs for all rows EXCEPT the last (which is folded into the
+  // trunk's rounded bottom corner above).
+  const covStubs = covY
+    .slice(0, -1)
+    .map((y, i) => ({
+      d: `M ${M_TRUNK_1_X} ${y} L ${M_LABEL_1_X - 2} ${y}`,
       key: `cov-${i}`,
-      orderDelay: 0.55 + i * 0.05,
-    });
-  });
-  // Detail stubs (skip last — it's part of Path B)
-  for (let i = 0; i < detailCount - 1; i++) {
-    stubPaths.push({
-      d: `M ${M_TRUNK_X} ${mRowY_det(i)} L ${M_STUB_END_X} ${mRowY_det(i)}`,
+      delay: 0.4 + i * 0.06,
+    }));
+
+  // -------------------------------------------------------------------------
+  // SUB-TRUNK (active coverage → its endorsement details)
+  // Branches DOWN from just under the active coverage row at one indent
+  // level, ending with a rounded "└" into the last detail row's stub.
+  // -------------------------------------------------------------------------
+  const lastDetY = detY[detY.length - 1] ?? activeCovY;
+  const subTrunkTopY = activeCovY + M_COV_ROW_H / 2;
+  const subTrunkPath = detailCount > 0
+    ? [
+        `M ${M_TRUNK_2_X} ${subTrunkTopY}`,
+        `L ${M_TRUNK_2_X} ${lastDetY - M_R}`,
+        `A ${M_R} ${M_R} 0 0 0 ${M_TRUNK_2_X + M_R} ${lastDetY}`,
+        `L ${M_LABEL_2_X - 2} ${lastDetY}`,
+      ].join(" ")
+    : null;
+
+  // Detail stubs for all rows EXCEPT the last (folded into sub-trunk's
+  // rounded corner above).
+  const detStubs = detY
+    .slice(0, -1)
+    .map((y, i) => ({
+      d: `M ${M_TRUNK_2_X} ${y} L ${M_LABEL_2_X - 2} ${y}`,
       key: `det-${i}`,
-      orderDelay: 0.85 + i * 0.05,
-    });
-  }
+      delay: 0.75 + i * 0.05,
+    }));
 
   const stroke = "rgba(255,255,255,0.55)";
 
@@ -387,8 +395,6 @@ function MobileTree({
         fontFamily: "var(--font-dm-mono), monospace",
       }}
     >
-      {/* SVG connectors — scale X with the card, keep Y in pixels so arc
-          radii stay circular. preserveAspectRatio="none" stretches X. */}
       <svg
         className="absolute inset-0 pointer-events-none"
         width="100%"
@@ -404,39 +410,55 @@ function MobileTree({
           strokeLinecap="round"
           strokeLinejoin="round"
         >
+          {/* Main trunk + last-coverage corner */}
           <motion.path
-            d={pathA}
+            d={mainTrunkPath}
             initial={{ pathLength: 0, opacity: 0 }}
             animate={{ pathLength: 1, opacity: 1 }}
             transition={{ duration: 0.5, ease: EASE_TECH }}
           />
-          <motion.path
-            d={pathB}
-            initial={{ pathLength: 0, opacity: 0 }}
-            animate={{ pathLength: 1, opacity: 1 }}
-            transition={{ duration: 0.5, ease: EASE_TECH, delay: 0.45 }}
-          />
-          {stubPaths.map(({ d, key, orderDelay }) => (
+          {/* Coverage stubs (sibling branches) */}
+          {covStubs.map(({ d, key, delay }) => (
             <motion.path
               key={key}
               d={d}
               initial={{ pathLength: 0, opacity: 0 }}
               animate={{ pathLength: 1, opacity: 1 }}
-              transition={{ duration: 0.18, ease: EASE_TECH, delay: orderDelay }}
+              transition={{ duration: 0.18, ease: EASE_TECH, delay }}
+            />
+          ))}
+          {/* Sub-trunk for active coverage's children */}
+          {subTrunkPath && (
+            <motion.path
+              d={subTrunkPath}
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{ pathLength: 1, opacity: 1 }}
+              transition={{ duration: 0.45, ease: EASE_TECH, delay: 0.65 }}
+            />
+          )}
+          {/* Detail stubs (children of active coverage) */}
+          {detStubs.map(({ d, key, delay }) => (
+            <motion.path
+              key={key}
+              d={d}
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{ pathLength: 1, opacity: 1 }}
+              transition={{ duration: 0.18, ease: EASE_TECH, delay }}
             />
           ))}
         </g>
       </svg>
 
-      {/* Requirements label — centered horizontally at the top */}
+      {/* Requirements (parent, top-left) */}
       <div
-        className="absolute left-0 right-0 flex items-center justify-center"
+        className="absolute flex items-center"
         style={{
+          left: M_PAD,
           top: M_PAD,
           height: M_REQ_H,
         }}
       >
-        <span className="text-[15px] text-white whitespace-nowrap leading-none">
+        <span className="text-[15px] text-white whitespace-nowrap leading-none font-medium">
           Requirements
         </span>
       </div>
@@ -449,14 +471,14 @@ function MobileTree({
             key={c.name}
             className="absolute flex items-center"
             style={{
-              left: pctX(M_LABEL_X),
+              left: pctX(M_LABEL_1_X),
               right: pctX(M_PAD),
-              top: mRowY_cov(i) - M_COV_ROW_H / 2,
+              top: covY[i] - M_COV_ROW_H / 2,
               height: M_COV_ROW_H,
             }}
           >
             <motion.span
-              className="text-[15px] whitespace-nowrap leading-none"
+              className="text-[14px] whitespace-nowrap leading-none"
               animate={{
                 color: isActive ? "rgb(255,255,255)" : "rgb(157,157,157)",
                 fontWeight: isActive ? 500 : 400,
@@ -469,7 +491,7 @@ function MobileTree({
         );
       })}
 
-      {/* Detail rows — keyed on activeIndex so rows fully replace */}
+      {/* Detail rows — children of the active coverage */}
       <div key={activeIndex} className="absolute inset-0 pointer-events-none">
         {coverage.details.map((d, i) => (
           <motion.div
@@ -478,9 +500,9 @@ function MobileTree({
               d.missing ? "bg-[#ff4848]" : ""
             }`}
             style={{
-              left: pctX(M_LABEL_X),
+              left: pctX(M_LABEL_2_X),
               right: pctX(M_PAD),
-              top: mRowY_det(i) - M_DET_ROW_H / 2,
+              top: detY[i] - M_DET_ROW_H / 2,
               height: M_DET_ROW_H,
               paddingLeft: d.missing ? 8 : 0,
               paddingRight: d.missing ? 8 : 0,
@@ -491,16 +513,16 @@ function MobileTree({
             transition={{
               duration: 0.22,
               ease: EASE_TECH,
-              delay: 0.7 + i * 0.06,
+              delay: 0.8 + i * 0.05,
             }}
           >
-            <span className="text-[12px] text-white leading-tight pr-2">
+            <span className="text-[11px] text-white leading-tight pr-2">
               {d.label}
             </span>
             <div className="flex items-center gap-1 flex-shrink-0">
               {d.value && (
                 <span
-                  className={`text-[12px] whitespace-nowrap leading-tight ${
+                  className={`text-[11px] whitespace-nowrap leading-tight ${
                     d.missing ? "text-white" : "text-[#22c55e]"
                   }`}
                 >
@@ -511,7 +533,7 @@ function MobileTree({
                 <CheckIcon className="h-4 w-4 text-[#22c55e]" strokeWidth={2.5} />
               )}
               {d.missing && !d.value && (
-                <span className="text-[12px] text-white whitespace-nowrap leading-tight">
+                <span className="text-[11px] text-white whitespace-nowrap leading-tight">
                   Missing
                 </span>
               )}
@@ -520,7 +542,7 @@ function MobileTree({
         ))}
       </div>
 
-      {/* Inset highlight ring per Figma */}
+      {/* Inset highlight ring */}
       <div className="absolute inset-0 pointer-events-none rounded-xl shadow-[inset_0_0_1.9px_rgba(255,255,255,0.25)]" />
     </div>
   );
