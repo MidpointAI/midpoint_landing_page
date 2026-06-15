@@ -18,10 +18,13 @@ html::-webkit-scrollbar {
   display: none;
 }
 
-/* Scroll-snap: sections fill viewport and snap into place (desktop only) */
+/* Scroll-snap: sections gently align as the user pauses scrolling (desktop
+   only). `proximity` instead of `mandatory` — mandatory snap can trap
+   scrolling when a snap section is taller than the viewport (e.g., the
+   HowItWorks + Footer wrapper on smaller laptops). */
 @media (min-width: 768px) {
   html {
-    scroll-snap-type: y mandatory;
+    scroll-snap-type: y proximity;
   }
 }
 

@@ -75,15 +75,31 @@ export function StepActivityProvider({ children }: { children: React.ReactNode }
   );
 
   useEffect(() => {
+    // rAF-throttle the scroll handler. pickClosest calls
+    // getBoundingClientRect() on every registered step (each one forces a
+    // synchronous layout/reflow). Scroll fires very frequently and the
+    // landing page also runs several framer-motion useScroll/useTransform
+    // parallax layers, so coalescing measurement to at most one per frame
+    // keeps things smooth on lower-end devices.
+    let rafId: number | null = null;
+    const schedulePick = () => {
+      if (rafId !== null) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = null;
+        pickClosest();
+      });
+    };
+
     // Defer the initial pick to the next frame so we don't trigger a
     // cascading render on mount (children haven't registered yet anyway).
-    const raf = requestAnimationFrame(pickClosest);
-    window.addEventListener("scroll", pickClosest, { passive: true });
-    window.addEventListener("resize", pickClosest);
+    const initialRaf = requestAnimationFrame(pickClosest);
+    window.addEventListener("scroll", schedulePick, { passive: true });
+    window.addEventListener("resize", schedulePick);
     return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener("scroll", pickClosest);
-      window.removeEventListener("resize", pickClosest);
+      cancelAnimationFrame(initialRaf);
+      if (rafId !== null) cancelAnimationFrame(rafId);
+      window.removeEventListener("scroll", schedulePick);
+      window.removeEventListener("resize", schedulePick);
     };
   }, [pickClosest]);
 

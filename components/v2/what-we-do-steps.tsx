@@ -8,12 +8,13 @@ import { useStepActivity } from "@/components/v2/step-activity";
 //   Step 2 — text left, papers image right
 //   Step 3 — centered headline + animated verify graphic
 //   Step 4 — text right-aligned (no media)
-//   Step 5 — text right-aligned, with radial-gradient highlight bg
+//   Step 5 — text right-aligned (originally had a radial-gradient highlight;
+//            since removed, it now shares the text-right layout)
 type StepDef = {
   step: number;
   title: string;
   body: string;
-  layout: "text-and-image" | "centered-graphic" | "text-right" | "text-right-highlight";
+  layout: "text-and-image" | "centered-graphic" | "text-right";
 };
 
 const STEPS: StepDef[] = [
@@ -39,7 +40,7 @@ const STEPS: StepDef[] = [
     step: 5,
     title: "Ongoing expiration monitoring and reporting",
     body: "We monitor and collect future policy information to keep them compliant and report back to you.",
-    layout: "text-right-highlight",
+    layout: "text-right",
   },
 ];
 
@@ -171,20 +172,6 @@ function StepItem({ step }: { step: StepDef }) {
           </div>
         )}
 
-        {/* Step 5 — right-aligned text with radial gradient highlight on active */}
-        {step.layout === "text-right-highlight" && (
-          <div className="px-4 md:px-16 lg:px-20 py-16 md:py-20 lg:py-28 flex flex-col items-end">
-            <div className="flex flex-col gap-[70px] lg:gap-[94px] w-full max-w-[512px]">
-              <div className="flex flex-col gap-4 items-start w-full">
-                <StepPill step={step.step} isActive={isActive} />
-                <StepTitle isActive={isActive}>{step.title}</StepTitle>
-              </div>
-              <div className="w-full">
-                <StepBody isActive={isActive}>{step.body}</StepBody>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
   );
 }
