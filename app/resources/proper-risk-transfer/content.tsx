@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
-import Footer from "@/components/footer";
+import Footer from "@/components/v2/footer-v2";
 import {
   ShieldCheck,
   AlertTriangle,

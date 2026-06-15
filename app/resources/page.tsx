@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Footer from "@/components/footer";
+import Footer from "@/components/v2/footer-v2";
 import {
   ResourcesSidebar,
   GradientDivider,

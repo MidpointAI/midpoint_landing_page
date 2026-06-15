@@ -12,7 +12,7 @@ import {
 } from "lucide-react"
 import { SlideToVerify } from "@/components/contact/slide-to-verify"
 import { Boxes } from "@/components/ui/background-boxes"
-import Footer from "@/components/footer"
+import Footer from "@/components/v2/footer-v2"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
