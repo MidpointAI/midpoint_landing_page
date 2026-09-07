@@ -49,8 +49,8 @@ function CopyableFormula() {
 export default function HowPricingWorksPage() {
   return (
     <>
-      <main className="pt-[72px] min-h-screen bg-background">
-        <div className="max-w-3xl mx-auto px-6">
+      <main className="min-h-screen bg-background">
+        <div className="container-prose">
           {/* Hero */}
           <section className="py-16 lg:py-20 text-center border-b border-border">
             <h1 className="text-3xl lg:text-4xl font-bold text-foreground tracking-tight mb-4">

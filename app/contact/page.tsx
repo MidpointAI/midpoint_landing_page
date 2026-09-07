@@ -272,8 +272,8 @@ export default function ContactPage() {
         </section>
 
         {/* Two-column content */}
-        <div id="contact-content" className="mx-auto max-w-6xl px-6">
-          <div className="grid gap-16 py-16 md:grid-cols-[1fr_1.5fr] md:gap-24 md:py-24">
+        <div id="contact-content" className="container-site">
+          <div className="grid gap-16 section-y md:grid-cols-[1fr_1.5fr] md:gap-24">
             {/* Left: Contact details + What to expect */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}

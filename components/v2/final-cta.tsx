@@ -6,7 +6,7 @@ import { Button } from "./ui/button";
 
 export default function FinalCta() {
   return (
-    <section className="w-full px-6 py-20 text-center bg-background">
+    <section className="w-full px-6 section-y text-center bg-background">
       <h2
         className="text-4xl font-bold text-foreground mb-4 tracking-tight"
         style={{ fontFamily: "var(--font-display), sans-serif" }}

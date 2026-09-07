@@ -59,7 +59,7 @@ const footerColumns: FooterColumn[] = [
 export default function FooterV2() {
   return (
     <footer className="w-full bg-background border-t border-border">
-      <div className="max-w-7xl mx-auto px-6 pt-16 pb-12">
+      <div className="container-site pt-16 pb-12">
         <div className="flex flex-col lg:flex-row gap-12 lg:gap-0">
           <div className="lg:w-[260px] lg:pr-8 flex-shrink-0">
             <Link href="/" className="inline-flex" aria-label="Midpoint home">

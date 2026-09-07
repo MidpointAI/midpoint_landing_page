@@ -91,8 +91,8 @@ export default function HowItWorksV2() {
   };
 
   return (
-    <section id="how-it-works" className="w-full bg-background py-24 overflow-hidden scroll-mt-24">
-      <div className="max-w-7xl mx-auto px-6 pb-[80px]">
+    <section id="how-it-works" className="w-full bg-background section-y overflow-hidden scroll-mt-24">
+      <div className="container-site">
         <div className="text-center mb-16 max-w-3xl mx-auto">
           <p className="text-muted-foreground/70 text-xs tracking-[0.2em] uppercase mb-4">
             Beyond COI checks

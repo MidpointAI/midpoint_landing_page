@@ -60,8 +60,8 @@ export function ProperRiskTransferContent() {
 
   return (
     <div className="min-h-svh bg-background text-foreground">
-      <section className="pt-32 pb-24 px-6">
-        <div className="max-w-3xl mx-auto">
+      <section className="section-y">
+        <div className="container-prose">
           <div>
             <Link
               href="/resources"

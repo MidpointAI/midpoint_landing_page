@@ -109,7 +109,7 @@ export default function NavbarV2() {
       className="sticky top-0 z-40 w-full border-b border-border bg-background/85 backdrop-blur-md"
       style={{ backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)" }}
     >
-      <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+      <div className="container-site h-20 flex items-center justify-between">
         <div className="flex items-center z-50">
           <Link href="/" className="focus:outline-none flex items-center" onClick={() => setMobileMenuOpen(false)}>
             <BrandLogo className="h-8" />

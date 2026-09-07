@@ -47,7 +47,7 @@ export function ResourcesContent({
 
   return (
     <main className="flex-1 min-w-0 flex justify-center" id="resources-content">
-      <div className="max-w-3xl w-full px-4 lg:px-8 py-16 lg:py-24">
+      <div className="max-w-3xl w-full px-4 lg:px-8 section-y">
         {activePage === "overview" && <OverviewPage onNavigate={onNavigate} />}
         {activePage === "what-is-midpoint" && <WhatIsMidpointPage />}
         {activePage === "proper-risk-transfer" && <ProperRiskTransferPage />}

@@ -106,7 +106,7 @@ function SuccessContent() {
 
   if (loading) {
     return (
-      <div className="pt-[72px] min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
           <p className="text-muted-foreground text-sm">Loading payment details...</p>
@@ -117,7 +117,7 @@ function SuccessContent() {
 
   if (error || !sessionData) {
     return (
-      <div className="pt-[72px] min-h-screen bg-background flex items-center justify-center px-6">
+      <div className="min-h-screen bg-background flex items-center justify-center px-6">
         <div className="max-w-md w-full">
           <div className="flex items-center gap-5">
             <div className="flex-shrink-0 flex items-center justify-center w-12 h-12 rounded-full bg-destructive/10">
@@ -150,8 +150,8 @@ function SuccessContent() {
   const isPaymentSuccessful = payment_status === "paid";
 
   return (
-    <main className="pt-[72px] min-h-screen bg-background">
-        <div className="max-w-3xl mx-auto px-6">
+    <main className="min-h-screen bg-background">
+        <div className="container-prose">
           {/* Hero Section - Properly Centered */}
           <section className="py-12 lg:py-14 border-b border-border">
             <div className="flex items-center gap-5">
@@ -276,7 +276,7 @@ export default function SuccessPage() {
   return (
     <Suspense
       fallback={
-        <div className="pt-[72px] min-h-screen bg-background flex items-center justify-center">
+        <div className="min-h-screen bg-background flex items-center justify-center">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
         </div>
       }

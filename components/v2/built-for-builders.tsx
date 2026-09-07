@@ -34,8 +34,8 @@ export default function BuiltForBuilders() {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(0);
 
   return (
-    <section className="w-full bg-background py-36 relative overflow-hidden">
-      <div className="relative max-w-7xl mx-auto px-6">
+    <section className="w-full bg-background section-y relative overflow-hidden">
+      <div className="relative container-site">
         <div className="flex flex-col md:flex-row md:gap-20 items-center gap-[0px]">
           <div className="w-full md:w-1/2 flex-shrink-0">
             <div className="relative aspect-square max-w-[560px] mx-auto">

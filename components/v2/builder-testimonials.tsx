@@ -61,8 +61,8 @@ export default function BuilderTestimonials() {
   };
 
   return (
-    <section id="testimonials" className="w-full bg-background py-24 pt-[110px] pb-[110px] scroll-mt-24">
-      <div className="max-w-7xl mx-auto px-6">
+    <section id="testimonials" className="w-full bg-background section-y scroll-mt-24">
+      <div className="container-site">
         <div className="text-center mb-16">
           <p className="text-muted-foreground text-base md:text-lg">
             Real stories from contractors who transformed their risk management

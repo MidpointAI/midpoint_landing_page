@@ -113,6 +113,29 @@ html::-webkit-scrollbar {
   --shader-6: var(--primary);
 }
 
+/* =============================================
+   PAGE SHELL
+   One site width (aligned with the navbar), one reading width for
+   long-form pages, and one vertical rhythm for stacked sections.
+   ============================================= */
+@utility container-site {
+  margin-inline: auto;
+  width: 100%;
+  max-width: var(--container-7xl);
+  padding-inline: --spacing(6);
+}
+
+@utility container-prose {
+  margin-inline: auto;
+  width: 100%;
+  max-width: var(--container-3xl);
+  padding-inline: --spacing(6);
+}
+
+@utility section-y {
+  @apply py-20 md:py-28;
+}
+
 /* Selection highlight - theme responsive */
 ::selection {
   background: color-mix(in oklch, var(--primary) 35%, transparent);

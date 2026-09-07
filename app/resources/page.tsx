@@ -26,7 +26,7 @@ export default function ResourcesPage() {
       <ResourcesMobileNav activePage={activePage} onNavigate={handleNavigate} />
 
       {/* Docs Body */}
-      <div className="max-w-[1400px] mx-auto px-6 lg:px-8 xl:px-12">
+      <div className="container-site">
         <div className="flex">
           {/* Desktop Sidebar */}
           <ResourcesSidebar

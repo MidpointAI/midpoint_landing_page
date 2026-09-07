@@ -35,7 +35,7 @@ export function ResourcesSidebar({
   };
 
   return (
-    <aside className="hidden lg:flex w-60 xl:w-64 sticky top-0 h-svh flex-col py-8 pr-4">
+    <aside className="hidden lg:flex w-60 xl:w-64 sticky top-20 h-[calc(100svh_-_5rem)] flex-col py-8 pr-4">
       <nav className="flex flex-col flex-1">
         {/* Overview */}
         <NavItem
@@ -180,7 +180,7 @@ function NavItem({
 export function GradientDivider() {
   return (
     <div className="hidden lg:block w-px">
-      <div className="sticky top-0 h-svh bg-gradient-to-b from-transparent via-border/50 to-transparent" />
+      <div className="sticky top-20 h-[calc(100svh_-_5rem)] bg-gradient-to-b from-transparent via-border/50 to-transparent" />
     </div>
   );
 }
