@@ -253,18 +253,18 @@ function SuccessContent() {
             </p>
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
               <Link
-                href="/midpointverified"
+                href="/"
                 className="px-6 py-2.5 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
               >
-                Set up your account
+                Return home
                 <ArrowRight className="w-4 h-4" />
               </Link>
-              <Link
-                href="mailto:hello@midpoint.com"
+              <a
+                href="mailto:service@midpointverified.com"
                 className="px-6 py-2.5 border border-border text-foreground text-sm font-medium rounded-lg hover:border-foreground/40 transition-colors text-center"
               >
-                Contact Support
-              </Link>
+                Contact support
+              </a>
             </div>
           </section>
         </div>

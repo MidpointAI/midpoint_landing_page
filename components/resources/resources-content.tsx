@@ -21,6 +21,7 @@ import {
   CheckCircle2,
   Share2,
   LinkIcon,
+  ExternalLink,
 } from "lucide-react";
 import { OnePagerModal } from "./one-pager-modal";
 import {
@@ -29,6 +30,7 @@ import {
   glossaryTerms,
   faqItems,
   downloads,
+  resolveDownloadHref,
   getTermById,
   getAdjacentTerms,
 } from "./resources-data";
@@ -65,6 +67,7 @@ export function ResourcesContent({
    Overview Page
    ───────────────────────────────────────────── */
 function OverviewPage({ onNavigate }: { onNavigate: (p: DocPage) => void }) {
+  const { resolvedTheme } = useTheme();
   return (
     <article>
       {/* Proper Risk Transfer highlight */}
@@ -131,9 +134,15 @@ function OverviewPage({ onNavigate }: { onNavigate: (p: DocPage) => void }) {
                 {item.description}
               </p>
             </div>
-            <button className="text-xs md:text-sm font-medium text-primary hover:underline cursor-pointer flex-shrink-0">
-              Download PDF
-            </button>
+            <a
+              href={resolveDownloadHref(item, resolvedTheme)}
+              download={item.download}
+              target={item.external ? "_blank" : undefined}
+              rel={item.external ? "noopener noreferrer" : undefined}
+              className="text-xs md:text-sm font-medium text-primary hover:underline cursor-pointer flex-shrink-0"
+            >
+              {item.cta}
+            </a>
           </div>
         ))}
       </div>
@@ -746,6 +755,7 @@ function GlossaryPage({
    Downloads Page
    ───────────────────────────────────────────── */
 function DownloadsPage() {
+  const { resolvedTheme } = useTheme();
   return (
     <article>
       <Breadcrumb items={["Resources", "Downloads"]} />
@@ -777,10 +787,16 @@ function DownloadsPage() {
                 <p className="text-sm md:text-base text-muted-foreground leading-relaxed mb-5">
                   {item.description}
                 </p>
-                <button className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg text-sm md:text-base font-medium hover:opacity-90 transition-opacity cursor-pointer">
-                  <Download className="w-4 h-4" />
+                <a
+                  href={resolveDownloadHref(item, resolvedTheme)}
+                  download={item.download}
+                  target={item.external ? "_blank" : undefined}
+                  rel={item.external ? "noopener noreferrer" : undefined}
+                  className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg text-sm md:text-base font-medium hover:opacity-90 transition-opacity cursor-pointer"
+                >
+                  {item.external ? <ExternalLink className="w-4 h-4" /> : <Download className="w-4 h-4" />}
                   {item.cta}
-                </button>
+                </a>
               </div>
             </div>
           </div>

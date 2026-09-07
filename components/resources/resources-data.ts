@@ -259,18 +259,41 @@ export const faqItems = [
 ];
 
 // Downloads data
-export const downloads = [
+export interface DownloadItem {
+  title: string;
+  description: string;
+  cta: string;
+  /** Destination in light mode (and the only one when darkHref is unset). */
+  href: string;
+  /** Optional theme-specific variant of the same file. */
+  darkHref?: string;
+  /** Filename to save as; when set the link downloads instead of navigating. */
+  download?: string;
+  /** Open in a new tab (used for the in-browser one-pager). */
+  external?: boolean;
+}
+
+export function resolveDownloadHref(item: DownloadItem, theme?: string) {
+  return theme === "dark" && item.darkHref ? item.darkHref : item.href;
+}
+
+export const downloads: DownloadItem[] = [
   {
-    title: "Risk Transfer Checklist",
+    title: "Proper Risk Transfer Guide",
     description:
-      "Helpful checklist to show what true compliance takes. Review insurance requirements, verify endorsements, and ensure proper risk transfer on every project.",
+      "Helpful guide to show what true compliance takes. Review insurance requirements, verify endorsements, and ensure proper risk transfer on every project.",
     cta: "Download PDF",
+    href: "/proper-risk-transfer-light.pdf",
+    darkHref: "/proper-risk-transfer-dark.pdf",
+    download: "Proper Risk Transfer – Midpoint.pdf",
   },
   {
     title: "Understanding Midpoint",
     description:
       "A quick explanation of how Midpoint works and can save builders time and money. Learn about our automated COI analysis and compliance verification.",
-    cta: "Download PDF",
+    cta: "View one-pager",
+    href: "/one-pager",
+    external: true,
   },
 ];
 
