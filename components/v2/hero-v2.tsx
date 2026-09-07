@@ -4,6 +4,7 @@ import { useRef } from "react";
 import Link from "next/link";
 import { motion, useInView, useScroll, useTransform } from "framer-motion";
 import { ArrowRightIcon } from "lucide-react";
+import { APP_LOGIN_URL } from "@/lib/site";
 
 const HERO_BG_URL =
   "https://cdn.magicpatterns.com/uploads/aYGrNQuUPNdajTBmWkC5Wu/Hero.svg";
@@ -93,7 +94,7 @@ export default function HeroV2() {
           </motion.p>
 
           {/* Heading — line-by-line clip reveal (driven by useInView on h2) */}
-          <h2 ref={headingRef} className="text-6xl md:text-7xl lg:text-8xl font-semibold leading-[0.9] mb-8">
+          <h2 ref={headingRef} className="text-[2.6rem] sm:text-6xl md:text-7xl lg:text-8xl font-semibold leading-[0.9] mb-8 px-2">
             <span className="text-reveal-line text-white">
               <motion.span
                 className="block"
@@ -101,7 +102,7 @@ export default function HeroV2() {
                 animate={headingInView ? { y: "0%" } : { y: "110%" }}
                 transition={{ duration: 1, ease, delay: 0.35 }}
               >
-                Trade Partner <span className="text-lime-400">Compliance</span>
+                Insurance Compliance for GCs
               </motion.span>
             </span>
             <span className="text-reveal-line text-white">
@@ -111,7 +112,7 @@ export default function HeroV2() {
                 animate={headingInView ? { y: "0%" } : { y: "110%" }}
                 transition={{ duration: 1, ease, delay: 0.5 }}
               >
-                Without the Headache
+                <span className="text-lime-400">Managed</span> End to End
               </motion.span>
             </span>
           </h2>
@@ -124,8 +125,8 @@ export default function HeroV2() {
             transition={{ duration: 0.9, ease, delay: 0.7 }}
             className="text-zinc-400 text-lg md:text-xl max-w-[612px] mx-auto mb-12 leading-relaxed"
           >
-            A dedicated compliance team handling proper risk transfer, flagging gaps
-            in coverage and continuously monitoring trade partners across projects.
+            A dedicated team plus software: signed agreement → requirements →
+            collect → verify → ongoing monitoring.
           </motion.p>
 
           {/* CTAs — fade up */}
@@ -134,14 +135,25 @@ export default function HeroV2() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={vp}
             transition={{ duration: 0.9, ease, delay: 0.85 }}
-            className="flex flex-col sm:flex-row items-center gap-4"
+            className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4"
           >
-            {/* "Get a Quote" CTA hidden until we're ready to go live. */}
             <Link
-              href="/resources"
-              className="inline-flex items-center gap-2 text-sm font-medium text-zinc-400 hover:text-white transition-colors"
+              href="/contact"
+              className="inline-flex items-center justify-center rounded-full bg-lime-400 px-7 py-2.5 text-sm font-medium text-zinc-950 hover:bg-lime-300 transition-colors"
             >
-              Learn More <ArrowRightIcon className="h-4 w-4" />
+              Talk to us
+            </Link>
+            <a
+              href={APP_LOGIN_URL}
+              className="inline-flex items-center justify-center rounded-full border border-white/20 px-7 py-2.5 text-sm font-medium text-white hover:bg-white/10 transition-colors"
+            >
+              Log in
+            </a>
+            <Link
+              href="/how-it-works"
+              className="inline-flex items-center gap-2 text-sm font-medium text-zinc-400 hover:text-white transition-colors px-2"
+            >
+              Learn more <ArrowRightIcon className="h-4 w-4" />
             </Link>
           </motion.div>
         </div>

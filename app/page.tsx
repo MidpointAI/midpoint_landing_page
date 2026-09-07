@@ -1,4 +1,5 @@
 import HeroV2 from "@/components/v2/hero-v2";
+import ProofStrip from "@/components/v2/proof-strip";
 import BuilderTestimonials from "@/components/v2/builder-testimonials";
 import BuiltForBuilders from "@/components/v2/built-for-builders";
 import WhyDeeper from "@/components/v2/why-deeper";
@@ -9,6 +10,7 @@ export default function Home() {
   return (
     <main className="relative bg-white dark:bg-zinc-950 text-zinc-900 dark:text-white min-h-screen">
       <HeroV2 />
+      <ProofStrip />
       <BuilderTestimonials />
       <BuiltForBuilders />
       <WhyDeeper />
