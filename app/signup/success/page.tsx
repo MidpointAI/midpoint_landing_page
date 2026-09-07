@@ -43,7 +43,10 @@ function SuccessContent() {
       confettiTriggered.current = true;
 
       const end = Date.now() + 3 * 1000;
-      const colors = ["#c8e66e", "#a3d134", "#22251e", "#86efac", "#4ade80"];
+      const styles = getComputedStyle(document.documentElement);
+      const primary = styles.getPropertyValue("--primary").trim();
+      const foreground = styles.getPropertyValue("--foreground").trim();
+      const colors = [primary, primary, primary, foreground];
 
       const frame = () => {
         if (Date.now() > end) return;
@@ -117,8 +120,8 @@ function SuccessContent() {
       <div className="pt-[72px] min-h-screen bg-background flex items-center justify-center px-6">
         <div className="max-w-md w-full">
           <div className="flex items-center gap-5">
-            <div className="flex-shrink-0 flex items-center justify-center w-12 h-12 rounded-full bg-red-500/10">
-              <AlertCircle className="w-6 h-6 text-red-500" />
+            <div className="flex-shrink-0 flex items-center justify-center w-12 h-12 rounded-full bg-destructive/10">
+              <AlertCircle className="w-6 h-6 text-destructive" />
             </div>
             <div className="flex-1">
               <h1 className="text-xl font-semibold text-foreground mb-1">
@@ -197,8 +200,8 @@ function SuccessContent() {
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">Status</span>
-                  <span className="inline-flex items-center gap-1.5 text-sm font-medium text-green-500">
-                    <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                  <span className="inline-flex items-center gap-1.5 text-sm font-medium text-primary">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary" />
                     {isPaymentSuccessful ? "Paid" : "Processing"}
                   </span>
                 </div>

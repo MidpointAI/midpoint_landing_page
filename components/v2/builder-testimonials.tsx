@@ -61,10 +61,10 @@ export default function BuilderTestimonials() {
   };
 
   return (
-    <section className="w-full bg-zinc-950 py-24 pt-[110px] pb-[110px]">
+    <section id="testimonials" className="w-full bg-background py-24 pt-[110px] pb-[110px] scroll-mt-24">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16">
-          <p className="text-zinc-400 text-base md:text-lg">
+          <p className="text-muted-foreground text-base md:text-lg">
             Real stories from contractors who transformed their risk management
           </p>
         </div>
@@ -94,10 +94,10 @@ export default function BuilderTestimonials() {
                   style={{ transformStyle: "preserve-3d", willChange: "transform" }}
                   onClick={() => handleClick(index)}
                 >
-                  <div className="rounded-xl bg-zinc-900/90 border border-zinc-800/50 p-8 md:p-10 h-full flex flex-col justify-center">
+                  <div className="rounded-xl bg-card/90 border border-border/50 p-8 md:p-10 h-full flex flex-col justify-center">
                     <p
                       className={`italic text-base md:text-lg leading-relaxed mb-6 text-center ${
-                        isActive ? "text-zinc-200" : "text-zinc-500"
+                        isActive ? "text-foreground/90" : "text-muted-foreground/70"
                       }`}
                     >
                       &ldquo;{testimonial.quote}&rdquo;
@@ -105,17 +105,17 @@ export default function BuilderTestimonials() {
                     <div className="text-center">
                       <p
                         className={`text-base font-medium mb-1 ${
-                          isActive ? "text-lime-400" : "text-zinc-600"
+                          isActive ? "text-primary" : "text-muted-foreground/50"
                         }`}
                       >
                         {testimonial.name}
                       </p>
-                      <p className="text-xs font-medium tracking-wider uppercase text-zinc-500">
+                      <p className="text-xs font-medium tracking-wider uppercase text-muted-foreground/70">
                         {testimonial.title}
                       </p>
                       <p
                         className={`text-xs font-medium tracking-wider uppercase ${
-                          isActive ? "text-lime-400/60" : "text-zinc-700"
+                          isActive ? "text-primary/60" : "text-muted-foreground/40"
                         }`}
                       >
                         {testimonial.company}
@@ -135,8 +135,8 @@ export default function BuilderTestimonials() {
               onClick={() => handleClick(index)}
               className={`h-2 rounded-full transition-all duration-500 ${
                 index === activeIndex
-                  ? "w-6 bg-lime-400"
-                  : "w-2 bg-zinc-700 hover:bg-zinc-500"
+                  ? "w-6 bg-primary"
+                  : "w-2 bg-muted-foreground/40 hover:bg-muted-foreground/70"
               }`}
               aria-label={`Show testimonial ${index + 1}`}
             />

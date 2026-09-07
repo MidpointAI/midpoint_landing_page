@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
-import Footer from "@/components/footer";
 import {
   ShieldCheck,
   AlertTriangle,
@@ -316,8 +315,6 @@ export function ProperRiskTransferContent() {
           </div>
         </div>
       </section>
-
-      <Footer />
     </div>
   );
 }

@@ -149,7 +149,7 @@ export default function HowPricingWorksPage() {
                 <div className="font-mono text-foreground">{scenario.subs}</div>
                 <div className="font-mono text-muted-foreground">{scenario.projects}</div>
                 <div className="font-mono text-muted-foreground">{scenario.loadFactor}</div>
-                <div className={`font-mono font-medium text-right ${scenario.isFloor ? "text-amber-500 dark:text-amber-400" : "text-emerald-600 dark:text-emerald-400"}`}>
+                <div className={`font-mono font-medium text-right ${scenario.isFloor ? "text-chart-4" : "text-primary"}`}>
                   {scenario.price}
                 </div>
               </div>
@@ -158,11 +158,11 @@ export default function HowPricingWorksPage() {
             {/* Legend */}
             <div className="flex items-center gap-6 mt-6 text-xs text-muted-foreground">
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-amber-500 dark:bg-amber-400" />
+                <span className="w-2 h-2 rounded-full bg-chart-4" />
                 <span>$6,000 floor applied</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-600 dark:bg-emerald-400" />
+                <span className="w-2 h-2 rounded-full bg-primary" />
                 <span>Formula-driven</span>
               </div>
             </div>
@@ -185,16 +185,16 @@ export default function HowPricingWorksPage() {
             </p>
             <div className="flex items-center justify-center gap-4">
               <Link
-                href="/"
+                href="/contact"
                 className="px-6 py-3 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:opacity-90 transition-opacity"
               >
-                Get Your Quote
+                Contact us
               </Link>
               <a
-                href="mailto:hello@midpoint.com"
+                href="mailto:service@midpointverified.com"
                 className="px-6 py-3 border border-border text-foreground text-sm font-medium rounded-lg hover:border-foreground/50 transition-colors"
               >
-                Contact Us
+                Email us
               </a>
             </div>
           </section>

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Footer from "@/components/footer";
 import { ResourcesHero } from "@/components/resources/resources-hero";
 import {
   ResourcesSidebar,
@@ -46,8 +45,6 @@ export default function ResourcesPage() {
         </div>
       </div>
 
-      {/* Footer */}
-      <Footer />
     </div>
   );
 }

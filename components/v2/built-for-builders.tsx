@@ -34,7 +34,7 @@ export default function BuiltForBuilders() {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(0);
 
   return (
-    <section className="w-full bg-zinc-950 py-36 relative overflow-hidden">
+    <section className="w-full bg-background py-36 relative overflow-hidden">
       <div className="relative max-w-7xl mx-auto px-6">
         <div className="flex flex-col md:flex-row md:gap-20 items-center gap-[0px]">
           <div className="w-full md:w-1/2 flex-shrink-0">
@@ -43,13 +43,13 @@ export default function BuiltForBuilders() {
               <img
                 src="/Papers_flyingss.png"
                 alt="Flying papers representing compliance paperwork"
-                className="w-full h-full object-contain invert"
+                className="w-full h-full object-contain dark:invert"
               />
               <div
                 className="absolute inset-0 pointer-events-none"
                 style={{
                   background:
-                    "radial-gradient(ellipse at center, transparent 30%, rgba(9,9,11,1) 75%)",
+                    "radial-gradient(ellipse at center, transparent 30%, var(--background) 75%)",
                 }}
               />
             </div>
@@ -57,21 +57,21 @@ export default function BuiltForBuilders() {
 
           <div className="w-full md:w-1/2">
             <p
-              className="text-zinc-500 text-xs tracking-[0.2em] uppercase mb-4"
+              className="text-muted-foreground/70 text-xs tracking-[0.2em] uppercase mb-4"
               style={{ fontFamily: "var(--font-display), sans-serif" }}
             >
               Why Midpoint?
             </p>
-            <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight mb-5">
-              Built for Builders, <span className="text-lime-400">Not Paper Pushers</span>
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight mb-5">
+              Built for Builders, <span className="text-primary">Not Paper Pushers</span>
             </h2>
-            <p className="text-zinc-400 text-base md:text-lg leading-relaxed mb-10">
+            <p className="text-muted-foreground text-base md:text-lg leading-relaxed mb-10">
               You manage jobsites, not filing cabinets.
               <br />
               We handle the compliance so you can focus on the build.
             </p>
 
-            <div className="border-t border-zinc-800 mb-6" />
+            <div className="border-t border-border mb-6" />
 
             <div className="space-y-1">
               {benefits.map((benefit, index) => {
@@ -84,8 +84,8 @@ export default function BuiltForBuilders() {
                     onMouseLeave={() => setExpandedIndex(null)}
                   >
                     <div className="w-full flex items-center py-4 cursor-default pl-[30px] gap-[32px]">
-                      <Icon className="h-5 w-5 text-lime-400 flex-shrink-0" />
-                      <span className="text-white font-semibold text-base tracking-tight flex-1">
+                      <Icon className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span className="text-foreground font-semibold text-base tracking-tight flex-1">
                         {benefit.title}
                       </span>
                     </div>
@@ -98,7 +98,7 @@ export default function BuiltForBuilders() {
                           transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
                           className="overflow-hidden"
                         >
-                          <p className="text-zinc-400 text-sm leading-relaxed pl-9 pb-4">
+                          <p className="text-muted-foreground text-sm leading-relaxed pl-9 pb-4">
                             {benefit.description}
                           </p>
                         </motion.div>

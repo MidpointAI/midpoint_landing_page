@@ -91,18 +91,18 @@ export default function HowItWorksV2() {
   };
 
   return (
-    <section id="how-it-works" className="w-full bg-zinc-950 py-24 overflow-hidden scroll-mt-24">
+    <section id="how-it-works" className="w-full bg-background py-24 overflow-hidden scroll-mt-24">
       <div className="max-w-7xl mx-auto px-6 pb-[80px]">
         <div className="text-center mb-16 max-w-3xl mx-auto">
-          <p className="text-zinc-500 text-xs tracking-[0.2em] uppercase mb-4">
+          <p className="text-muted-foreground/70 text-xs tracking-[0.2em] uppercase mb-4">
             Beyond COI checks
           </p>
-          <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight mb-5">
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight mb-5">
             We Don&apos;t Just Store Documents —
             <br />
-            We <span className="text-lime-400">Verify</span> Them
+            We <span className="text-primary">Verify</span> Them
           </h2>
-          <p className="text-zinc-400 text-base md:text-lg leading-relaxed">
+          <p className="text-muted-foreground text-base md:text-lg leading-relaxed">
             Most General Contractors assume their construction management software,
             accounting platform, or bookkeeper is handling trade partner compliance —
             they&apos;re not. They&apos;re storing documents. Midpoint goes further: we read
@@ -118,8 +118,8 @@ export default function HowItWorksV2() {
               onClick={() => handleClick(i)}
               className={`flex-shrink-0 px-4 py-2 rounded-full text-xs font-medium transition-colors whitespace-nowrap ${
                 i === activeIndex
-                  ? "bg-lime-400 text-zinc-950"
-                  : "bg-zinc-800 text-zinc-400 hover:text-white"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-secondary text-muted-foreground hover:text-foreground"
               }`}
             >
               {step.title}
@@ -129,7 +129,7 @@ export default function HowItWorksV2() {
 
         <div className="flex flex-col md:flex-row md:gap-16 items-center justify-center gap-[48px]">
           <div className="hidden md:flex flex-col w-[280px] flex-shrink-0 relative">
-            <div className="absolute left-[4px] top-3 bottom-3 w-px bg-zinc-800" />
+            <div className="absolute left-[4px] top-3 bottom-3 w-px bg-secondary" />
             {steps.map((step, i) => {
               const isActive = i === activeIndex;
               return (
@@ -143,13 +143,13 @@ export default function HowItWorksV2() {
                       animate={isActive ? { scale: [1, 1.3, 1] } : { scale: 1 }}
                       transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                       className={`h-[9px] w-[9px] rounded-full transition-colors duration-300 ${
-                        isActive ? "bg-lime-400" : "bg-zinc-600 group-hover:bg-zinc-400"
+                        isActive ? "bg-primary" : "bg-muted-foreground/50 group-hover:bg-muted-foreground"
                       }`}
                     />
                   </div>
                   <span
                     className={`text-sm font-medium transition-colors duration-300 ${
-                      isActive ? "text-white" : "text-zinc-500 group-hover:text-zinc-300"
+                      isActive ? "text-foreground" : "text-muted-foreground/70 group-hover:text-foreground/80"
                     }`}
                   >
                     {step.title}
@@ -171,19 +171,19 @@ export default function HowItWorksV2() {
               >
                 <div className="flex items-center gap-2.5 mb-4">
                   {createElement(steps[activeIndex].icon, {
-                    className: "h-5 w-5 text-lime-400",
+                    className: "h-5 w-5 text-primary",
                   })}
-                  <p className="text-xs text-zinc-500 font-medium uppercase tracking-wider">
+                  <p className="text-xs text-muted-foreground/70 font-medium uppercase tracking-wider">
                     Step {activeIndex + 1}
                   </p>
                 </div>
-                <h3 className="text-2xl text-white font-semibold tracking-tight mb-4">
+                <h3 className="text-2xl text-foreground font-semibold tracking-tight mb-4">
                   {steps[activeIndex].title}
                 </h3>
-                <p className="text-zinc-400 text-base leading-relaxed mb-6 max-w-lg">
+                <p className="text-muted-foreground text-base leading-relaxed mb-6 max-w-lg">
                   {steps[activeIndex].description}
                 </p>
-                <p className="text-sm text-lime-400 font-medium">
+                <p className="text-sm text-primary font-medium">
                   {steps[activeIndex].highlight}
                 </p>
               </motion.div>

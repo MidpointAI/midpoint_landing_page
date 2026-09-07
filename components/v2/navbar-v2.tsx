@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
+import BrandLogo from "@/components/v2/brand-logo";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ShieldCheckIcon,
@@ -9,10 +10,8 @@ import {
   BarChart3Icon,
   ChevronDownIcon,
   BookOpenIcon,
-  NewspaperIcon,
-  VideoIcon,
   CalculatorIcon,
-  ClipboardCheckIcon,
+  MessageSquareQuoteIcon,
   MailIcon,
   ClipboardListIcon,
   RefreshCwIcon,
@@ -25,7 +24,7 @@ interface MenuItem {
   label: string;
   icon: LucideIcon;
   description?: string;
-  href?: string;
+  href: string;
 }
 
 interface MenuSection {
@@ -33,16 +32,20 @@ interface MenuSection {
   items: MenuItem[];
 }
 
+// Services don't have dedicated pages yet, so each item points at the
+// "How It Works" walkthrough on the home page, which covers all of them.
+const HOW_IT_WORKS = "/#how-it-works";
+
 const servicesMenu: MenuSection[] = [
   {
     category: "For General Contractors",
     items: [
-      { label: "COI Verification", icon: ShieldCheckIcon, description: "Deep compliance checks on every sub" },
-      { label: "Endorsement Review", icon: FileTextIcon, description: "Verify actual policy endorsements" },
-      { label: "Ongoing Monitoring", icon: RefreshCwIcon, description: "Track expirations & renewals" },
-      { label: "Sub Outreach", icon: MailIcon, description: "We chase non-compliant subs for you" },
-      { label: "Audit Support", icon: ClipboardListIcon, description: "Pull documents on demand" },
-      { label: "Risk Scoring", icon: BarChart3Icon, description: "Score sub compliance at a glance" },
+      { label: "COI Verification", icon: ShieldCheckIcon, description: "Deep compliance checks on every sub", href: HOW_IT_WORKS },
+      { label: "Endorsement Review", icon: FileTextIcon, description: "Verify actual policy endorsements", href: HOW_IT_WORKS },
+      { label: "Ongoing Monitoring", icon: RefreshCwIcon, description: "Track expirations & renewals", href: HOW_IT_WORKS },
+      { label: "Sub Outreach", icon: MailIcon, description: "We chase non-compliant subs for you", href: HOW_IT_WORKS },
+      { label: "Audit Support", icon: ClipboardListIcon, description: "Pull documents on demand", href: HOW_IT_WORKS },
+      { label: "Risk Scoring", icon: BarChart3Icon, description: "Score sub compliance at a glance", href: HOW_IT_WORKS },
     ],
   },
 ];
@@ -51,26 +54,20 @@ const resourcesMenu: MenuSection[] = [
   {
     category: "Learn",
     items: [
-      { label: "Blog", icon: NewspaperIcon, description: "Latest insights and updates" },
-      { label: "Success Stories", icon: BookOpenIcon, description: "See how we've saved thousands" },
-      { label: "Video Walkthroughs", icon: VideoIcon, description: "See Midpoint in action" },
-      { label: "ROI Calculator", icon: CalculatorIcon, description: "Estimate your savings" },
+      { label: "Insurance Terms", icon: BookOpenIcon, description: "Plain-English guide to coverage terms", href: "/resources" },
+      { label: "Success Stories", icon: MessageSquareQuoteIcon, description: "Hear from builders using Midpoint", href: "/#testimonials" },
     ],
   },
   {
     category: "Materials",
     items: [
-      { label: "Proper Risk Transfer", icon: FileTextIcon, description: "Download the PDF guide", href: "/resources" },
-      { label: "Compliance Checklist", icon: ClipboardCheckIcon, description: "Verify your coverage", href: "/resources" },
+      { label: "Proper Risk Transfer", icon: FileTextIcon, description: "Step-by-step guide, with PDF", href: "/resources/proper-risk-transfer" },
+      { label: "How Pricing Works", icon: CalculatorIcon, description: "Transparent, formula-based pricing", href: "/pricing/how-it-works" },
     ],
   },
 ];
 
-interface NavbarV2Props {
-  onQuoteClick: () => void;
-}
-
-export default function NavbarV2({ onQuoteClick }: NavbarV2Props) {
+export default function NavbarV2() {
   const [resourcesOpen, setResourcesOpen] = useState(false);
   const [servicesOpen, setServicesOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -109,18 +106,13 @@ export default function NavbarV2({ onQuoteClick }: NavbarV2Props) {
 
   return (
     <header
-      className="sticky top-0 z-40 w-full border-b border-white/[0.06] bg-zinc-950/85 backdrop-blur-md"
+      className="sticky top-0 z-40 w-full border-b border-border bg-background/85 backdrop-blur-md"
       style={{ backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)" }}
     >
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
         <div className="flex items-center z-50">
           <Link href="/" className="focus:outline-none flex items-center" onClick={() => setMobileMenuOpen(false)}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/v2/Property_1Frame_2.svg"
-              alt="Midpoint"
-              className="h-8 max-w-[180px] object-left object-contain"
-            />
+            <BrandLogo className="h-8" />
           </Link>
         </div>
 
@@ -128,35 +120,33 @@ export default function NavbarV2({ onQuoteClick }: NavbarV2Props) {
         <div className="flex md:hidden items-center gap-3 z-50">
           <button
             onClick={() => setMobileMenuOpen((v) => !v)}
-            className="p-2 -mr-2 text-zinc-400 hover:text-white transition-colors"
+            className="p-2 -mr-2 text-muted-foreground hover:text-foreground transition-colors"
             aria-label="Toggle menu"
           >
             {mobileMenuOpen ? <XIcon className="h-6 w-6" /> : <MenuIcon className="h-6 w-6" />}
           </button>
-          <button
-            onClick={() => {
-              setMobileMenuOpen(false);
-              onQuoteClick();
-            }}
-            className="px-4 py-1.5 text-sm font-medium text-zinc-950 bg-lime-400 rounded-full hover:bg-lime-300 transition-colors ml-1"
+          <Link
+            href="/contact"
+            onClick={() => setMobileMenuOpen(false)}
+            className="px-4 py-1.5 text-sm font-medium text-primary-foreground bg-primary rounded-full hover:bg-primary/90 transition-colors ml-1"
           >
-            Get a quote
-          </button>
+            Contact us
+          </Link>
         </div>
 
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-1">
-          <a
-            href="#how-it-works"
-            className="px-3 py-1.5 text-sm font-medium rounded-full text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
+          <Link
+            href={HOW_IT_WORKS}
+            className="px-3 py-1.5 text-sm font-medium rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
           >
             How It Works
-          </a>
+          </Link>
 
           <div className="relative" onMouseEnter={handleServicesEnter} onMouseLeave={handleServicesLeave}>
             <button
               className={`inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium rounded-full transition-colors ${
-                servicesOpen ? "text-white bg-zinc-800" : "text-zinc-400 hover:text-white hover:bg-zinc-800"
+                servicesOpen ? "text-foreground bg-secondary" : "text-muted-foreground hover:text-foreground hover:bg-secondary"
               }`}
             >
               Services
@@ -171,35 +161,36 @@ export default function NavbarV2({ onQuoteClick }: NavbarV2Props) {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 8, scale: 0.97 }}
                   transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
-                  className="absolute right-0 top-full mt-2 rounded-xl bg-zinc-900 border border-zinc-800 p-5 shadow-2xl shadow-black/40 w-[540px]"
+                  className="absolute right-0 top-full mt-2 rounded-xl bg-card border border-border p-5 shadow-2xl shadow-black/40 w-[540px]"
                   style={{ transformOrigin: "top right" }}
                 >
                   {servicesMenu.map((section) => (
                     <div key={section.category}>
-                      <p className="text-zinc-500 text-xs font-medium uppercase tracking-[0.15em] mb-3">
+                      <p className="text-muted-foreground/70 text-xs font-medium uppercase tracking-[0.15em] mb-3">
                         {section.category}
                       </p>
                       <div className="grid grid-cols-2 gap-1">
                         {section.items.map((item) => {
                           const Icon = item.icon;
                           return (
-                            <button
+                            <Link
                               key={item.label}
-                              type="button"
-                              className="flex items-start gap-3 px-4 py-3.5 rounded-lg text-left transition-colors hover:bg-zinc-800 group w-full"
+                              href={item.href}
+                              onClick={() => setServicesOpen(false)}
+                              className="flex items-start gap-3 px-4 py-3.5 rounded-lg text-left transition-colors hover:bg-secondary group w-full"
                             >
-                              <Icon className="h-4 w-4 text-zinc-500 group-hover:text-lime-400 transition-colors flex-shrink-0 mt-0.5" />
+                              <Icon className="h-4 w-4 text-muted-foreground/70 group-hover:text-primary transition-colors flex-shrink-0 mt-0.5" />
                               <div>
-                                <span className="text-sm text-zinc-300 group-hover:text-white transition-colors block">
+                                <span className="text-sm text-foreground/80 group-hover:text-foreground transition-colors block">
                                   {item.label}
                                 </span>
                                 {item.description && (
-                                  <span className="text-xs text-zinc-600 group-hover:text-zinc-400 transition-colors leading-snug mt-0.5 block">
+                                  <span className="text-xs text-muted-foreground/50 group-hover:text-muted-foreground transition-colors leading-snug mt-0.5 block">
                                     {item.description}
                                   </span>
                                 )}
                               </div>
-                            </button>
+                            </Link>
                           );
                         })}
                       </div>
@@ -213,7 +204,7 @@ export default function NavbarV2({ onQuoteClick }: NavbarV2Props) {
           <div className="relative" onMouseEnter={handleResourcesEnter} onMouseLeave={handleResourcesLeave}>
             <button
               className={`inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium rounded-full transition-colors ${
-                resourcesOpen ? "text-white bg-zinc-800" : "text-zinc-400 hover:text-white hover:bg-zinc-800"
+                resourcesOpen ? "text-foreground bg-secondary" : "text-muted-foreground hover:text-foreground hover:bg-secondary"
               }`}
             >
               Resources
@@ -228,13 +219,13 @@ export default function NavbarV2({ onQuoteClick }: NavbarV2Props) {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 8, scale: 0.97 }}
                   transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
-                  className="absolute right-0 top-full mt-2 rounded-xl bg-zinc-900 border border-zinc-800 p-6 shadow-2xl shadow-black/40 w-auto"
+                  className="absolute right-0 top-full mt-2 rounded-xl bg-card border border-border p-6 shadow-2xl shadow-black/40 w-auto"
                   style={{ transformOrigin: "top right" }}
                 >
                   <div className="flex gap-6">
                     {resourcesMenu.map((section) => (
                       <div key={section.category} className="flex-1 min-w-0">
-                        <p className="text-zinc-500 text-xs font-medium uppercase tracking-[0.15em] mb-3">
+                        <p className="text-muted-foreground/70 text-xs font-medium uppercase tracking-[0.15em] mb-3">
                           {section.category}
                         </p>
                         <div className="space-y-1.5">
@@ -242,35 +233,28 @@ export default function NavbarV2({ onQuoteClick }: NavbarV2Props) {
                             const Icon = item.icon;
                             const inner = (
                               <>
-                                <Icon className="h-4 w-4 text-zinc-500 group-hover:text-lime-400 transition-colors flex-shrink-0 mt-0.5" />
+                                <Icon className="h-4 w-4 text-muted-foreground/70 group-hover:text-primary transition-colors flex-shrink-0 mt-0.5" />
                                 <div className="flex-1">
-                                  <span className="text-sm text-zinc-300 group-hover:text-white transition-colors block whitespace-nowrap">
+                                  <span className="text-sm text-foreground/80 group-hover:text-foreground transition-colors block whitespace-nowrap">
                                     {item.label}
                                   </span>
                                   {item.description && (
-                                    <span className="text-xs text-zinc-600 group-hover:text-zinc-400 transition-colors leading-snug mt-0.5 block">
+                                    <span className="text-xs text-muted-foreground/50 group-hover:text-muted-foreground transition-colors leading-snug mt-0.5 block">
                                       {item.description}
                                     </span>
                                   )}
                                 </div>
                               </>
                             );
-                            return item.href ? (
+                            return (
                               <Link
                                 key={item.label}
                                 href={item.href}
-                                className="flex items-start gap-3 px-4 py-3.5 rounded-lg text-left transition-colors hover:bg-zinc-800 group w-full"
+                                onClick={() => setResourcesOpen(false)}
+                                className="flex items-start gap-3 px-4 py-3.5 rounded-lg text-left transition-colors hover:bg-secondary group w-full"
                               >
                                 {inner}
                               </Link>
-                            ) : (
-                              <button
-                                key={item.label}
-                                type="button"
-                                className="flex items-start gap-3 px-4 py-3.5 rounded-lg text-left transition-colors hover:bg-zinc-800 group w-full"
-                              >
-                                {inner}
-                              </button>
                             );
                           })}
                         </div>
@@ -284,16 +268,10 @@ export default function NavbarV2({ onQuoteClick }: NavbarV2Props) {
 
           <Link
             href="/contact"
-            className="px-3 py-1.5 text-sm font-medium text-zinc-400 rounded-full hover:text-white hover:bg-zinc-800 transition-colors"
+            className="ml-3 px-4 py-1.5 text-sm font-medium bg-primary text-primary-foreground rounded-full hover:bg-primary/90 transition-colors"
           >
-            Contact
+            Contact us
           </Link>
-          <button
-            onClick={onQuoteClick}
-            className="ml-3 px-4 py-1.5 text-sm font-medium text-white border border-zinc-700 rounded-full hover:bg-zinc-800 transition-colors"
-          >
-            Get a quote
-          </button>
         </div>
       </div>
 
@@ -305,25 +283,25 @@ export default function NavbarV2({ onQuoteClick }: NavbarV2Props) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
-            className="fixed inset-0 z-40 bg-zinc-950 pt-20 overflow-y-auto"
+            className="fixed inset-0 z-40 bg-background pt-20 overflow-y-auto"
           >
             <div className="px-6 py-8 space-y-6">
-              <a
-                href="#how-it-works"
+              <Link
+                href={HOW_IT_WORKS}
                 onClick={() => setMobileMenuOpen(false)}
-                className="block w-full text-left text-2xl font-semibold tracking-tight py-3 text-white"
+                className="block w-full text-left text-2xl font-semibold tracking-tight py-3 text-foreground"
               >
                 How It Works
-              </a>
+              </Link>
 
-              <div className="border-t border-white/[0.06] pt-6">
+              <div className="border-t border-border pt-6">
                 <button
                   onClick={() => setMobileServicesOpen((v) => !v)}
-                  className="flex items-center justify-between w-full text-2xl font-semibold tracking-tight text-white py-3"
+                  className="flex items-center justify-between w-full text-2xl font-semibold tracking-tight text-foreground py-3"
                 >
                   Services
                   <ChevronDownIcon
-                    className={`h-6 w-6 text-zinc-500 transition-transform duration-300 ${
+                    className={`h-6 w-6 text-muted-foreground/70 transition-transform duration-300 ${
                       mobileServicesOpen ? "rotate-180" : ""
                     }`}
                   />
@@ -340,20 +318,21 @@ export default function NavbarV2({ onQuoteClick }: NavbarV2Props) {
                       <div className="pt-4 pb-2 space-y-4">
                         {servicesMenu.map((section) => (
                           <div key={section.category} className="space-y-4">
-                            <p className="text-xs font-medium uppercase tracking-[0.15em] text-zinc-500">
+                            <p className="text-xs font-medium uppercase tracking-[0.15em] text-muted-foreground/70">
                               {section.category}
                             </p>
                             {section.items.map((item) => {
                               const Icon = item.icon;
                               return (
-                                <button
+                                <Link
                                   key={item.label}
-                                  type="button"
+                                  href={item.href}
+                                  onClick={() => setMobileMenuOpen(false)}
                                   className="flex items-center gap-4 w-full text-left py-2"
                                 >
-                                  <Icon className="h-5 w-5 text-zinc-500" />
-                                  <span className="text-base text-zinc-300">{item.label}</span>
-                                </button>
+                                  <Icon className="h-5 w-5 text-muted-foreground/70" />
+                                  <span className="text-base text-foreground/80">{item.label}</span>
+                                </Link>
                               );
                             })}
                           </div>
@@ -364,14 +343,14 @@ export default function NavbarV2({ onQuoteClick }: NavbarV2Props) {
                 </AnimatePresence>
               </div>
 
-              <div className="border-t border-white/[0.06] pt-6">
+              <div className="border-t border-border pt-6">
                 <button
                   onClick={() => setMobileResourcesOpen((v) => !v)}
-                  className="flex items-center justify-between w-full text-2xl font-semibold tracking-tight text-white py-3"
+                  className="flex items-center justify-between w-full text-2xl font-semibold tracking-tight text-foreground py-3"
                 >
                   Resources
                   <ChevronDownIcon
-                    className={`h-6 w-6 text-zinc-500 transition-transform duration-300 ${
+                    className={`h-6 w-6 text-muted-foreground/70 transition-transform duration-300 ${
                       mobileResourcesOpen ? "rotate-180" : ""
                     }`}
                   />
@@ -388,30 +367,21 @@ export default function NavbarV2({ onQuoteClick }: NavbarV2Props) {
                       <div className="pt-4 pb-2 space-y-8">
                         {resourcesMenu.map((section) => (
                           <div key={section.category} className="space-y-4">
-                            <p className="text-xs font-medium uppercase tracking-[0.15em] text-zinc-500">
+                            <p className="text-xs font-medium uppercase tracking-[0.15em] text-muted-foreground/70">
                               {section.category}
                             </p>
                             {section.items.map((item) => {
                               const Icon = item.icon;
-                              return item.href ? (
+                              return (
                                 <Link
                                   key={item.label}
                                   href={item.href}
                                   onClick={() => setMobileMenuOpen(false)}
                                   className="flex items-center gap-4 w-full text-left py-2"
                                 >
-                                  <Icon className="h-5 w-5 text-zinc-500" />
-                                  <span className="text-base text-zinc-300">{item.label}</span>
+                                  <Icon className="h-5 w-5 text-muted-foreground/70" />
+                                  <span className="text-base text-foreground/80">{item.label}</span>
                                 </Link>
-                              ) : (
-                                <button
-                                  key={item.label}
-                                  type="button"
-                                  className="flex items-center gap-4 w-full text-left py-2"
-                                >
-                                  <Icon className="h-5 w-5 text-zinc-500" />
-                                  <span className="text-base text-zinc-300">{item.label}</span>
-                                </button>
                               );
                             })}
                           </div>
@@ -422,11 +392,11 @@ export default function NavbarV2({ onQuoteClick }: NavbarV2Props) {
                 </AnimatePresence>
               </div>
 
-              <div className="border-t border-white/[0.06] pt-6">
+              <div className="border-t border-border pt-6">
                 <Link
                   href="/contact"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="block w-full text-left text-2xl font-semibold tracking-tight py-3 text-white"
+                  className="block w-full text-left text-2xl font-semibold tracking-tight py-3 text-foreground"
                 >
                   Contact
                 </Link>
