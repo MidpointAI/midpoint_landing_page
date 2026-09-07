@@ -21,25 +21,25 @@ const STEPS: StepDef[] = [
   {
     step: 2,
     title: "Collect requirements, policy certificates, endorsements.",
-    body: "We systematically collect new certificates and policy endorsements from your trade partners.",
+    body: "We collect certificates and endorsements from your trade partners — then check each one against the signed subcontract, not a folder of PDFs.",
     layout: "text-and-image",
   },
   {
     step: 3,
-    title: "Experts verify policy info matches your project.",
-    body: "We establish project by project insurance requirements based on your agreements",
+    title: "Experts verify policy info matches your contract.",
+    body: "We turn your signed subcontract into the compliance benchmark — then verify every COI and endorsement against that contract.",
     layout: "centered-graphic",
   },
   {
     step: 4,
     title: "Compliance is determined and reported back to the general contractor",
-    body: "We establish project by project insurance requirements based on your agreements",
+    body: "You get a clear status against the executed agreement — who’s verified, what’s missing, and what still needs a chase.",
     layout: "text-right",
   },
   {
     step: 5,
     title: "Ongoing expiration monitoring and reporting",
-    body: "We monitor and collect future policy information to keep them compliant and report back to you.",
+    body: "We monitor expirations, request updated documents, and escalate gaps so coverage stays aligned with the contract.",
     layout: "text-right",
   },
 ];

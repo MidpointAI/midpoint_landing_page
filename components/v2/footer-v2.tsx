@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { APP_LOGIN_URL } from "@/lib/site";
 
 interface FooterLink {
   label: string;
-  href?: string;
+  href: string;
+  external?: boolean;
 }
 
 interface FooterColumn {
@@ -18,27 +20,14 @@ const footerColumns: FooterColumn[] = [
     links: [
       { label: "How It Works", href: "/how-it-works" },
       { label: "Risk Transfer Process", href: "/resources" },
-      { label: "Success Stories" },
-      { label: "Blog" },
-      { label: "ROI Calculator" },
-      { label: "Video Walkthroughs" },
+      { label: "One-Pager", href: "/one-pager" },
     ],
   },
   {
     title: "Company",
     links: [
-      { label: "About" },
-      { label: "Careers" },
       { label: "Contact", href: "/contact" },
-      { label: "Partners" },
-    ],
-  },
-  {
-    title: "Legal",
-    links: [
-      { label: "Privacy Policy" },
-      { label: "Terms of Service" },
-      { label: "Security" },
+      { label: "Log in", href: APP_LOGIN_URL, external: true },
     ],
   },
 ];
@@ -76,17 +65,20 @@ export default function FooterV2() {
                 <ul className="space-y-3">
                   {column.links.map((link) => (
                     <li key={link.label}>
-                      {link.href ? (
+                      {link.external ? (
+                        <a
+                          href={link.href}
+                          className="text-sm text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
+                        >
+                          {link.label}
+                        </a>
+                      ) : (
                         <Link
                           href={link.href}
                           className="text-sm text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
                         >
                           {link.label}
                         </Link>
-                      ) : (
-                        <span className="text-sm text-zinc-400 dark:text-zinc-500 cursor-default">
-                          {link.label}
-                        </span>
                       )}
                     </li>
                   ))}
@@ -97,11 +89,6 @@ export default function FooterV2() {
         </div>
 
         <div className="mt-16 pt-6 border-t border-zinc-200/60 dark:border-white/[0.06] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-6">
-            <span className="text-sm text-zinc-400 dark:text-zinc-600">Privacy</span>
-            <span className="text-sm text-zinc-400 dark:text-zinc-600">Terms</span>
-            <span className="text-sm text-zinc-400 dark:text-zinc-600">DPA</span>
-          </div>
           <p className="text-sm text-zinc-400 dark:text-zinc-600">
             © {new Date().getFullYear()} Midpoint Verified. All rights reserved.
           </p>

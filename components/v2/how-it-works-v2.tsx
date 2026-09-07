@@ -23,37 +23,37 @@ const steps: Step[] = [
   {
     title: "Subcontractor Insurance Requirements",
     description:
-      "You provide your subcontract agreement, project list, and sub roster. Midpoint uploads your contract requirements as the compliance benchmark.",
+      "We turn your signed subcontract into the compliance benchmark — then verify every COI and endorsement against that contract. You provide the executed agreement, project list, and sub roster; those terms become the standard.",
     icon: ClipboardListIcon,
-    highlight: "Your standards become the benchmark",
+    highlight: "The signed contract is the benchmark",
   },
   {
     title: "Contract Triggering",
     description:
-      "When a sub signs a contract, your team simply CCs service@midpointverified.com. Our AI extracts and processes the contract automatically — zero manual entry.",
+      "When a sub signs, your team CCs service@midpointverified.com. We take the executed agreement from there — no extra portal work from you.",
     icon: MailIcon,
-    highlight: "One CC, fully automated",
+    highlight: "One CC starts the work",
   },
   {
     title: "Deep Compliance Verification",
     description:
-      "We verify every sub's certificate of insurance and endorsement documents against your contract requirements — additional insured, primary & non-contributory, waivers of subrogation, and more.",
+      "Every certificate of insurance and endorsement is checked against the signed contract — additional insured, primary & non-contributory, waivers of subrogation, and more. Not a folder of PDFs.",
     icon: ShieldCheckIcon,
-    highlight: "Every endorsement, every date",
+    highlight: "Every endorsement, against the contract",
   },
   {
     title: "Human Review",
     description:
-      "A dedicated Midpoint analyst reviews every AI output to catch edge cases across 3,500+ P&C carriers. No false positives, no missed gaps.",
+      "A dedicated Midpoint analyst reviews every file to catch edge cases across 3,500+ P&C carriers. Tools help the team move faster; experts stand behind the call.",
     icon: UserCheckIcon,
-    highlight: "AI + human, no gaps missed",
+    highlight: "Experts, supported by tools",
   },
   {
     title: "Ongoing Management",
     description:
-      "We handle outreach to non-compliant subs, track expirations, and pull documents for audits on demand. Verified compliance unlocks preferred carrier rates.",
+      "We chase missing documents, escalate gaps, track expirations, and pull records for audits on demand. Verified compliance unlocks preferred carrier rates.",
     icon: RefreshCwIcon,
-    highlight: "Compliance that saves you money",
+    highlight: "Chase, verify, escalate",
   },
 ];
 
@@ -149,9 +149,9 @@ export default function HowItWorksV2() {
           >
             Most General Contractors assume their construction management software,
             accounting platform, or bookkeeper is handling trade partner compliance —
-            they&apos;re not. They&apos;re storing documents. Midpoint goes further: we read
-            the policy language itself to confirm your trade partners are truly
-            compliant, so you&apos;re protected when it matters — not just organized.
+            they&apos;re not. They&apos;re storing documents. We turn your signed subcontract
+            into the compliance benchmark — then verify every COI and endorsement
+            against that contract, so you&apos;re protected when it matters.
           </motion.p>
         </motion.div>
 
