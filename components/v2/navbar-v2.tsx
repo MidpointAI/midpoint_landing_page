@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import BrandLogo from "@/components/v2/brand-logo";
 import { motion, AnimatePresence } from "framer-motion";
@@ -68,35 +68,131 @@ const resourcesMenu: MenuSection[] = [
   },
 ];
 
+type MenuKey = "services" | "resources";
+
+interface MenuDef {
+  key: MenuKey;
+  label: string;
+  sections: MenuSection[];
+  /** Items per row inside each section. */
+  columns: 1 | 2;
+}
+
+// Order matters: it decides which way the shared panel's content slides.
+const MENUS: MenuDef[] = [
+  { key: "services", label: "Services", sections: servicesMenu, columns: 2 },
+  { key: "resources", label: "Resources", sections: resourcesMenu, columns: 1 },
+];
+
+const PANEL_EASE = [0.25, 0.1, 0.25, 1] as const;
+
+// Content slides toward the direction of travel: moving to a menu further
+// right enters from the right and the old content exits left, and vice versa.
+const slideVariants = {
+  enter: (dir: number) => ({ x: dir > 0 ? 28 : dir < 0 ? -28 : 0, opacity: 0 }),
+  center: { x: 0, opacity: 1 },
+  exit: (dir: number) => ({ x: dir > 0 ? -28 : dir < 0 ? 28 : 0, opacity: 0 }),
+};
+
+function MenuPanelContent({ menu, onNavigate }: { menu: MenuDef; onNavigate: () => void }) {
+  return (
+    <div className="flex gap-6">
+      {menu.sections.map((section) => (
+        <div key={section.category} className="flex-1 min-w-0">
+          <p className="eyebrow mb-3">{section.category}</p>
+          <div className={menu.columns === 2 ? "grid grid-cols-2 gap-1" : "space-y-1.5"}>
+            {section.items.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  onClick={onNavigate}
+                  className="flex items-start gap-3 px-4 py-3.5 rounded-lg text-left transition-colors hover:bg-secondary group w-full"
+                >
+                  <Icon className="h-4 w-4 text-muted-foreground/70 group-hover:text-primary transition-colors flex-shrink-0 mt-0.5" />
+                  <div className="flex-1 min-w-0">
+                    <span className="text-sm text-foreground/80 group-hover:text-foreground transition-colors block whitespace-nowrap">
+                      {item.label}
+                    </span>
+                    {item.description && (
+                      <span className="text-xs text-muted-foreground/50 group-hover:text-muted-foreground transition-colors leading-snug mt-0.5 block">
+                        {item.description}
+                      </span>
+                    )}
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function NavbarV2() {
-  const [resourcesOpen, setResourcesOpen] = useState(false);
-  const [servicesOpen, setServicesOpen] = useState(false);
+  const [activeMenu, setActiveMenu] = useState<MenuKey | null>(null);
+  const [direction, setDirection] = useState(0);
+  const [panelHeight, setPanelHeight] = useState<number | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
   const [mobileResourcesOpen, setMobileResourcesOpen] = useState(false);
   const closeTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const servicesCloseTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const panelContentRef = useRef<HTMLDivElement | null>(null);
 
-  const handleResourcesEnter = () => {
+  const cancelClose = useCallback(() => {
     if (closeTimeout.current) {
       clearTimeout(closeTimeout.current);
       closeTimeout.current = null;
     }
-    setResourcesOpen(true);
-  };
-  const handleResourcesLeave = () => {
-    closeTimeout.current = setTimeout(() => setResourcesOpen(false), 150);
-  };
-  const handleServicesEnter = () => {
-    if (servicesCloseTimeout.current) {
-      clearTimeout(servicesCloseTimeout.current);
-      servicesCloseTimeout.current = null;
-    }
-    setServicesOpen(true);
-  };
-  const handleServicesLeave = () => {
-    servicesCloseTimeout.current = setTimeout(() => setServicesOpen(false), 150);
-  };
+  }, []);
+
+  const closeMenu = useCallback(() => {
+    cancelClose();
+    setActiveMenu(null);
+  }, [cancelClose]);
+
+  const scheduleClose = useCallback(() => {
+    cancelClose();
+    closeTimeout.current = setTimeout(() => setActiveMenu(null), 150);
+  }, [cancelClose]);
+
+  const openMenu = useCallback(
+    (key: MenuKey) => {
+      cancelClose();
+      setActiveMenu((current) => {
+        if (current && current !== key) {
+          const from = MENUS.findIndex((m) => m.key === current);
+          const to = MENUS.findIndex((m) => m.key === key);
+          setDirection(Math.sign(to - from));
+        } else if (!current) {
+          setDirection(0);
+        }
+        return key;
+      });
+    },
+    [cancelClose]
+  );
+
+  // Keep the shared panel's height in step with whichever content is showing.
+  useLayoutEffect(() => {
+    const el = panelContentRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver(() => setPanelHeight(el.offsetHeight));
+    observer.observe(el);
+    setPanelHeight(el.offsetHeight);
+    return () => observer.disconnect();
+  }, [activeMenu]);
+
+  useEffect(() => {
+    if (!activeMenu) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeMenu();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [activeMenu, closeMenu]);
 
   useEffect(() => {
     document.body.style.overflow = mobileMenuOpen ? "hidden" : "";
@@ -133,141 +229,87 @@ export default function NavbarV2() {
           </Button>
         </div>
 
-        {/* Desktop nav */}
-        <div className="hidden md:flex items-center gap-1">
+        {/* Desktop nav: triggers plus one shared panel */}
+        <div
+          className="hidden md:flex items-center gap-1 relative"
+          onMouseEnter={cancelClose}
+          onMouseLeave={scheduleClose}
+        >
           <Link
             href={HOW_IT_WORKS}
+            onMouseEnter={closeMenu}
             className="px-3 py-1.5 text-sm font-medium rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
           >
             How It Works
           </Link>
 
-          <div className="relative" onMouseEnter={handleServicesEnter} onMouseLeave={handleServicesLeave}>
-            <button
-              className={`inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium rounded-full transition-colors ${
-                servicesOpen ? "text-foreground bg-secondary" : "text-muted-foreground hover:text-foreground hover:bg-secondary"
-              }`}
-            >
-              Services
-              <ChevronDownIcon
-                className={`h-3.5 w-3.5 transition-transform duration-200 ${servicesOpen ? "rotate-180" : ""}`}
-              />
-            </button>
-            <AnimatePresence>
-              {servicesOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: 8, scale: 0.97 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 8, scale: 0.97 }}
-                  transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
-                  className="absolute right-0 top-full mt-2 rounded-xl bg-card border border-border p-5 shadow-2xl shadow-black/40 w-[540px]"
-                  style={{ transformOrigin: "top right" }}
-                >
-                  {servicesMenu.map((section) => (
-                    <div key={section.category}>
-                      <p className="text-muted-foreground/70 text-xs font-medium uppercase tracking-[0.15em] mb-3">
-                        {section.category}
-                      </p>
-                      <div className="grid grid-cols-2 gap-1">
-                        {section.items.map((item) => {
-                          const Icon = item.icon;
-                          return (
-                            <Link
-                              key={item.label}
-                              href={item.href}
-                              onClick={() => setServicesOpen(false)}
-                              className="flex items-start gap-3 px-4 py-3.5 rounded-lg text-left transition-colors hover:bg-secondary group w-full"
-                            >
-                              <Icon className="h-4 w-4 text-muted-foreground/70 group-hover:text-primary transition-colors flex-shrink-0 mt-0.5" />
-                              <div>
-                                <span className="text-sm text-foreground/80 group-hover:text-foreground transition-colors block">
-                                  {item.label}
-                                </span>
-                                {item.description && (
-                                  <span className="text-xs text-muted-foreground/50 group-hover:text-muted-foreground transition-colors leading-snug mt-0.5 block">
-                                    {item.description}
-                                  </span>
-                                )}
-                              </div>
-                            </Link>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
-          <div className="relative" onMouseEnter={handleResourcesEnter} onMouseLeave={handleResourcesLeave}>
-            <button
-              className={`inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium rounded-full transition-colors ${
-                resourcesOpen ? "text-foreground bg-secondary" : "text-muted-foreground hover:text-foreground hover:bg-secondary"
-              }`}
-            >
-              Resources
-              <ChevronDownIcon
-                className={`h-3.5 w-3.5 transition-transform duration-200 ${resourcesOpen ? "rotate-180" : ""}`}
-              />
-            </button>
-            <AnimatePresence>
-              {resourcesOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: 8, scale: 0.97 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 8, scale: 0.97 }}
-                  transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
-                  className="absolute right-0 top-full mt-2 rounded-xl bg-card border border-border p-6 shadow-2xl shadow-black/40 w-auto"
-                  style={{ transformOrigin: "top right" }}
-                >
-                  <div className="flex gap-6">
-                    {resourcesMenu.map((section) => (
-                      <div key={section.category} className="flex-1 min-w-0">
-                        <p className="text-muted-foreground/70 text-xs font-medium uppercase tracking-[0.15em] mb-3">
-                          {section.category}
-                        </p>
-                        <div className="space-y-1.5">
-                          {section.items.map((item) => {
-                            const Icon = item.icon;
-                            const inner = (
-                              <>
-                                <Icon className="h-4 w-4 text-muted-foreground/70 group-hover:text-primary transition-colors flex-shrink-0 mt-0.5" />
-                                <div className="flex-1">
-                                  <span className="text-sm text-foreground/80 group-hover:text-foreground transition-colors block whitespace-nowrap">
-                                    {item.label}
-                                  </span>
-                                  {item.description && (
-                                    <span className="text-xs text-muted-foreground/50 group-hover:text-muted-foreground transition-colors leading-snug mt-0.5 block">
-                                      {item.description}
-                                    </span>
-                                  )}
-                                </div>
-                              </>
-                            );
-                            return (
-                              <Link
-                                key={item.label}
-                                href={item.href}
-                                onClick={() => setResourcesOpen(false)}
-                                className="flex items-start gap-3 px-4 py-3.5 rounded-lg text-left transition-colors hover:bg-secondary group w-full"
-                              >
-                                {inner}
-                              </Link>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+          {MENUS.map((menu) => {
+            const isActive = activeMenu === menu.key;
+            return (
+              <button
+                key={menu.key}
+                type="button"
+                aria-expanded={isActive}
+                aria-controls="site-menu-panel"
+                onMouseEnter={() => openMenu(menu.key)}
+                onFocus={() => openMenu(menu.key)}
+                onClick={() => (isActive ? closeMenu() : openMenu(menu.key))}
+                className={`inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium rounded-full transition-colors ${
+                  isActive
+                    ? "text-foreground bg-secondary"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+                }`}
+              >
+                {menu.label}
+                <ChevronDownIcon
+                  className={`h-3.5 w-3.5 transition-transform duration-200 ${isActive ? "rotate-180" : ""}`}
+                />
+              </button>
+            );
+          })}
 
           <Button asChild size="sm" className="ml-3">
-            <Link href="/contact">Contact us</Link>
+            <Link href="/contact" onMouseEnter={closeMenu}>
+              Contact us
+            </Link>
           </Button>
+
+          <AnimatePresence>
+            {activeMenu && (
+              <motion.div
+                id="site-menu-panel"
+                key="panel"
+                initial={{ opacity: 0, y: 8, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1, height: panelHeight ?? "auto" }}
+                exit={{ opacity: 0, y: 8, scale: 0.98 }}
+                transition={{
+                  duration: 0.18,
+                  ease: PANEL_EASE,
+                  height: { duration: 0.25, ease: PANEL_EASE },
+                }}
+                style={{ transformOrigin: "top right" }}
+                className="absolute right-0 top-full mt-2 w-[560px] overflow-hidden rounded-xl bg-card border border-border shadow-2xl shadow-black/40"
+              >
+                <AnimatePresence initial={false} custom={direction} mode="popLayout">
+                  {MENUS.filter((m) => m.key === activeMenu).map((menu) => (
+                    <motion.div
+                      key={menu.key}
+                      ref={panelContentRef}
+                      custom={direction}
+                      variants={slideVariants}
+                      initial="enter"
+                      animate="center"
+                      exit="exit"
+                      transition={{ duration: 0.22, ease: PANEL_EASE }}
+                      className="p-5"
+                    >
+                      <MenuPanelContent menu={menu} onNavigate={closeMenu} />
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
 
@@ -314,7 +356,7 @@ export default function NavbarV2() {
                       <div className="pt-4 pb-2 space-y-4">
                         {servicesMenu.map((section) => (
                           <div key={section.category} className="space-y-4">
-                            <p className="text-xs font-medium uppercase tracking-[0.15em] text-muted-foreground/70">
+                            <p className="eyebrow">
                               {section.category}
                             </p>
                             {section.items.map((item) => {
@@ -363,7 +405,7 @@ export default function NavbarV2() {
                       <div className="pt-4 pb-2 space-y-8">
                         {resourcesMenu.map((section) => (
                           <div key={section.category} className="space-y-4">
-                            <p className="text-xs font-medium uppercase tracking-[0.15em] text-muted-foreground/70">
+                            <p className="eyebrow">
                               {section.category}
                             </p>
                             {section.items.map((item) => {
