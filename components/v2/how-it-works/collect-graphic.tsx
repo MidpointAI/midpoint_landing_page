@@ -31,7 +31,7 @@ export default function CollectGraphic({ isActive }: { isActive: boolean }) {
     status: i < received ? "reviewing" : "collecting",
     score: 0,
     evidence: [],
-    reviewedOn: undefined,
+    reviewedDaysAgo: undefined,
   }));
 
   return (

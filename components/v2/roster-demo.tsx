@@ -14,7 +14,7 @@ type Stage = 0 | 1 | 2; // collecting → reviewing → final
 function withStage(sub: Sub, stage: Stage): Sub {
   if (stage === 2) return sub;
   const status: SubStatus = stage === 0 ? "collecting" : "reviewing";
-  return { ...sub, status, score: stage === 0 ? 0 : Math.round(sub.score * 0.4), reviewedOn: undefined, evidence: [] };
+  return { ...sub, status, score: stage === 0 ? 0 : Math.round(sub.score * 0.4), reviewedDaysAgo: undefined, evidence: [] };
 }
 
 export default function RosterDemo() {

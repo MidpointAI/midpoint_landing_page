@@ -69,7 +69,7 @@ export default function Roster({
                   className="overflow-hidden"
                 >
                   <div className={`pb-3 pr-2 ${showRing ? "pl-[46px]" : "pl-5"}`}>
-                    <EvidenceTrail checks={s.evidence} reviewedOn={s.reviewedOn} compact />
+                    <EvidenceTrail checks={s.evidence} reviewedDaysAgo={s.reviewedDaysAgo} compact />
                   </div>
                 </motion.div>
               ) : null}

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { CheckIcon, FlagIcon, RotateCcwIcon } from "lucide-react";
-import { ComplianceRing, StatusChip, SUBS, type SubStatus } from "@/components/v2/report";
+import { ComplianceRing, StatusChip, SUBS, formatDaysAgo, type SubStatus } from "@/components/v2/report";
 
 const SPRING = { type: "spring", bounce: 0, duration: 0.45 } as const;
 
@@ -91,7 +91,7 @@ export default function VerifyGraphic({ isActive }: { isActive: boolean }) {
         <p className="text-xs text-muted-foreground">
           {!finished && "Reading the certificate and the endorsement forms behind it."}
           {finished && shown <= total && "One endorsement missing. Score reflects it."}
-          {shown > total && `Reviewed by Midpoint · ${SUB.reviewedOn}. The gap is already being chased.`}
+          {shown > total && `Reviewed by Midpoint · ${formatDaysAgo(SUB.reviewedDaysAgo ?? 0)}. The gap is already being chased.`}
         </p>
         <button type="button" onClick={() => setRun((r) => r + 1)} className="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:underline shrink-0">
           <RotateCcwIcon className="h-3.5 w-3.5" /> Replay

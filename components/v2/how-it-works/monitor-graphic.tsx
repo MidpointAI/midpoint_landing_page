@@ -11,7 +11,7 @@ type Week = { label: string; note: string; overrides: Record<string, Override> }
 // The same six subs, week by week. Scores are the project-level report.
 const WEEKS: Week[] = [
   {
-    label: "Week of Sep 1",
+    label: "Week 1",
     note: "Onboarding. Requests out to every sub on the roster.",
     overrides: {
       saguaro: { status: "compliant", score: 100 },
@@ -23,23 +23,23 @@ const WEEKS: Week[] = [
     },
   },
   {
-    label: "Week of Sep 8",
+    label: "Week 2",
     note: "Five verified. Redrock is missing one endorsement; we're on it.",
     overrides: { redrock: { status: "noncompliant", score: 80 } },
   },
   {
-    label: "Week of Sep 15",
+    label: "Week 3",
     note: "Endorsement received. Nothing needs you this week.",
     overrides: { redrock: { status: "compliant", score: 100 } },
   },
   {
-    label: "Week of Oct 6",
+    label: "Week 6",
     note: "Bluebird's policy renews in 30 days. Reminder already sent.",
     overrides: { redrock: { status: "compliant", score: 100 }, bluebird: { status: "expiring", score: 100 } },
   },
   {
     label: "Two years later",
-    note: "Project closed in 2026. Coverage still tracked, because claims arrive late.",
+    note: "Project closed. Coverage still tracked for two more years, because claims arrive late.",
     overrides: { redrock: { status: "compliant", score: 100 } },
   },
 ];

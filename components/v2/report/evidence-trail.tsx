@@ -1,5 +1,5 @@
 import { CheckIcon, FlagIcon } from "lucide-react";
-import type { EvidenceCheck } from "./data";
+import { formatDaysAgo, type EvidenceCheck } from "./data";
 
 /**
  * What Midpoint checked on one subcontractor. A receipt, not a form:
@@ -7,11 +7,11 @@ import type { EvidenceCheck } from "./data";
  */
 export default function EvidenceTrail({
   checks,
-  reviewedOn,
+  reviewedDaysAgo,
   compact = false,
 }: {
   checks: EvidenceCheck[];
-  reviewedOn?: string;
+  reviewedDaysAgo?: number;
   compact?: boolean;
 }) {
   return (
@@ -31,8 +31,8 @@ export default function EvidenceTrail({
           </li>
         ))}
       </ul>
-      {reviewedOn ? (
-        <p className="mt-3 eyebrow text-[10px] tracking-[0.16em] text-muted-foreground/70">Reviewed by Midpoint · {reviewedOn}</p>
+      {reviewedDaysAgo !== undefined ? (
+        <p className="mt-3 eyebrow text-[10px] tracking-[0.16em] text-muted-foreground/70">Reviewed by Midpoint · {formatDaysAgo(reviewedDaysAgo)}</p>
       ) : null}
     </div>
   );

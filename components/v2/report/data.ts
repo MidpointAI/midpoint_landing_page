@@ -24,7 +24,8 @@ export type Sub = {
   /** 0–100 compliance score against the project's requirements. */
   score: number;
   evidence: EvidenceCheck[];
-  reviewedOn?: string;
+  /** Days since Midpoint reviewed this sub. Rendered relative so it never goes stale. */
+  reviewedDaysAgo?: number;
 };
 
 const ok = (label: string): EvidenceCheck => ({ label, ok: true });
@@ -40,7 +41,7 @@ export const SUBS: Sub[] = [
     project: PROJECT.name,
     status: "compliant",
     score: 100,
-    reviewedOn: "Sep 2",
+    reviewedDaysAgo: 5,
     evidence: [ok("General liability $1M / $2M"), ok("Additional insured, ongoing + completed"), ok("Primary and non-contributory"), ok("Waiver of subrogation"), ok("30-day cancellation notice")],
   },
   {
@@ -50,7 +51,7 @@ export const SUBS: Sub[] = [
     project: PROJECT.name,
     status: "compliant",
     score: 100,
-    reviewedOn: "Sep 2",
+    reviewedDaysAgo: 5,
     evidence: [ok("General liability $1M / $2M"), ok("Additional insured, ongoing + completed"), ok("Primary and non-contributory"), ok("Waiver of subrogation"), ok("Workers' comp, statutory")],
   },
   {
@@ -60,7 +61,7 @@ export const SUBS: Sub[] = [
     project: PROJECT.name,
     status: "compliant",
     score: 100,
-    reviewedOn: "Sep 3",
+    reviewedDaysAgo: 4,
     evidence: [ok("General liability $1M / $2M"), ok("Additional insured, ongoing + completed"), ok("Auto liability $1M CSL"), ok("Waiver of subrogation"), ok("30-day cancellation notice")],
   },
   {
@@ -70,7 +71,7 @@ export const SUBS: Sub[] = [
     project: PROJECT.name,
     status: "compliant",
     score: 100,
-    reviewedOn: "Sep 3",
+    reviewedDaysAgo: 4,
     evidence: [ok("General liability $1M / $2M"), ok("Additional insured, ongoing + completed"), ok("Primary and non-contributory"), ok("Umbrella $5M"), ok("Workers' comp, statutory")],
   },
   {
@@ -80,7 +81,7 @@ export const SUBS: Sub[] = [
     project: PROJECT.name,
     status: "compliant",
     score: 100,
-    reviewedOn: "Sep 4",
+    reviewedDaysAgo: 3,
     evidence: [ok("General liability $1M / $2M"), ok("Additional insured, ongoing + completed"), ok("Primary and non-contributory"), ok("Waiver of subrogation"), ok("Workers' comp, statutory")],
   },
   {
@@ -90,10 +91,13 @@ export const SUBS: Sub[] = [
     project: PROJECT.name,
     status: "noncompliant",
     score: 80,
-    reviewedOn: "Sep 4",
+    reviewedDaysAgo: 3,
     evidence: [ok("General liability $1M / $2M"), ok("Additional insured, ongoing + completed"), ok("Primary and non-contributory"), ok("Waiver of subrogation"), flag("30-day cancellation notice", "Requested from the agent, 2 days ago")],
   },
 ];
+
+/** "today", "yesterday", "5 days ago". */
+export const formatDaysAgo = (n: number) => (n <= 0 ? "today" : n === 1 ? "yesterday" : `${n} days ago`);
 
 /** Project-level score: the average of its subs. */
 export const projectScore = (subs: Pick<Sub, "score">[]) =>
