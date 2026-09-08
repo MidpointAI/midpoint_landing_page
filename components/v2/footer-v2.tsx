@@ -54,7 +54,7 @@ export default function FooterV2() {
     <footer className="w-full bg-background border-t border-border">
       <div className="container-site pt-16 pb-12">
         <div className="flex flex-col lg:flex-row gap-12 lg:gap-0">
-          <div className="lg:w-[260px] lg:pr-8 flex-shrink-0">
+          <div className="lg:w-[280px] lg:pr-8 flex-shrink-0">
             <Link href="/" className="inline-flex" aria-label="Midpoint home">
               <BrandLogo variant="mark" className="h-8 w-8" />
             </Link>
@@ -64,7 +64,7 @@ export default function FooterV2() {
             </p>
           </div>
 
-          <div className="flex-1 grid grid-cols-2 sm:grid-cols-3 gap-8 lg:gap-12">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-10 lg:gap-16 lg:ml-auto">
             {footerColumns.map((column) => (
               <div key={column.title}>
                 <p className="text-sm font-medium text-foreground mb-5">{column.title}</p>
