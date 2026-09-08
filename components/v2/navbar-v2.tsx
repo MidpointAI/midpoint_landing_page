@@ -5,15 +5,10 @@ import Link from "next/link";
 import BrandLogo from "@/components/v2/brand-logo";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  ShieldCheckIcon,
   FileTextIcon,
-  BarChart3Icon,
   ChevronDownIcon,
   BookOpenIcon,
   MessageSquareQuoteIcon,
-  MailIcon,
-  ClipboardListIcon,
-  RefreshCwIcon,
   MenuIcon,
   XIcon,
   type LucideIcon,
@@ -32,24 +27,8 @@ interface MenuSection {
   items: MenuItem[];
 }
 
-// Services don't have dedicated pages yet, so each item points at the
-// How It Works page, which covers all of them.
 const HOW_IT_WORKS = "/how-it-works";
 const PRICING = "/pricing/how-it-works";
-
-const servicesMenu: MenuSection[] = [
-  {
-    category: "For General Contractors",
-    items: [
-      { label: "COI Verification", icon: ShieldCheckIcon, description: "Deep compliance checks on every sub", href: HOW_IT_WORKS },
-      { label: "Endorsement Review", icon: FileTextIcon, description: "Verify actual policy endorsements", href: HOW_IT_WORKS },
-      { label: "Ongoing Monitoring", icon: RefreshCwIcon, description: "Track expirations & renewals", href: HOW_IT_WORKS },
-      { label: "Sub Outreach", icon: MailIcon, description: "We chase non-compliant subs for you", href: HOW_IT_WORKS },
-      { label: "Audit Support", icon: ClipboardListIcon, description: "Pull documents on demand", href: HOW_IT_WORKS },
-      { label: "Risk Scoring", icon: BarChart3Icon, description: "Score sub compliance at a glance", href: HOW_IT_WORKS },
-    ],
-  },
-];
 
 const resourcesMenu: MenuSection[] = [
   {
@@ -67,7 +46,7 @@ const resourcesMenu: MenuSection[] = [
   },
 ];
 
-type MenuKey = "services" | "resources";
+type MenuKey = "resources";
 
 interface MenuDef {
   key: MenuKey;
@@ -79,7 +58,6 @@ interface MenuDef {
 
 // Order matters: it decides which way the shared panel's content slides.
 const MENUS: MenuDef[] = [
-  { key: "services", label: "Services", sections: servicesMenu, columns: 2 },
   { key: "resources", label: "Resources", sections: resourcesMenu, columns: 1 },
 ];
 
@@ -135,7 +113,6 @@ export default function NavbarV2() {
   const [direction, setDirection] = useState(0);
   const [panelHeight, setPanelHeight] = useState<number | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
   const [mobileResourcesOpen, setMobileResourcesOpen] = useState(false);
   const closeTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const panelContentRef = useRef<HTMLDivElement | null>(null);
@@ -338,55 +315,6 @@ export default function NavbarV2() {
               >
                 How It Works
               </Link>
-
-              <div className="border-t border-border pt-6">
-                <button
-                  onClick={() => setMobileServicesOpen((v) => !v)}
-                  className="flex items-center justify-between w-full text-2xl font-semibold tracking-tight text-foreground py-3"
-                >
-                  Services
-                  <ChevronDownIcon
-                    className={`h-6 w-6 text-muted-foreground/70 transition-transform duration-300 ${
-                      mobileServicesOpen ? "rotate-180" : ""
-                    }`}
-                  />
-                </button>
-                <AnimatePresence>
-                  {mobileServicesOpen && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
-                      className="overflow-hidden"
-                    >
-                      <div className="pt-4 pb-2 space-y-4">
-                        {servicesMenu.map((section) => (
-                          <div key={section.category} className="space-y-4">
-                            <p className="eyebrow">
-                              {section.category}
-                            </p>
-                            {section.items.map((item) => {
-                              const Icon = item.icon;
-                              return (
-                                <Link
-                                  key={item.label}
-                                  href={item.href}
-                                  onClick={() => setMobileMenuOpen(false)}
-                                  className="flex items-center gap-4 w-full text-left py-2"
-                                >
-                                  <Icon className="h-5 w-5 text-muted-foreground/70" />
-                                  <span className="text-base text-foreground/80">{item.label}</span>
-                                </Link>
-                              );
-                            })}
-                          </div>
-                        ))}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
 
               <div className="border-t border-border pt-6">
                 <button
