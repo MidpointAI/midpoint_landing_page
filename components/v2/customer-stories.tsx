@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { stats, testimonials, type Testimonial } from "./customer-stories-data";
+import { testimonials, type Testimonial } from "./customer-stories-data";
 
 const EASE = [0.25, 0.1, 0.25, 1] as const;
 
@@ -54,29 +54,8 @@ export default function CustomerStories() {
           </p>
         </motion.div>
 
-        {/* Proof numbers */}
-        <div className="mt-12 grid sm:grid-cols-3 gap-px rounded-xl border border-border bg-border overflow-hidden">
-          {stats.map((stat, i) => (
-            <motion.div
-              key={stat.label}
-              variants={fadeUp}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, margin: "-60px" }}
-              custom={i + 1}
-              className="bg-background p-6 md:p-7 flex flex-col"
-            >
-              <p className="text-4xl md:text-5xl font-semibold tracking-tight text-primary tabular-nums">
-                {stat.value}
-              </p>
-              <p className="mt-3 text-sm text-foreground/90 leading-snug flex-1">{stat.label}</p>
-              <p className="mt-4 eyebrow text-muted-foreground/70">{stat.source}</p>
-            </motion.div>
-          ))}
-        </div>
-
         {/* Testimonials */}
-        <div className="mt-8 grid md:grid-cols-3 gap-4">
+        <div className="mt-12 grid md:grid-cols-3 gap-4">
           {testimonials.map((item, i) => (
             <motion.figure
               key={item.name}

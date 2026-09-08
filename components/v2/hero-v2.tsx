@@ -56,8 +56,8 @@ export default function HeroV2() {
             <Link href="/contact">Contact us</Link>
           </Button>
           <Button asChild variant="ghost">
-            <Link href="/resources">
-              Learn More <ArrowRightIcon />
+            <Link href="/how-it-works">
+              See how it works <ArrowRightIcon />
             </Link>
           </Button>
         </div>

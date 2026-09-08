@@ -99,7 +99,7 @@ export default function WhyDeeper() {
               <motion.div {...reveal(0.55)}>
                 <Button asChild variant="link">
                   <Link href="/how-it-works">
-                    Learn how <ArrowRightIcon />
+                    See how it works <ArrowRightIcon />
                   </Link>
                 </Button>
               </motion.div>
