@@ -72,6 +72,7 @@ export default function ContactPage() {
     company: "",
     subject: "",
     message: "",
+    source: "",
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle")
@@ -135,7 +136,7 @@ export default function ContactPage() {
       })
 
       setStatus("success")
-      setFormData({ name: "", email: "", company: "", subject: "", message: "" })
+      setFormData({ name: "", email: "", company: "", subject: "", message: "", source: "" })
       setIsHumanVerified(false)
     } catch (error) {
       setStatus("error")
@@ -330,6 +331,17 @@ export default function ContactPage() {
                     aria-invalid={Boolean(errors.message)}
                     aria-describedby={errors.message ? "message-error" : undefined}
                     className="resize-none"
+                  />
+                </Field>
+
+                <Field id="source" label="How did you hear about us?" optional>
+                  <Input
+                    id="source"
+                    name="source"
+                    value={formData.source}
+                    onChange={handleChange}
+                    placeholder="Your insurance agent, a referral, a search..."
+                    className="h-11"
                   />
                 </Field>
 

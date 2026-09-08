@@ -7,6 +7,8 @@ interface ContactFormData {
   company?: string
   subject: string
   message: string
+  /** Optional "How did you hear about us?" answer. */
+  source?: string
 }
 
 async function sendSlackNotification(data: ContactFormData) {
@@ -77,6 +79,13 @@ async function sendSlackNotification(data: ContactFormData) {
         }
       },
       {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `*How they heard about us:*\n${data.source || 'Not given'}`
+        }
+      },
+      {
         type: "context",
         elements: [
           {
@@ -133,10 +142,10 @@ async function appendToGoogleSheet(data: ContactFormData) {
     const timestamp = new Date().toISOString()
 
     // Append a row to the sheet
-    // Assumes headers: Timestamp | Name | Email | Company | Subject | Message
+    // Assumes headers: Timestamp | Name | Email | Company | Subject | Message | Source
     const response = await sheets.spreadsheets.values.append({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: 'Sheet1!A:F', // Adjust if your sheet has a different name
+      range: 'Sheet1!A:G', // Adjust if your sheet has a different name
       valueInputOption: 'USER_ENTERED',
       requestBody: {
         values: [[
@@ -146,6 +155,7 @@ async function appendToGoogleSheet(data: ContactFormData) {
           data.company || '',
           data.subject,
           data.message,
+          data.source || '',
         ]],
       },
     })
