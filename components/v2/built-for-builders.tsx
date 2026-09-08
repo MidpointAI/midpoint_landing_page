@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShieldCheckIcon, ClockIcon, ClipboardCheckIcon, BellIcon } from "lucide-react";
+import RosterDemo from "@/components/v2/roster-demo";
 
 const benefits = [
   {
@@ -37,22 +38,8 @@ export default function BuiltForBuilders() {
     <section className="w-full bg-background section-y relative overflow-hidden">
       <div className="relative container-site">
         <div className="flex flex-col md:flex-row md:gap-20 items-center gap-[0px]">
-          <div className="w-full md:w-1/2 flex-shrink-0">
-            <div className="relative aspect-square max-w-[560px] mx-auto">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/Papers_flyingss.png"
-                alt="Flying papers representing compliance paperwork"
-                className="w-full h-full object-contain dark:invert"
-              />
-              <div
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                  background:
-                    "radial-gradient(ellipse at center, transparent 30%, var(--background) 75%)",
-                }}
-              />
-            </div>
+          <div className="w-full md:w-1/2 flex-shrink-0 flex justify-center md:justify-start">
+            <RosterDemo />
           </div>
 
           <div className="w-full md:w-1/2">
