@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useState, useRef, useEffect, createElement } from "react";
 import { useTheme } from "next-themes";
 import {
@@ -524,7 +523,6 @@ function RiskTransferStep({
   checks,
   warnings,
   callout,
-  icon,
 }: {
   number: number;
   badge: string;

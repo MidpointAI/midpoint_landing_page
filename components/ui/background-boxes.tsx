@@ -7,21 +7,20 @@ export const BoxesCore = ({ className, ...rest }: { className?: string }) => {
   const rows = new Array(150).fill(1);
   const cols = new Array(100).fill(1);
 
-  // Multi-color hover palette — harmonious with the lime/green theme
+  // Hover palette: the brand accent plus a few complementary hues.
   const colors = [
-    "oklch(0.75 0.18 130 / 0.4)",  // lime green
+    "color-mix(in oklch, var(--primary) 45%, transparent)",
     "oklch(0.70 0.14 160 / 0.35)", // teal
     "oklch(0.65 0.16 250 / 0.3)",  // soft blue
     "oklch(0.72 0.12 85 / 0.35)",  // warm gold
     "oklch(0.68 0.15 300 / 0.25)", // muted purple
-    "oklch(0.80 0.19 115 / 0.45)", // bright lime (primary)
+    "color-mix(in oklch, var(--primary) 60%, transparent)",
     "oklch(0.60 0.13 195 / 0.3)",  // cyan
     "oklch(0.70 0.10 50 / 0.3)",   // amber
   ];
 
-  const getRandomColor = () => {
-    return colors[Math.floor(Math.random() * colors.length)];
-  };
+  // Deterministic per-cell pick so render stays pure (no Math.random during render).
+  const colorFor = (i: number, j: number) => colors[(i * 7 + j * 13) % colors.length];
 
   return (
     <div
@@ -42,7 +41,7 @@ export const BoxesCore = ({ className, ...rest }: { className?: string }) => {
           {cols.map((_, j) => (
             <motion.div
               whileHover={{
-                backgroundColor: `${getRandomColor()}`,
+                backgroundColor: colorFor(i, j),
                 transition: { duration: 0 },
               }}
               animate={{

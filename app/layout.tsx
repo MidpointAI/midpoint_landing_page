@@ -56,21 +56,12 @@ export const metadata: Metadata = {
     title: "Midpoint - AI-Powered Insurance Compliance for Builders",
     description:
       "Eliminate subcontractor paperwork with AI that reviews certificates and endorsements to uncover missing coverage, outdated limits, and hidden exposures.",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Midpoint - AI-Powered Insurance Compliance",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Midpoint - AI-Powered Insurance Compliance for Builders",
     description:
       "Eliminate subcontractor paperwork with AI that reviews certificates and endorsements.",
-    images: ["/og-image.png"],
   },
   robots: {
     index: true,
