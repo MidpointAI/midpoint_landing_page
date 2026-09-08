@@ -49,7 +49,7 @@ export function ResourcesContent({
 
   return (
     <main className="flex-1 min-w-0 flex justify-center" id="resources-content">
-      <div className="max-w-3xl w-full px-4 lg:px-8 section-y">
+      <div className="max-w-3xl w-full px-4 lg:px-8 pt-2 pb-20 md:pb-28">
         {activePage === "overview" && <OverviewPage onNavigate={onNavigate} />}
         {activePage === "what-is-midpoint" && <WhatIsMidpointPage />}
         {activePage === "proper-risk-transfer" && <ProperRiskTransferPage />}
@@ -179,9 +179,9 @@ function WhatIsMidpointPage() {
     <article>
       <Breadcrumb items={["Resources", "What is Midpoint?"]} />
 
-      <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl lg:text-[42px] font-bold tracking-tight text-foreground mt-6 mb-4">
+      <h2 className="heading-1 text-foreground mt-6 mb-4">
         What is Midpoint?
-      </h1>
+      </h2>
       <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-8 max-w-2xl">
         Midpoint is an AI-powered platform that helps residential home builders
         and general contractors manage subcontractor insurance compliance. We
@@ -293,9 +293,9 @@ function ProperRiskTransferPage() {
           <ShieldCheck className="w-6 h-6 md:w-7 md:h-7" />
         </div>
         <div>
-          <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl lg:text-[42px] font-bold tracking-tight text-foreground">
+          <h2 className="heading-1 text-foreground">
             Proper Risk Transfer
-          </h1>
+          </h2>
           <p className="text-sm md:text-base text-muted-foreground mt-2">
             How it works — step by step
           </p>
@@ -340,7 +340,7 @@ function ProperRiskTransferPage() {
       <div className="h-px bg-border/30 mb-10" />
 
       {/* THE RISK TRANSFER FLOW */}
-      <p className="text-xs uppercase tracking-[0.15em] text-muted-foreground/60 font-medium mb-8">
+      <p className="eyebrow mb-8">
         The Risk Transfer Flow
       </p>
 
@@ -411,13 +411,13 @@ function ProperRiskTransferPage() {
       <div className="rounded-xl border border-yellow-500/30 bg-yellow-500/5 p-6 md:p-8 my-10">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-8 h-8 rounded-lg bg-yellow-500/10 flex items-center justify-center flex-shrink-0">
-            <AlertTriangle className="w-4 h-4 text-yellow-500" />
+            <AlertTriangle className="w-4 h-4 text-chart-4" />
           </div>
-          <span className="text-xs uppercase tracking-[0.12em] font-semibold text-yellow-500">
+          <span className="eyebrow text-chart-4">
             Critical — Often Overlooked
           </span>
         </div>
-        <h3 className="text-xl md:text-2xl font-bold text-foreground mb-3">
+        <h3 className="heading-3 text-foreground mb-3">
           Request Exclusions List & GL Rating Pages
         </h3>
         <p className="text-base text-foreground/70 leading-relaxed mb-6">
@@ -429,7 +429,7 @@ function ProperRiskTransferPage() {
           <div className="rounded-lg border border-border/30 bg-background/50 p-5">
             <div className="flex items-center gap-2 mb-2">
               <Eye className="w-4 h-4 text-primary" />
-              <h4 className="text-sm font-semibold text-foreground">Why Exclusions Matter</h4>
+              <h4 className="heading-4 text-foreground">Why Exclusions Matter</h4>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
               A sub&apos;s policy may exclude the exact type of work being performed.
@@ -439,7 +439,7 @@ function ProperRiskTransferPage() {
           <div className="rounded-lg border border-border/30 bg-background/50 p-5">
             <div className="flex items-center gap-2 mb-2">
               <FileText className="w-4 h-4 text-primary" />
-              <h4 className="text-sm font-semibold text-foreground">Why GL Rating Pages Matter</h4>
+              <h4 className="heading-4 text-foreground">Why GL Rating Pages Matter</h4>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
               If the sub&apos;s actual scope isn&apos;t listed, the insurer may deny the
@@ -480,12 +480,12 @@ function ProperRiskTransferPage() {
             <CheckCircle2 className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <span className="text-xs uppercase tracking-[0.12em] font-semibold text-primary block">
+            <span className="eyebrow text-primary block">
               Step 5 — Risk Successfully Transferred
             </span>
           </div>
         </div>
-        <h3 className="text-xl md:text-2xl font-bold text-foreground mb-3">
+        <h3 className="heading-3 text-foreground mb-3">
           The GC Is Protected — Coverage Responds Correctly
         </h3>
         <p className="text-base text-foreground/70 leading-relaxed">
@@ -529,10 +529,10 @@ function RiskTransferStep({
           {number}
         </div>
         <div>
-          <span className="text-xs uppercase tracking-[0.12em] text-primary font-semibold block mb-1">
+          <span className="eyebrow text-primary block mb-1">
             {badge}
           </span>
-          <h2 className="text-xl md:text-2xl font-bold text-foreground">
+          <h2 className="heading-3 text-foreground">
             {title}
           </h2>
         </div>
@@ -551,7 +551,7 @@ function RiskTransferStep({
                 key={card.title}
                 className="rounded-lg border border-border/30 p-5"
               >
-                <h4 className="text-sm font-semibold text-foreground mb-2">
+                <h4 className="heading-4 text-foreground mb-2">
                   {card.title}
                 </h4>
                 <p className="text-sm text-muted-foreground leading-relaxed">
@@ -576,7 +576,7 @@ function RiskTransferStep({
               <div className="space-y-2">
                 {warnings.map((item) => (
                   <div key={item} className="flex items-start gap-3">
-                    <AlertTriangle className="w-4 h-4 text-yellow-500 flex-shrink-0 mt-0.5" />
+                    <AlertTriangle className="w-4 h-4 text-chart-4 flex-shrink-0 mt-0.5" />
                     <span className="text-sm text-muted-foreground">{item}</span>
                   </div>
                 ))}
@@ -636,9 +636,9 @@ function GlossaryPage({
             {createElement(term.icon, { className: "w-6 h-6 md:w-7 md:h-7" })}
           </div>
           <div>
-            <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl lg:text-[42px] font-bold tracking-tight text-foreground">
+            <h2 className="heading-1 text-foreground">
               {term.title}
-            </h1>
+            </h2>
             <p className="text-sm md:text-base text-muted-foreground mt-2">
               {term.tagline}
             </p>
@@ -697,7 +697,7 @@ function GlossaryPage({
                 <ArrowLeft className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors duration-200" />
               </div>
               <div>
-                <span className="text-xs text-muted-foreground/50 uppercase tracking-[0.15em] block">
+                <span className="eyebrow block">
                   Previous
                 </span>
                 <span className="text-base md:text-lg font-medium text-foreground group-hover:text-primary transition-colors duration-200">
@@ -716,7 +716,7 @@ function GlossaryPage({
               className="group flex items-center gap-4 text-right cursor-pointer"
             >
               <div>
-                <span className="text-xs text-muted-foreground/50 uppercase tracking-[0.15em] block">
+                <span className="eyebrow block">
                   Next
                 </span>
                 <span className="text-base md:text-lg font-medium text-foreground group-hover:text-primary transition-colors duration-200">
@@ -745,9 +745,9 @@ function DownloadsPage() {
     <article>
       <Breadcrumb items={["Resources", "Downloads"]} />
 
-      <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl lg:text-[42px] font-bold tracking-tight text-foreground mt-6 mb-4">
+      <h2 className="heading-1 text-foreground mt-6 mb-4">
         Helpful Resources
-      </h1>
+      </h2>
       <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-8 max-w-2xl">
         Real tools from contractors who transformed their risk management.
         Download these resources to improve your insurance compliance.
@@ -766,7 +766,7 @@ function DownloadsPage() {
                 <Download className="w-6 h-6 text-primary" />
               </div>
               <div className="flex-1">
-                <h3 className="text-lg md:text-xl font-semibold text-foreground mb-2">
+                <h3 className="heading-3 text-foreground mb-2">
                   {item.title}
                 </h3>
                 <p className="text-sm md:text-base text-muted-foreground leading-relaxed mb-5">
@@ -802,9 +802,9 @@ function FaqPage() {
     <article>
       <Breadcrumb items={["Resources", "FAQ"]} />
 
-      <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl lg:text-[42px] font-bold tracking-tight text-foreground mt-6 mb-4">
+      <h2 className="heading-1 text-foreground mt-6 mb-4">
         Common Questions
-      </h1>
+      </h2>
       <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-8 max-w-2xl">
         Get clarity on how Midpoint transforms insurance management for
         residential contractors.
@@ -826,7 +826,7 @@ function FaqPage() {
 
       {/* Contact CTA card */}
       <div className="mt-16 rounded-xl border border-border/30 p-8 md:p-10 text-center">
-        <h3 className="text-xl md:text-2xl font-semibold text-foreground mb-3">
+        <h3 className="heading-3 text-foreground mb-3">
           Need more information?
         </h3>
         <p className="text-sm md:text-base text-muted-foreground mb-8 max-w-md mx-auto">
@@ -855,7 +855,7 @@ function FaqPage() {
 function SectionLabel({ label }: { label: string }) {
   return (
     <div className="flex items-center gap-4 mb-6">
-      <span className="text-xs md:text-sm uppercase tracking-[0.08em] text-muted-foreground/60 flex-shrink-0 font-medium">
+      <span className="eyebrow flex-shrink-0">
         {label}
       </span>
       <div className="flex-1 h-px bg-border/20" />

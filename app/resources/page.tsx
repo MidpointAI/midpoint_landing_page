@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ResourcesHero } from "@/components/resources/resources-hero";
+import { PageHeader } from "@/components/page-header";
 import {
   ResourcesSidebar,
   GradientDivider,
@@ -19,8 +19,11 @@ export default function ResourcesPage() {
 
   return (
     <div className="min-h-svh bg-background text-foreground">
-      {/* Hero Section */}
-      <ResourcesHero />
+      <PageHeader
+        eyebrow="Resources"
+        title="Insurance terms"
+        description="Essential knowledge to help builders navigate complex insurance landscapes and optimize risk transfer strategies."
+      />
 
       {/* Mobile Navigation */}
       <ResourcesMobileNav activePage={activePage} onNavigate={handleNavigate} />
