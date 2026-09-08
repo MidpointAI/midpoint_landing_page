@@ -16,7 +16,7 @@ interface FooterColumn {
 
 // Services have no dedicated pages yet; they point at the How It Works
 // walkthrough, matching the navbar. Labels mirror the navbar's Services menu.
-const HOW_IT_WORKS = "/#how-it-works";
+const HOW_IT_WORKS = "/how-it-works";
 const SUPPORT_EMAIL = "service@midpointverified.com";
 
 const footerColumns: FooterColumn[] = [

@@ -34,8 +34,8 @@ interface MenuSection {
 }
 
 // Services don't have dedicated pages yet, so each item points at the
-// "How It Works" walkthrough on the home page, which covers all of them.
-const HOW_IT_WORKS = "/#how-it-works";
+// How It Works page, which covers all of them.
+const HOW_IT_WORKS = "/how-it-works";
 
 const servicesMenu: MenuSection[] = [
   {
