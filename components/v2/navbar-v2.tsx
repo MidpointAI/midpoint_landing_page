@@ -8,7 +8,6 @@ import {
   FileTextIcon,
   ChevronDownIcon,
   BookOpenIcon,
-  MessageSquareQuoteIcon,
   MenuIcon,
   XIcon,
   type LucideIcon,
@@ -29,13 +28,13 @@ interface MenuSection {
 
 const HOW_IT_WORKS = "/how-it-works";
 const PRICING = "/pricing/how-it-works";
+const CUSTOMERS = "/customers";
 
 const resourcesMenu: MenuSection[] = [
   {
     category: "Learn",
     items: [
       { label: "Insurance Terms", icon: BookOpenIcon, description: "Plain-English guide to coverage terms", href: "/resources" },
-      { label: "Success Stories", icon: MessageSquareQuoteIcon, description: "Hear from builders using Midpoint", href: "/#testimonials" },
     ],
   },
   {
@@ -178,10 +177,13 @@ export default function NavbarV2() {
   }, [mobileMenuOpen]);
 
   return (
-    <header
-      className="sticky top-0 z-40 w-full border-b border-border bg-background/85 backdrop-blur-md"
-      style={{ backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)" }}
-    >
+    <header className="sticky top-0 z-40 w-full">
+      {/* The blur sits on this bar, not on <header>: a backdrop filter would make the
+          header the containing block for the fixed mobile overlay below and clip it. */}
+      <div
+        className="border-b border-border bg-background/85 backdrop-blur-md"
+        style={{ backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)" }}
+      >
       <div className="container-site h-20 flex items-center justify-between">
         <div className="flex items-center z-50">
           <Link href="/" className="focus:outline-none flex items-center" onClick={() => setMobileMenuOpen(false)}>
@@ -217,6 +219,13 @@ export default function NavbarV2() {
             className="px-3 py-1.5 text-sm font-medium rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
           >
             How It Works
+          </Link>
+          <Link
+            href={CUSTOMERS}
+            onMouseEnter={closeMenu}
+            className="px-3 py-1.5 text-sm font-medium rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+          >
+            Customers
           </Link>
 
           {MENUS.map((menu) => {
@@ -296,6 +305,7 @@ export default function NavbarV2() {
           </AnimatePresence>
         </div>
       </div>
+      </div>
 
       {/* Mobile menu overlay */}
       <AnimatePresence>
@@ -315,6 +325,16 @@ export default function NavbarV2() {
               >
                 How It Works
               </Link>
+
+              <div className="border-t border-border pt-6">
+                <Link
+                  href={CUSTOMERS}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block w-full text-left text-2xl font-semibold tracking-tight py-3 text-foreground"
+                >
+                  Customers
+                </Link>
+              </div>
 
               <div className="border-t border-border pt-6">
                 <button
