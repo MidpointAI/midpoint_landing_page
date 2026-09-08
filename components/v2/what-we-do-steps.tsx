@@ -1,12 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
-import ExpertsVerifyGraphic from "@/components/v2/experts-verify-graphic";
 import { useStepActivity } from "@/components/v2/step-activity";
 import GraphicFrame from "@/components/v2/how-it-works/graphic-frame";
 import RequirementsGraphic from "@/components/v2/how-it-works/requirements-graphic";
 import CollectGraphic from "@/components/v2/how-it-works/collect-graphic";
 import ChaseGraphic from "@/components/v2/how-it-works/chase-graphic";
+import VerifyGraphic from "@/components/v2/how-it-works/verify-graphic";
 import MonitorGraphic from "@/components/v2/how-it-works/monitor-graphic";
 import StepRail from "@/components/v2/how-it-works/step-rail";
 
@@ -100,7 +100,7 @@ function StepGraphic({ id, isActive }: { id: string; isActive: boolean }) {
     case "collect":
       return <CollectGraphic isActive={isActive} />;
     case "verify":
-      return <ExpertsVerifyGraphic variant="tree" />;
+      return <VerifyGraphic isActive={isActive} />;
     case "chase":
       return <ChaseGraphic isActive={isActive} />;
     default:

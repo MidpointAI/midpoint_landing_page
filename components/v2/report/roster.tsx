@@ -18,12 +18,18 @@ export default function Roster({
   onRowEnter,
   onRowLeave,
   onRowSelect,
+  showRing = true,
+  chipLabel,
 }: {
   subs: Sub[];
   expandedId?: string | null;
   onRowEnter?: (id: string) => void;
   onRowLeave?: () => void;
   onRowSelect?: (id: string) => void;
+  /** Hide the ring when the score isn't the point (e.g. during collection). */
+  showRing?: boolean;
+  /** Override the chip text per status, e.g. "Requested" instead of "Collecting". */
+  chipLabel?: (sub: Sub) => string | undefined;
 }) {
   return (
     <ul className="divide-y divide-border/70" onMouseLeave={onRowLeave}>
@@ -41,12 +47,16 @@ export default function Roster({
                 open ? "bg-secondary/50" : "hover:bg-secondary/40"
               }`}
             >
-              <ComplianceRing value={s.score} status={s.status} size={34} />
+              {showRing ? (
+                <ComplianceRing value={s.score} status={s.status} size={34} />
+              ) : (
+                <span className={`h-2 w-2 rounded-full shrink-0 transition-colors duration-500 ${s.status === "collecting" ? "bg-chart-4" : "bg-primary"}`} aria-hidden="true" />
+              )}
               <span className="min-w-0 flex-1">
                 <span className="block text-sm font-medium text-foreground truncate">{s.name}</span>
                 <span className="block text-xs text-muted-foreground truncate">{s.trade}</span>
               </span>
-              <StatusChip status={s.status} />
+              <StatusChip status={s.status} label={chipLabel?.(s)} />
             </button>
             <AnimatePresence initial={false}>
               {open ? (
@@ -58,7 +68,7 @@ export default function Roster({
                   transition={SPRING}
                   className="overflow-hidden"
                 >
-                  <div className="pb-3 pl-[46px] pr-2">
+                  <div className={`pb-3 pr-2 ${showRing ? "pl-[46px]" : "pl-5"}`}>
                     <EvidenceTrail checks={s.evidence} reviewedOn={s.reviewedOn} compact />
                   </div>
                 </motion.div>
