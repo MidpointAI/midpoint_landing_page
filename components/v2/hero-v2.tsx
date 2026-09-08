@@ -48,8 +48,8 @@ export default function HeroV2() {
           <span className="text-foreground block">Without the Headache</span>
         </h1>
         <p className="text-muted-foreground text-lg md:text-xl max-w-[612px] mx-auto mb-12 leading-relaxed">
-          A dedicated compliance team handling proper risk transfer, flagging gaps
-          in coverage and continuously monitoring trade partners across projects.
+          We collect your subcontractors&apos; certificates, verify the coverage against
+          your contract, chase what&apos;s missing, and report back every week.
         </p>
         <div className="flex flex-col sm:flex-row items-center gap-4">
           <Button asChild>
@@ -61,6 +61,7 @@ export default function HeroV2() {
             </Link>
           </Button>
         </div>
+        <p className="mt-4 text-sm text-muted-foreground">We reply within one business day.</p>
       </main>
 
       <div className="relative z-10 flex flex-col items-center pb-10 -mt-[120px]">

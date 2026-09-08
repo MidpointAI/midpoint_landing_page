@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { testimonials, type Testimonial } from "./customer-stories-data";
 
@@ -33,6 +33,24 @@ function CompanyMark({ item }: { item: Testimonial }) {
 }
 
 export default function CustomerStories() {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [page, setPage] = useState(0);
+
+  // Phones: the track scroll-snaps one card at a time; dots follow the scroll.
+  const onScroll = () => {
+    const el = trackRef.current;
+    if (!el) return;
+    const card = el.firstElementChild as HTMLElement | null;
+    if (!card) return;
+    setPage(Math.round(el.scrollLeft / (card.offsetWidth + 16)));
+  };
+  const goTo = (i: number) => {
+    const el = trackRef.current;
+    const card = el?.firstElementChild as HTMLElement | null;
+    if (!el || !card) return;
+    el.scrollTo({ left: i * (card.offsetWidth + 16), behavior: "smooth" });
+  };
+
   return (
     <section id="testimonials" className="w-full bg-background section-y scroll-mt-24">
       <div className="container-site">
@@ -55,7 +73,11 @@ export default function CustomerStories() {
         </motion.div>
 
         {/* Testimonials */}
-        <div className="mt-12 grid md:grid-cols-3 gap-4">
+        <div
+          ref={trackRef}
+          onScroll={onScroll}
+          className="mt-12 flex md:grid md:grid-cols-3 gap-4 overflow-x-auto md:overflow-visible snap-x snap-mandatory md:snap-none scrollbar-hide -mx-6 px-6 md:mx-0 md:px-0"
+        >
           {testimonials.map((item, i) => (
             <motion.figure
               key={item.name}
@@ -64,7 +86,7 @@ export default function CustomerStories() {
               whileInView="show"
               viewport={{ once: true, margin: "-60px" }}
               custom={i}
-              className="rounded-xl border border-border bg-card p-7 md:p-8 flex flex-col"
+              className="rounded-xl border border-border bg-card p-7 md:p-8 flex flex-col shrink-0 w-[86%] md:w-auto snap-center"
             >
               <div className="flex items-center justify-between gap-4 mb-6 min-h-6">
                 <CompanyMark item={item} />
@@ -84,7 +106,18 @@ export default function CustomerStories() {
             </motion.figure>
           ))}
         </div>
-
+        <div className="mt-5 flex justify-center gap-2 md:hidden" role="tablist" aria-label="Customer stories">
+          {testimonials.map((t, i) => (
+            <button
+              key={t.name}
+              role="tab"
+              aria-selected={page === i}
+              aria-label={`Story ${i + 1} of ${testimonials.length}`}
+              onClick={() => goTo(i)}
+              className={`h-1.5 rounded-full transition-all duration-300 ${page === i ? "w-5 bg-primary" : "w-1.5 bg-border"}`}
+            />
+          ))}
+        </div>
       </div>
     </section>
   );
