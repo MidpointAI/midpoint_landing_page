@@ -125,7 +125,7 @@ function SuccessContent() {
               <AlertCircle className="w-6 h-6 text-destructive" />
             </div>
             <div className="flex-1">
-              <h1 className="text-xl font-semibold text-foreground mb-1">
+              <h1 className="heading-3 text-foreground mb-1">
                 Something went wrong
               </h1>
               <p className="text-muted-foreground text-sm">
@@ -159,10 +159,10 @@ function SuccessContent() {
                 <Check className="w-7 h-7 text-primary" strokeWidth={3} />
               </div>
               <div className="flex-1">
-                <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-widest mb-1">
+                <p className="eyebrow mb-1">
                   Payment Confirmed
                 </p>
-                <h1 className="text-2xl lg:text-[28px] font-bold text-foreground tracking-tight">
+                <h1 className="heading-2 text-foreground">
                   Welcome to Midpoint!
                 </h1>
               </div>
@@ -171,7 +171,7 @@ function SuccessContent() {
 
           {/* Order Details - Compact Two-Column Layout */}
           <section className="py-8 border-b border-border">
-            <h2 className="text-[11px] font-medium text-muted-foreground uppercase tracking-widest mb-5">
+            <h2 className="eyebrow mb-5">
               Order Details
             </h2>
 
@@ -243,7 +243,7 @@ function SuccessContent() {
 
           {/* Next Steps */}
           <section className="py-8">
-            <h2 className="text-[11px] font-medium text-muted-foreground uppercase tracking-widest mb-3">
+            <h2 className="eyebrow mb-3">
               Next Steps
             </h2>
             <p className="text-foreground text-sm leading-relaxed mb-5">

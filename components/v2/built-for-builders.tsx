@@ -56,13 +56,10 @@ export default function BuiltForBuilders() {
           </div>
 
           <div className="w-full md:w-1/2">
-            <p
-              className="text-muted-foreground/70 text-xs tracking-[0.2em] uppercase mb-4"
-              style={{ fontFamily: "var(--font-display), sans-serif" }}
-            >
+            <p className="eyebrow mb-4">
               Why Midpoint?
             </p>
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight mb-5">
+            <h2 className="heading-2 text-foreground mb-5">
               Built for Builders, <span className="text-primary">Not Paper Pushers</span>
             </h2>
             <p className="text-muted-foreground text-base md:text-lg leading-relaxed mb-10">

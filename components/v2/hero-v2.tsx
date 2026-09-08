@@ -38,15 +38,15 @@ export default function HeroV2() {
       <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-background to-transparent pointer-events-none" />
 
       <main className="relative z-10 flex flex-col px-6 text-center items-center justify-center flex-1">
-        <p className="text-muted-foreground text-sm tracking-[0.2em] uppercase mb-8">
+        <p className="eyebrow mb-8">
           Insurance verification, <span className="italic">off your plate</span>
         </p>
-        <h2 className="text-6xl md:text-7xl lg:text-8xl font-semibold leading-[0.9] mb-8">
+        <h1 className="heading-display mb-8">
           <span className="text-foreground block">
             Trade Partner <span className="text-primary">Compliance</span>
           </span>
           <span className="text-foreground block">Without the Headache</span>
-        </h2>
+        </h1>
         <p className="text-muted-foreground text-lg md:text-xl max-w-[612px] mx-auto mb-12 leading-relaxed">
           A dedicated compliance team handling proper risk transfer, flagging gaps
           in coverage and continuously monitoring trade partners across projects.

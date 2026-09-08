@@ -94,10 +94,10 @@ export default function HowItWorksV2() {
     <section id="how-it-works" className="w-full bg-background section-y overflow-hidden scroll-mt-24">
       <div className="container-site">
         <div className="text-center mb-16 max-w-3xl mx-auto">
-          <p className="text-muted-foreground/70 text-xs tracking-[0.2em] uppercase mb-4">
+          <p className="eyebrow mb-4">
             Beyond COI checks
           </p>
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight mb-5">
+          <h2 className="heading-2 text-foreground mb-5">
             We Don&apos;t Just Store Documents —
             <br />
             We <span className="text-primary">Verify</span> Them
@@ -173,11 +173,11 @@ export default function HowItWorksV2() {
                   {createElement(steps[activeIndex].icon, {
                     className: "h-5 w-5 text-primary",
                   })}
-                  <p className="text-xs text-muted-foreground/70 font-medium uppercase tracking-wider">
+                  <p className="eyebrow">
                     Step {activeIndex + 1}
                   </p>
                 </div>
-                <h3 className="text-2xl text-foreground font-semibold tracking-tight mb-4">
+                <h3 className="heading-3 text-foreground mb-4">
                   {steps[activeIndex].title}
                 </h3>
                 <p className="text-muted-foreground text-base leading-relaxed mb-6 max-w-lg">

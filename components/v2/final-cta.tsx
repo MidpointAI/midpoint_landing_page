@@ -7,10 +7,7 @@ import { Button } from "@/components/ui/button";
 export default function FinalCta() {
   return (
     <section className="w-full px-6 section-y text-center bg-background">
-      <h2
-        className="text-4xl font-bold text-foreground mb-4 tracking-tight"
-        style={{ fontFamily: "var(--font-display), sans-serif" }}
-      >
+      <h2 className="heading-2 text-foreground mb-4">
         Ready to stop collecting COIs?
       </h2>
       <p className="text-muted-foreground text-lg mb-8 max-w-xl mx-auto">

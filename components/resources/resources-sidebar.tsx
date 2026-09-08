@@ -127,7 +127,7 @@ export function ResourcesSidebar({
 
         {/* Help card */}
         <div className="rounded-xl border border-border/30 p-5 mt-4">
-          <h4 className="text-base font-medium text-foreground mb-2">
+          <h4 className="heading-4 text-foreground mb-2">
             Need help?
           </h4>
           <p className="text-sm text-muted-foreground leading-relaxed mb-4">

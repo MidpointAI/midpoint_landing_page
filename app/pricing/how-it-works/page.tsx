@@ -54,7 +54,7 @@ export default function HowPricingWorksPage() {
         <div className="container-prose">
           {/* Hero */}
           <section className="py-16 lg:py-20 text-center border-b border-border">
-            <h1 className="text-3xl lg:text-4xl font-bold text-foreground tracking-tight mb-4">
+            <h1 className="heading-1 text-foreground mb-4">
               How Pricing Works
             </h1>
             <p className="text-muted-foreground text-lg max-w-xl mx-auto">
@@ -64,7 +64,7 @@ export default function HowPricingWorksPage() {
 
           {/* The Formula */}
           <section className="py-12 border-b border-border">
-            <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-8">
+            <h2 className="eyebrow mb-8">
               The Formula
             </h2>
             <div className="flex justify-center">
@@ -77,7 +77,7 @@ export default function HowPricingWorksPage() {
 
           {/* Model Assumptions */}
           <section className="py-12 border-b border-border">
-            <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-8">
+            <h2 className="eyebrow mb-8">
               Model Assumptions
             </h2>
             <div className="space-y-0">
@@ -98,12 +98,12 @@ export default function HowPricingWorksPage() {
 
           {/* How It's Calculated */}
           <section className="py-12 border-b border-border">
-            <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-8">
+            <h2 className="eyebrow mb-8">
               How It&apos;s Calculated
             </h2>
             <div className="grid md:grid-cols-2 gap-8">
               <div>
-                <p className="text-xs text-muted-foreground uppercase tracking-wider mb-3">
+                <p className="eyebrow mb-3">
                   Load Factor
                 </p>
                 <code className="text-sm font-mono text-primary">
@@ -114,7 +114,7 @@ export default function HowPricingWorksPage() {
                 </p>
               </div>
               <div>
-                <p className="text-xs text-muted-foreground uppercase tracking-wider mb-3">
+                <p className="eyebrow mb-3">
                   Calculated Fee
                 </p>
                 <code className="text-sm font-mono text-primary">
@@ -129,7 +129,7 @@ export default function HowPricingWorksPage() {
 
           {/* Example Scenarios */}
           <section className="py-12 border-b border-border">
-            <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-8">
+            <h2 className="eyebrow mb-8">
               Example Scenarios
             </h2>
 
@@ -171,7 +171,7 @@ export default function HowPricingWorksPage() {
 
           {/* Renewal Policy */}
           <section className="py-12">
-            <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-4">
+            <h2 className="eyebrow mb-4">
               Renewal Policy
             </h2>
             <p className="text-foreground">
