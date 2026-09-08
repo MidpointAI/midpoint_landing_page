@@ -47,7 +47,7 @@ const STEPS: StepDef[] = [
     step: 5,
     id: "monitor",
     title: "Report weekly. Monitor for years.",
-    body: "A digest every week, and monitoring that continues for two years after the project closes, because claims arrive late.",
+    body: "Every week you get one short email listing each trade partner and where they stand: verified, expiring soon, missing a document, or waiting on a decision from you. Nothing to log into. And it doesn't stop when the project does: we keep tracking every sub's coverage for two years after completion, because claims arrive late.",
     layout: "text-left",
   },
 ];

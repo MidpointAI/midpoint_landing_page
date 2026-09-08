@@ -21,14 +21,20 @@ const youDo = [
   },
   {
     title: "Read one weekly email.",
-    body: "Who's verified, who's expiring, who's ignoring us, and anything that needs a decision from you.",
+    body: "A short status report every week: which subs are verified, whose coverage expires soon, who still owes us a document, and anything that needs your call.",
   },
 ];
 
 const youGet = [
   {
-    title: "A weekly digest",
-    body: "Every trade partner by status: verified, expiring, missing documents, or waiting on you.",
+    title: "One weekly status email",
+    body: "A plain-English list of every trade partner: who's verified, whose coverage expires soon, who still owes us a document, and which items need a decision from you. It takes two minutes to read and there's nothing to log into.",
+    example: [
+      { label: "Verified", value: "24 trade partners" },
+      { label: "Expiring in 30 days", value: "3" },
+      { label: "Missing a document", value: "2, being chased" },
+      { label: "Needs your decision", value: "1" },
+    ],
   },
   {
     title: "Records filed by project",
@@ -134,9 +140,20 @@ export default function HowItWorksPage() {
             </div>
             <div className="grid md:grid-cols-3 gap-4">
               {youGet.map((item) => (
-                <div key={item.title} className="rounded-xl border border-border bg-card p-7">
+                <div key={item.title} className="rounded-xl border border-border bg-card p-7 flex flex-col">
                   <h3 className="heading-4 text-base text-foreground mb-3">{item.title}</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">{item.body}</p>
+                  {"example" in item && item.example ? (
+                    <dl className="mt-6 rounded-lg border border-border bg-background p-4 text-sm font-mono">
+                      <p className="eyebrow mb-3">Example, one week</p>
+                      {item.example.map((row) => (
+                        <div key={row.label} className="flex items-baseline justify-between gap-4 py-1.5 border-t border-border/60 first-of-type:border-t-0">
+                          <dt className="text-muted-foreground">{row.label}</dt>
+                          <dd className={row.label === "Needs your decision" ? "text-primary" : "text-foreground"}>{row.value}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                  ) : null}
                 </div>
               ))}
             </div>
@@ -152,7 +169,7 @@ export default function HowItWorksPage() {
             </div>
             <div className="flex flex-col gap-6">
               <p className="text-muted-foreground text-base md:text-lg leading-relaxed">
-                We contact the sub and their agent repeatedly. After roughly thirty days without resolution, or fifteen days past an expiration, that trade partner lands in your weekly digest with the missing item, the outreach history, and a recommended next step. The decision stays yours:
+                We contact the sub and their agent repeatedly. After roughly thirty days without resolution, or fifteen days past an expiration, that trade partner shows up in your weekly status email with what&apos;s missing, every attempt we&apos;ve made to get it, and a recommended next step. The decision stays yours:
               </p>
               <ul className="flex flex-col gap-3">
                 {decisions.map((d) => (
