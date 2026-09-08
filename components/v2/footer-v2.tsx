@@ -95,9 +95,11 @@ export default function FooterV2() {
         </div>
 
         <div className="mt-16 pt-6 border-t border-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <p className="text-sm text-muted-foreground/50">
-            111 E Monroe Ave, Buckeye, AZ 85396
-          </p>
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground/50">
+            <p>111 E Monroe Ave, Buckeye, AZ 85396</p>
+            <Link href="/privacy" className="hover:text-foreground/80 transition-colors">Privacy</Link>
+            <Link href="/terms" className="hover:text-foreground/80 transition-colors">Terms</Link>
+          </div>
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
             <p className="text-sm text-muted-foreground/50">
               © {new Date().getFullYear()} Midpoint. All rights reserved.
