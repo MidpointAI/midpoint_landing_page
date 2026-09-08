@@ -171,6 +171,15 @@ p, li, h1, h2, h3, h4, h5, h6 {
   display: block;
 }
 
+/* Section snapping for guided pages (opt in by adding .snap-sections to <html>).
+   `proximity` nudges a section into place when the user pauses near it but
+   never traps scrolling on sections taller than the viewport. */
+@media (min-width: 768px) {
+  html.snap-sections {
+    scroll-snap-type: y proximity;
+  }
+}
+
 /* Selection highlight - theme responsive */
 ::selection {
   background: color-mix(in oklch, var(--primary) 35%, transparent);

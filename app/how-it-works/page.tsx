@@ -1,6 +1,8 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
+import { MotionConfig } from "framer-motion";
 import { ArrowRightIcon, ChevronDownIcon } from "lucide-react";
 import WhatWeDoSteps from "@/components/v2/what-we-do-steps";
 import { StepActivityProvider } from "@/components/v2/step-activity";
@@ -81,11 +83,18 @@ const faqs = [
 ];
 
 export default function HowItWorksPage() {
+  // Sections snap into place on this page (desktop only, proximity, see globals.css).
+  useEffect(() => {
+    document.documentElement.classList.add("snap-sections");
+    return () => document.documentElement.classList.remove("snap-sections");
+  }, []);
+
   return (
+    <MotionConfig reducedMotion="user">
     <StepActivityProvider>
       <main className="min-h-screen bg-background text-foreground">
         {/* Hero */}
-        <section className="w-full section-y">
+        <section className="w-full min-h-[calc(100svh-5rem)] flex items-center snap-start">
           <div className="container-site flex flex-col items-center text-center gap-6">
             <p className="eyebrow">How it works</p>
             <h1 className="heading-1 md:text-6xl text-foreground max-w-3xl">
@@ -110,8 +119,8 @@ export default function HowItWorksPage() {
         </section>
 
         {/* What you do */}
-        <section id="what-you-do" className="w-full section-y border-t border-border scroll-mt-20">
-          <div className="container-site">
+        <section id="what-you-do" className="w-full min-h-[calc(100svh-5rem)] flex items-center section-y border-t border-border snap-start scroll-mt-20">
+          <div className="container-site w-full">
             <div className="max-w-2xl mb-12">
               <p className="eyebrow mb-4">What you do</p>
               <h2 className="heading-2 text-foreground">Three things. Then you&apos;re done.</h2>
@@ -132,8 +141,8 @@ export default function HowItWorksPage() {
         <WhatWeDoSteps />
 
         {/* What you get back */}
-        <section id="what-you-get" className="w-full section-y scroll-mt-20">
-          <div className="container-site">
+        <section id="what-you-get" className="w-full min-h-[calc(100svh-5rem)] flex items-center section-y snap-start scroll-mt-20">
+          <div className="container-site w-full">
             <div className="max-w-2xl mb-12">
               <p className="eyebrow mb-4">What you get back</p>
               <h2 className="heading-2 text-foreground">Visibility without the busywork.</h2>
@@ -161,8 +170,8 @@ export default function HowItWorksPage() {
         </section>
 
         {/* When a sub won't respond */}
-        <section id="escalation" className="w-full section-y border-t border-border scroll-mt-20">
-          <div className="container-site grid md:grid-cols-[1fr_1.2fr] gap-10 md:gap-16">
+        <section id="escalation" className="w-full min-h-[calc(100svh-5rem)] flex items-center section-y border-t border-border snap-start scroll-mt-20">
+          <div className="container-site w-full grid md:grid-cols-[1fr_1.2fr] gap-10 md:gap-16">
             <div>
               <p className="eyebrow mb-4">When a sub won&apos;t respond</p>
               <h2 className="heading-2 text-foreground">We chase. You decide.</h2>
@@ -184,8 +193,8 @@ export default function HowItWorksPage() {
         </section>
 
         {/* When a claim comes */}
-        <section id="claims" className="w-full section-y border-t border-border scroll-mt-20">
-          <div className="container-site grid md:grid-cols-[1fr_1.2fr] gap-10 md:gap-16">
+        <section id="claims" className="w-full min-h-[calc(100svh-5rem)] flex items-center section-y border-t border-border snap-start scroll-mt-20">
+          <div className="container-site w-full grid md:grid-cols-[1fr_1.2fr] gap-10 md:gap-16">
             <div>
               <p className="eyebrow mb-4">When a claim comes</p>
               <h2 className="heading-2 text-foreground">Insurance responds to paperwork, not intentions.</h2>
@@ -201,7 +210,7 @@ export default function HowItWorksPage() {
         </section>
 
         {/* FAQ */}
-        <section id="faq" className="w-full section-y border-t border-border scroll-mt-20">
+        <section id="faq" className="w-full section-y border-t border-border snap-start scroll-mt-20">
           <div className="container-prose">
             <p className="eyebrow mb-4">Questions builders ask</p>
             <h2 className="heading-2 text-foreground mb-10">Before you hand it off</h2>
@@ -234,5 +243,6 @@ export default function HowItWorksPage() {
         </section>
       </main>
     </StepActivityProvider>
+    </MotionConfig>
   );
 }

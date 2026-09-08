@@ -114,10 +114,22 @@ const cardHeightFor = (c: Coverage) =>
 const CYCLE_MS = 5000;
 const EASE_TECH: [number, number, number, number] = [0.65, 0, 0.35, 1];
 
-export default function ExpertsVerifyGraphic() {
+export default function ExpertsVerifyGraphic({
+  variant = "auto",
+}: {
+  /** "tree" always renders the compact vertical layout (for narrow columns). */
+  variant?: "auto" | "tree";
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
+  const [pausedUntil, setPausedUntil] = useState(0);
+
+  // Clicking a coverage selects it and holds the cycle for a while.
+  const select = (i: number) => {
+    setActiveIndex(i);
+    setPausedUntil(Date.now() + 12000);
+  };
 
   useEffect(() => {
     const el = ref.current;
@@ -132,10 +144,11 @@ export default function ExpertsVerifyGraphic() {
   useEffect(() => {
     if (!isVisible) return;
     const id = setInterval(() => {
+      if (Date.now() < pausedUntil) return;
       setActiveIndex((i) => (i + 1) % COVERAGES.length);
     }, CYCLE_MS);
     return () => clearInterval(id);
-  }, [isVisible]);
+  }, [isVisible, pausedUntil]);
 
   const coverage = COVERAGES[activeIndex];
   const activeY = rowY(activeIndex);
@@ -145,10 +158,12 @@ export default function ExpertsVerifyGraphic() {
       {/* < xl (mobile + tablet + small desktop): vertical tree. The
           horizontal card is only used when there's enough room for it to
           render at full size without crushing the labels. */}
-      <MobileTree activeIndex={activeIndex} coverage={coverage} />
+      <MobileTree activeIndex={activeIndex} coverage={coverage} onSelect={select} always={variant === "tree"} />
 
       {/* xl and up: horizontal card */}
-      <DesktopCard activeIndex={activeIndex} activeY={activeY} coverage={coverage} />
+      {variant === "auto" && (
+        <DesktopCard activeIndex={activeIndex} activeY={activeY} coverage={coverage} onSelect={select} />
+      )}
     </div>
   );
 }
@@ -159,10 +174,12 @@ function DesktopCard({
   activeIndex,
   activeY,
   coverage,
+  onSelect,
 }: {
   activeIndex: number;
   activeY: number;
   coverage: Coverage;
+  onSelect: (i: number) => void;
 }) {
   return (
     <motion.div
@@ -206,16 +223,16 @@ function DesktopCard({
             width={COV_W}
             top={rowY(i) - ROW_H / 2}
           >
-            <motion.span
-              className="text-[16px] whitespace-nowrap leading-none"
-              animate={{
-                color: isActive ? "rgb(255,255,255)" : "rgb(157,157,157)",
-                fontWeight: isActive ? 500 : 400,
-              }}
+            <motion.button
+              type="button"
+              onClick={() => onSelect(i)}
+              aria-pressed={isActive}
+              className="text-[16px] whitespace-nowrap leading-none text-foreground cursor-pointer hover:opacity-100 focus-visible:outline-none focus-visible:underline"
+              animate={{ opacity: isActive ? 1 : 0.5, fontWeight: isActive ? 500 : 400 }}
               transition={{ duration: 0.3, ease: EASE_TECH }}
             >
               {c.name}
-            </motion.span>
+            </motion.button>
           </Cell>
         );
       })}
@@ -333,9 +350,13 @@ function mobileLayout(activeIndex: number, detailCount: number) {
 function MobileTree({
   activeIndex,
   coverage,
+  onSelect,
+  always = false,
 }: {
   activeIndex: number;
   coverage: Coverage;
+  onSelect: (i: number) => void;
+  always?: boolean;
 }) {
   const detailCount = coverage.details.length;
   const { covY, detY, cardH } = mobileLayout(activeIndex, detailCount);
@@ -396,7 +417,7 @@ function MobileTree({
 
   return (
     <div
-      className="xl:hidden relative rounded-xl bg-card shadow-lg ring-1 ring-border w-full max-w-md md:max-w-xl"
+      className={`${always ? "" : "xl:hidden"} relative rounded-xl bg-card shadow-lg ring-1 ring-border w-full max-w-md md:max-w-xl`}
       style={{
         height: cardH,
         fontFamily: "var(--font-dm-mono), monospace",
@@ -484,16 +505,16 @@ function MobileTree({
               height: M_COV_ROW_H,
             }}
           >
-            <motion.span
-              className="text-[14px] whitespace-nowrap leading-none"
-              animate={{
-                color: isActive ? "rgb(255,255,255)" : "rgb(157,157,157)",
-                fontWeight: isActive ? 500 : 400,
-              }}
+            <motion.button
+              type="button"
+              onClick={() => onSelect(i)}
+              aria-pressed={isActive}
+              className="text-[14px] whitespace-nowrap leading-none text-foreground cursor-pointer focus-visible:outline-none focus-visible:underline"
+              animate={{ opacity: isActive ? 1 : 0.5, fontWeight: isActive ? 500 : 400 }}
               transition={{ duration: 0.3, ease: EASE_TECH }}
             >
               {c.name}
-            </motion.span>
+            </motion.button>
           </div>
         );
       })}
