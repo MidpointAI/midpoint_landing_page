@@ -18,7 +18,7 @@ export interface Testimonial {
   name: string;
   title: string;
   company: string;
-  /** Path under /public. Drop the file in and the card picks it up. */
+  /** Path under /public. Only set this once the file exists; a missing file shows a broken image before hydration. */
   logo?: string;
   /** Optional proof line shown above the quote, e.g. a verified result. */
   highlight?: string;
@@ -51,7 +51,7 @@ export const testimonials: Testimonial[] = [
     name: "Spencer Nield",
     title: "Director of Operations",
     company: "A Finer Touch Construction",
-    logo: "/customers/a-finer-touch.svg", // TODO: add file from the old Webflow/Figma assets
+    // logo: "/customers/a-finer-touch.svg", // TODO: uncomment once the file is in public/customers
     highlight: "60% rate reduction",
   },
   {
@@ -60,7 +60,7 @@ export const testimonials: Testimonial[] = [
     name: "Andy Becker",
     title: "Owner",
     company: "Stonegate Custom Homes",
-    logo: "/customers/stonegate.svg", // TODO: add file from the old Webflow/Figma assets
+    // logo: "/customers/stonegate.svg", // TODO: uncomment once the file is in public/customers
   },
   {
     quote:
@@ -68,6 +68,6 @@ export const testimonials: Testimonial[] = [
     name: "Samantha Becher",
     title: "Office Manager",
     company: "Starwood Custom Homes",
-    logo: "/customers/starwood.svg", // TODO: add file
+    // logo: "/customers/starwood.svg", // TODO: uncomment once the file is in public/customers
   },
 ];
