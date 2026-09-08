@@ -10,8 +10,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/pricing/how-it-works" },
 };
 
-// Confirm before publishing: the per-sub range ($125–150) and the $6,000 minimum.
-const PER_SUB = "$125–150";
+// $150 per sub per year and the $6,000 minimum confirmed by Andy, Sep 2026.
+const PER_SUB = "$150";
 const MINIMUM = "$6,000";
 const THRESHOLD = 100;
 
