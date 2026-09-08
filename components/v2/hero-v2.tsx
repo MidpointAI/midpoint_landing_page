@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRightIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const HERO_BG_URL =
   "https://cdn.magicpatterns.com/uploads/aYGrNQuUPNdajTBmWkC5Wu/Hero.svg";
@@ -51,18 +52,14 @@ export default function HeroV2() {
           in coverage and continuously monitoring trade partners across projects.
         </p>
         <div className="flex flex-col sm:flex-row items-center gap-4">
-          <Link
-            href="/contact"
-            className="px-6 py-2 bg-primary text-primary-foreground text-sm font-medium rounded-full hover:bg-primary/90 transition-colors"
-          >
-            Contact us
-          </Link>
-          <Link
-            href="/resources"
-            className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Learn More <ArrowRightIcon className="h-4 w-4" />
-          </Link>
+          <Button asChild>
+            <Link href="/contact">Contact us</Link>
+          </Button>
+          <Button asChild variant="ghost">
+            <Link href="/resources">
+              Learn More <ArrowRightIcon />
+            </Link>
+          </Button>
         </div>
       </main>
 

@@ -19,6 +19,7 @@ import {
   XIcon,
   type LucideIcon,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface MenuItem {
   label: string;
@@ -125,13 +126,11 @@ export default function NavbarV2() {
           >
             {mobileMenuOpen ? <XIcon className="h-6 w-6" /> : <MenuIcon className="h-6 w-6" />}
           </button>
-          <Link
-            href="/contact"
-            onClick={() => setMobileMenuOpen(false)}
-            className="px-4 py-1.5 text-sm font-medium text-primary-foreground bg-primary rounded-full hover:bg-primary/90 transition-colors ml-1"
-          >
-            Contact us
-          </Link>
+          <Button asChild size="sm" className="ml-1">
+            <Link href="/contact" onClick={() => setMobileMenuOpen(false)}>
+              Contact us
+            </Link>
+          </Button>
         </div>
 
         {/* Desktop nav */}
@@ -266,12 +265,9 @@ export default function NavbarV2() {
             </AnimatePresence>
           </div>
 
-          <Link
-            href="/contact"
-            className="ml-3 px-4 py-1.5 text-sm font-medium bg-primary text-primary-foreground rounded-full hover:bg-primary/90 transition-colors"
-          >
-            Contact us
-          </Link>
+          <Button asChild size="sm" className="ml-3">
+            <Link href="/contact">Contact us</Link>
+          </Button>
         </div>
       </div>
 

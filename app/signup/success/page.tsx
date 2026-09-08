@@ -11,6 +11,7 @@ import {
   ArrowLeft,
   ArrowRight,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface SessionData {
   status: string;
@@ -133,13 +134,12 @@ function SuccessContent() {
             </div>
           </div>
           <div className="mt-6 pl-[68px]">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Return Home
-            </Link>
+            <Button asChild>
+              <Link href="/">
+                <ArrowLeft />
+                Return home
+              </Link>
+            </Button>
           </div>
         </div>
       </div>
@@ -252,19 +252,15 @@ function SuccessContent() {
               Our team will reach out within 24 hours to help you get started.
             </p>
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-              <Link
-                href="/"
-                className="px-6 py-2.5 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
-              >
-                Return home
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-              <a
-                href="mailto:service@midpointverified.com"
-                className="px-6 py-2.5 border border-border text-foreground text-sm font-medium rounded-lg hover:border-foreground/40 transition-colors text-center"
-              >
-                Contact support
-              </a>
+              <Button asChild>
+                <Link href="/">
+                  Return home
+                  <ArrowRight />
+                </Link>
+              </Button>
+              <Button asChild variant="outline">
+                <a href="mailto:service@midpointverified.com">Contact support</a>
+              </Button>
             </div>
           </section>
         </div>

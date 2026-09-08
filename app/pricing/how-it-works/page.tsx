@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Copy, Check } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 // Pricing scenario data
 const pricingScenarios = [
@@ -184,18 +185,12 @@ export default function HowPricingWorksPage() {
               Ready to get started?
             </p>
             <div className="flex items-center justify-center gap-4">
-              <Link
-                href="/contact"
-                className="px-6 py-3 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:opacity-90 transition-opacity"
-              >
-                Contact us
-              </Link>
-              <a
-                href="mailto:service@midpointverified.com"
-                className="px-6 py-3 border border-border text-foreground text-sm font-medium rounded-lg hover:border-foreground/50 transition-colors"
-              >
-                Email us
-              </a>
+              <Button asChild>
+                <Link href="/contact">Contact us</Link>
+              </Button>
+              <Button asChild variant="outline">
+                <a href="mailto:service@midpointverified.com">Email us</a>
+              </Button>
             </div>
           </section>
         </div>

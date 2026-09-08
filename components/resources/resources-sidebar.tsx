@@ -11,6 +11,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { glossaryTerms, type DocPage } from "./resources-data";
+import { Button } from "@/components/ui/button";
 
 interface ResourcesSidebarProps {
   activePage: DocPage;
@@ -133,13 +134,12 @@ export function ResourcesSidebar({
             Our team is ready to answer your questions about insurance
             compliance.
           </p>
-          <a
-            href="/contact"
-            className="inline-flex items-center gap-2 text-sm text-primary font-medium hover:underline cursor-pointer"
-          >
-            Contact us
-            <ArrowUpRight className="w-3.5 h-3.5" />
-          </a>
+          <Button asChild variant="link" size="sm">
+            <a href="/contact">
+              Contact us
+              <ArrowUpRight />
+            </a>
+          </Button>
         </div>
       </nav>
     </aside>

@@ -33,6 +33,7 @@ import {
   getTermById,
   getAdjacentTerms,
 } from "./resources-data";
+import { Button } from "@/components/ui/button";
 
 interface ResourcesContentProps {
   activePage: DocPage;
@@ -133,15 +134,16 @@ function OverviewPage({ onNavigate }: { onNavigate: (p: DocPage) => void }) {
                 {item.description}
               </p>
             </div>
-            <a
-              href={resolveDownloadHref(item, resolvedTheme)}
-              download={item.download}
-              target={item.external ? "_blank" : undefined}
-              rel={item.external ? "noopener noreferrer" : undefined}
-              className="text-xs md:text-sm font-medium text-primary hover:underline cursor-pointer flex-shrink-0"
-            >
-              {item.cta}
-            </a>
+            <Button asChild variant="link" size="sm" className="flex-shrink-0">
+              <a
+                href={resolveDownloadHref(item, resolvedTheme)}
+                download={item.download}
+                target={item.external ? "_blank" : undefined}
+                rel={item.external ? "noopener noreferrer" : undefined}
+              >
+                {item.cta}
+              </a>
+            </Button>
           </div>
         ))}
       </div>
@@ -159,12 +161,9 @@ function OverviewPage({ onNavigate }: { onNavigate: (p: DocPage) => void }) {
             <ChevronRight className="w-4 h-4 text-muted-foreground/50 ml-auto flex-shrink-0" />
           </button>
         ))}
-        <button
-          onClick={() => onNavigate("faq")}
-          className="text-xs md:text-sm text-primary font-medium mt-3 self-start hover:underline cursor-pointer"
-        >
+        <Button variant="link" size="sm" onClick={() => onNavigate("faq")} className="mt-3 self-start">
           View all questions
-        </button>
+        </Button>
       </div>
     </article>
   );
@@ -230,13 +229,10 @@ function WhatIsMidpointPage() {
         View our one-pager to learn more about how Midpoint works:
       </p>
 
-      <button
-        onClick={() => setModalOpen(true)}
-        className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg text-sm md:text-base font-medium hover:opacity-90 transition-opacity cursor-pointer"
-      >
-        <FileText className="w-5 h-5" />
+      <Button size="lg" onClick={() => setModalOpen(true)}>
+        <FileText />
         Open One Pager
-      </button>
+      </Button>
 
       {/* Modal */}
       <OnePagerModal isOpen={modalOpen} onClose={() => setModalOpen(false)} />
@@ -308,36 +304,27 @@ function ProperRiskTransferPage() {
 
       {/* Action bar */}
       <div className="flex items-center gap-3 mt-6 mb-8 flex-wrap">
-        <button
-          onClick={handleDownloadPDF}
-          className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity cursor-pointer"
-        >
-          <Download className="w-4 h-4" />
+        <Button onClick={handleDownloadPDF}>
+          <Download />
           Download PDF
-        </button>
-        <button
-          onClick={handleShare}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium border border-border/40 text-foreground/80 hover:border-primary/40 hover:text-primary transition-all cursor-pointer"
-        >
-          <Share2 className="w-4 h-4" />
+        </Button>
+        <Button variant="outline" onClick={handleShare}>
+          <Share2 />
           Share
-        </button>
-        <button
-          onClick={handleCopyLink}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium border border-border/40 text-foreground/80 hover:border-primary/40 hover:text-primary transition-all cursor-pointer"
-        >
+        </Button>
+        <Button variant="outline" onClick={handleCopyLink}>
           {copied ? (
             <>
-              <Check className="w-4 h-4 text-primary" />
+              <Check className="text-primary" />
               <span className="text-primary">Copied!</span>
             </>
           ) : (
             <>
-              <LinkIcon className="w-4 h-4" />
+              <LinkIcon />
               Copy Link
             </>
           )}
-        </button>
+        </Button>
       </div>
 
       {/* Intro */}
@@ -785,16 +772,17 @@ function DownloadsPage() {
                 <p className="text-sm md:text-base text-muted-foreground leading-relaxed mb-5">
                   {item.description}
                 </p>
-                <a
-                  href={resolveDownloadHref(item, resolvedTheme)}
-                  download={item.download}
-                  target={item.external ? "_blank" : undefined}
-                  rel={item.external ? "noopener noreferrer" : undefined}
-                  className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg text-sm md:text-base font-medium hover:opacity-90 transition-opacity cursor-pointer"
-                >
-                  {item.external ? <ExternalLink className="w-4 h-4" /> : <Download className="w-4 h-4" />}
-                  {item.cta}
-                </a>
+                <Button asChild size="lg">
+                  <a
+                    href={resolveDownloadHref(item, resolvedTheme)}
+                    download={item.download}
+                    target={item.external ? "_blank" : undefined}
+                    rel={item.external ? "noopener noreferrer" : undefined}
+                  >
+                    {item.external ? <ExternalLink /> : <Download />}
+                    {item.cta}
+                  </a>
+                </Button>
               </div>
             </div>
           </div>
@@ -845,19 +833,15 @@ function FaqPage() {
           Our team is ready to answer your specific questions and concerns.
         </p>
         <div className="flex items-center justify-center gap-5 flex-wrap">
-          <a
-            href="/contact"
-            className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-7 py-3 rounded-lg text-sm md:text-base font-medium hover:opacity-90 transition-opacity cursor-pointer"
-          >
-            Contact Us
-          </a>
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-sm md:text-base text-foreground hover:text-primary transition-colors cursor-pointer"
-          >
-            Learn More
-            <ArrowRight className="w-4 h-4" />
-          </Link>
+          <Button asChild size="lg">
+            <Link href="/contact">Contact us</Link>
+          </Button>
+          <Button asChild variant="ghost" size="lg">
+            <Link href="/">
+              Learn More
+              <ArrowRight />
+            </Link>
+          </Button>
         </div>
       </div>
     </article>

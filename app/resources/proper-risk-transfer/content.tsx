@@ -15,6 +15,7 @@ import {
   Share2,
   LinkIcon,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export function ProperRiskTransferContent() {
   const [copied, setCopied] = useState(false);
@@ -88,36 +89,27 @@ export function ProperRiskTransferContent() {
 
             {/* Action bar */}
             <div className="flex items-center gap-3 mt-6 flex-wrap">
-              <button
-                onClick={handleDownloadPDF}
-                className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity cursor-pointer"
-              >
-                <Download className="w-4 h-4" />
+              <Button onClick={handleDownloadPDF}>
+                <Download />
                 Download PDF
-              </button>
-              <button
-                onClick={handleShare}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium border border-border/40 text-foreground/80 hover:border-primary/40 hover:text-primary transition-all cursor-pointer"
-              >
-                <Share2 className="w-4 h-4" />
+              </Button>
+              <Button variant="outline" onClick={handleShare}>
+                <Share2 />
                 Share
-              </button>
-              <button
-                onClick={handleCopyLink}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium border border-border/40 text-foreground/80 hover:border-primary/40 hover:text-primary transition-all cursor-pointer"
-              >
+              </Button>
+              <Button variant="outline" onClick={handleCopyLink}>
                 {copied ? (
                   <>
-                    <Check className="w-4 h-4 text-primary" />
+                    <Check className="text-primary" />
                     <span className="text-primary">Copied!</span>
                   </>
                 ) : (
                   <>
-                    <LinkIcon className="w-4 h-4" />
+                    <LinkIcon />
                     Copy Link
                   </>
                 )}
-              </button>
+              </Button>
             </div>
 
             {/* Intro callout */}
@@ -304,13 +296,12 @@ export function ProperRiskTransferContent() {
 
           {/* Back to resources */}
           <div className="mt-16 pt-8 border-t border-border/20 text-center">
-            <Link
-              href="/resources"
-              className="inline-flex items-center gap-2 text-sm text-primary font-medium hover:underline"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back to all resources
-            </Link>
+            <Button asChild variant="link" size="sm">
+              <Link href="/resources">
+                <ArrowLeft />
+                Back to all resources
+              </Link>
+            </Button>
           </div>
         </div>
       </section>

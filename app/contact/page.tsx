@@ -436,8 +436,9 @@ export default function ContactPage() {
 
                 <Button
                   type="submit"
+                  size="lg"
                   disabled={!isFormValid || status === "sending"}
-                  className="h-11 w-full sm:w-auto"
+                  className="w-full sm:w-auto"
                 >
                   {status === "sending" ? (
                     <>
@@ -451,7 +452,7 @@ export default function ContactPage() {
                   ) : (
                     <>
                       Send message
-                      <ArrowRight className="ml-2 h-4 w-4" />
+                      <ArrowRight />
                     </>
                   )}
                 </Button>

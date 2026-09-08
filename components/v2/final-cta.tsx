@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ArrowRightIcon } from "lucide-react";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 
 export default function FinalCta() {
   return (
@@ -17,7 +17,7 @@ export default function FinalCta() {
         Tell us about your projects and trade partners, and we&apos;ll walk you
         through how Midpoint takes compliance off your plate.
       </p>
-      <Button size="lg" asChild className="gap-2 text-base px-10">
+      <Button size="lg" asChild>
         <Link href="/contact">
           Contact us <ArrowRightIcon className="h-4 w-4" />
         </Link>

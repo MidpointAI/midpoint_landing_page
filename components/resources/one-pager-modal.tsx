@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { X, Copy, Check, Share2, ExternalLink } from "lucide-react";
 import OnePager from "@/components/one-pager";
+import { Button } from "@/components/ui/button";
 
 interface OnePagerModalProps {
   isOpen: boolean;
@@ -86,42 +87,33 @@ export function OnePagerModal({ isOpen, onClose }: OnePagerModalProps) {
 
           <div className="flex items-center gap-2">
             {/* Copy Link */}
-            <button
-              onClick={handleCopyLink}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border/40 bg-secondary/50 text-[12px] font-medium text-foreground hover:border-primary/30 hover:bg-secondary transition-all duration-200 cursor-pointer"
-            >
+            <Button size="xs" variant="outline" onClick={handleCopyLink}>
               {copied ? (
                 <>
-                  <Check className="w-3.5 h-3.5 text-primary" />
+                  <Check className="text-primary" />
                   <span className="hidden sm:inline">Copied!</span>
                 </>
               ) : (
                 <>
-                  <Copy className="w-3.5 h-3.5" />
+                  <Copy />
                   <span className="hidden sm:inline">Copy Link</span>
                 </>
               )}
-            </button>
+            </Button>
 
             {/* Share */}
-            <button
-              onClick={handleShare}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border/40 bg-secondary/50 text-[12px] font-medium text-foreground hover:border-primary/30 hover:bg-secondary transition-all duration-200 cursor-pointer"
-            >
-              <Share2 className="w-3.5 h-3.5" />
+            <Button size="xs" variant="outline" onClick={handleShare}>
+              <Share2 />
               <span className="hidden sm:inline">Share</span>
-            </button>
+            </Button>
 
             {/* Open Full Size */}
-            <a
-              href="/one-pager"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-[12px] font-medium hover:opacity-90 transition-opacity cursor-pointer"
-            >
-              <ExternalLink className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Open Full Size</span>
-            </a>
+            <Button size="xs" asChild>
+              <a href="/one-pager" target="_blank" rel="noopener noreferrer">
+                <ExternalLink />
+                <span className="hidden sm:inline">Open Full Size</span>
+              </a>
+            </Button>
           </div>
         </div>
 
