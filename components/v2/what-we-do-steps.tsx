@@ -116,7 +116,7 @@ function StepItem({ step }: { step: StepDef }) {
             <StepBody isActive={isActive}>{step.body}</StepBody>
           </div>
           <motion.div
-            className="w-full flex justify-center overflow-x-auto"
+            className="w-full flex justify-center"
             animate={{ opacity: isActive ? 1 : 0.35 }}
             transition={{ duration: 0.5 }}
           >

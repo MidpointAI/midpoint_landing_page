@@ -166,7 +166,7 @@ function DesktopCard({
 }) {
   return (
     <motion.div
-      className="hidden xl:block relative rounded-xl bg-card shadow-lg ring-1 ring-border"
+      className="hidden xl:block relative overflow-hidden rounded-xl bg-card shadow-lg ring-1 ring-border"
       initial={false}
       animate={{ height: cardHeightFor(coverage) }}
       transition={{ duration: 0.45, ease: EASE_TECH }}
