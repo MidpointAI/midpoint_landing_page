@@ -1,193 +1,175 @@
 "use client";
 
-import { useCallback, useEffect, useState, createElement } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import {
-  ClipboardListIcon,
-  MailIcon,
-  ShieldCheckIcon,
-  UserCheckIcon,
-  RefreshCwIcon,
-} from "lucide-react";
+import { useState } from "react";
+import Link from "next/link";
+import { AnimatePresence, motion } from "framer-motion";
+import { ArrowRightIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Roster, SUBS, type Sub, type SubStatus } from "@/components/v2/report";
 
-const INTERVAL = 20000;
+const SPRING = { type: "spring", bounce: 0, duration: 0.4 } as const;
 
+// Same five steps as /how-it-works, condensed. Each shows one sub in the
+// state the GC would see it at that point.
 interface Step {
+  id: string;
   title: string;
-  description: string;
-  icon: React.ElementType;
+  body: string;
   highlight: string;
+  row: { status: SubStatus; score: number; label?: string; showRing?: boolean; expanded?: boolean };
 }
 
-const steps: Step[] = [
+const STEPS: Step[] = [
   {
-    title: "Subcontractor Insurance Requirements",
-    description:
-      "You provide your subcontract agreement, project list, and sub roster. Midpoint uploads your contract requirements as the compliance benchmark.",
-    icon: ClipboardListIcon,
-    highlight: "Your standards become the benchmark",
+    id: "requirements",
+    title: "Pull the requirements from your agreement",
+    body: "Every executed subcontract sets the insurance requirements for that sub on that project. You CC us on the signed agreement and that's the trigger.",
+    highlight: "Your contract is the benchmark",
+    row: { status: "collecting", score: 0, label: "Requirements set", showRing: false },
   },
   {
-    title: "Contract Triggering",
-    description:
-      "When a sub signs a contract, your team simply CCs service@midpointverified.com. Our AI extracts and processes the contract automatically — zero manual entry.",
-    icon: MailIcon,
-    highlight: "One CC, fully automated",
+    id: "collect",
+    title: "Contact the sub and their agent",
+    body: "We request certificates and endorsements directly from the subcontractor and the agent who wrote the policy. Your team stops chasing.",
+    highlight: "You send nothing",
+    row: { status: "collecting", score: 0, label: "Requested", showRing: false },
   },
   {
-    title: "Deep Compliance Verification",
-    description:
-      "We verify every sub's certificate of insurance and endorsement documents against your contract requirements — additional insured, primary & non-contributory, waivers of subrogation, and more.",
-    icon: ShieldCheckIcon,
-    highlight: "Every endorsement, every date",
+    id: "verify",
+    title: "Verify the coverage, not the certificate",
+    body: "Limits, additional insured, waivers, and the endorsement forms behind them, read by our compliance team and scored against your project.",
+    highlight: "Reviewed by people, reported to you",
+    row: { status: "noncompliant", score: 80, expanded: true },
   },
   {
-    title: "Human Review",
-    description:
-      "A dedicated Midpoint analyst reviews every AI output to catch edge cases across 3,500+ P&C carriers. No false positives, no missed gaps.",
-    icon: UserCheckIcon,
-    highlight: "AI + human, no gaps missed",
+    id: "chase",
+    title: "Chase gaps and renewals",
+    body: "Automated follow-ups to the sub and the agent, warnings ahead of every expiration, and escalation to you only when repeated outreach hasn't worked.",
+    highlight: "It reaches you only when it needs you",
+    row: { status: "expiring", score: 100, label: "Renewal requested" },
   },
   {
-    title: "Ongoing Management",
-    description:
-      "We handle outreach to non-compliant subs, track expirations, and pull documents for audits on demand. Verified compliance unlocks preferred carrier rates.",
-    icon: RefreshCwIcon,
-    highlight: "Compliance that saves you money",
+    id: "monitor",
+    title: "Report weekly. Monitor for years",
+    body: "One short email a week listing each trade partner and where they stand, and monitoring that continues for two years after the project closes.",
+    highlight: "One email. No login.",
+    row: { status: "compliant", score: 100 },
   },
 ];
 
+const BASE = SUBS.find((s) => s.id === "redrock")!;
+
 export default function HowItWorksV2() {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
-  const [, setProgress] = useState(0);
-
-  const advance = useCallback(() => {
-    setActiveIndex((prev) => (prev + 1) % steps.length);
-    setProgress(0);
-  }, []);
-
-  useEffect(() => {
-    if (isPaused) return;
-    const tick = 50;
-    const timer = setInterval(() => {
-      setProgress((prev) => {
-        const next = prev + (tick / INTERVAL) * 100;
-        if (next >= 100) {
-          advance();
-          return 0;
-        }
-        return next;
-      });
-    }, tick);
-    return () => clearInterval(timer);
-  }, [isPaused, advance, activeIndex]);
-
-  const handleClick = (index: number) => {
-    setActiveIndex(index);
-    setProgress(0);
-    setIsPaused(true);
-    setTimeout(() => setIsPaused(false), INTERVAL);
-  };
+  const [active, setActive] = useState(0);
+  const step = STEPS[active];
+  const row: Sub = { ...BASE, status: step.row.status, score: step.row.score };
 
   return (
     <section id="how-it-works" className="w-full bg-background section-y overflow-hidden scroll-mt-24">
       <div className="container-site">
-        <div className="text-center mb-16 max-w-3xl mx-auto">
-          <p className="eyebrow mb-4">
-            Beyond COI checks
-          </p>
+        <div className="text-center mb-14 max-w-3xl mx-auto">
+          <p className="eyebrow mb-4">Beyond COI checks</p>
           <h2 className="heading-2 text-foreground mb-5">
-            We Don&apos;t Just Store Documents —
+            We don&apos;t just store documents.
             <br />
-            We <span className="text-primary">Verify</span> Them
+            We <span className="text-primary">verify</span> them.
           </h2>
           <p className="text-muted-foreground text-base md:text-lg leading-relaxed">
-            Most General Contractors assume their construction management software,
-            accounting platform, or bookkeeper is handling trade partner compliance —
-            they&apos;re not. They&apos;re storing documents. Midpoint goes further: we read
-            the policy language itself to confirm your trade partners are truly
-            compliant, so you&apos;re protected when it matters — not just organized.
+            Most builders assume their construction software, accounting platform, or bookkeeper is handling trade partner compliance. They&apos;re storing documents. Midpoint reads the policy language itself and reports back what it means for each sub on each project.
           </p>
         </div>
 
-        <div className="flex md:hidden overflow-x-auto gap-2 mb-8 pb-2 -mx-2 px-2">
-          {steps.map((step, i) => (
+        {/* Mobile: step chips */}
+        <div className="flex md:hidden overflow-x-auto gap-2 mb-8 pb-2 -mx-2 px-2" role="tablist" aria-label="Steps">
+          {STEPS.map((s, i) => (
             <button
-              key={step.title}
-              onClick={() => handleClick(i)}
-              className={`flex-shrink-0 px-4 py-2 rounded-full text-xs font-medium transition-colors whitespace-nowrap ${
-                i === activeIndex
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-secondary text-muted-foreground hover:text-foreground"
+              key={s.id}
+              role="tab"
+              aria-selected={i === active}
+              onClick={() => setActive(i)}
+              className={`flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors whitespace-nowrap ${
+                i === active ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground hover:text-foreground"
               }`}
             >
-              {step.title}
+              {i + 1}. {s.title}
             </button>
           ))}
         </div>
 
-        <div className="flex flex-col md:flex-row md:gap-16 items-center justify-center gap-[48px]">
-          <div className="hidden md:flex flex-col w-[280px] flex-shrink-0 relative">
-            <div className="absolute left-[4px] top-3 bottom-3 w-px bg-secondary" />
-            {steps.map((step, i) => {
-              const isActive = i === activeIndex;
+        <div className="grid md:grid-cols-[260px_1fr_minmax(0,380px)] gap-10 lg:gap-14 items-start">
+          {/* Desktop: step list */}
+          <div className="hidden md:flex flex-col relative" role="tablist" aria-label="Steps">
+            <div className="absolute left-[4px] top-3 bottom-3 w-px bg-border" />
+            {STEPS.map((s, i) => {
+              const on = i === active;
               return (
                 <button
-                  key={step.title}
-                  onClick={() => handleClick(i)}
+                  key={s.id}
+                  role="tab"
+                  aria-selected={on}
+                  onClick={() => setActive(i)}
                   className="relative flex items-center gap-4 text-left group py-3"
                 >
-                  <div className="relative flex-shrink-0 z-10">
-                    <motion.div
-                      animate={isActive ? { scale: [1, 1.3, 1] } : { scale: 1 }}
-                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                      className={`h-[9px] w-[9px] rounded-full transition-colors duration-300 ${
-                        isActive ? "bg-primary" : "bg-muted-foreground/50 group-hover:bg-muted-foreground"
-                      }`}
+                  <span className="relative flex-shrink-0 z-10">
+                    <motion.span
+                      animate={{ scale: on ? [1, 1.3, 1] : 1 }}
+                      transition={on ? { duration: 2, repeat: Infinity, ease: "easeInOut" } : { duration: 0.2 }}
+                      className={`block h-[9px] w-[9px] rounded-full transition-colors duration-300 ${on ? "bg-primary" : "bg-muted-foreground/50 group-hover:bg-muted-foreground"}`}
                     />
-                  </div>
-                  <span
-                    className={`text-sm font-medium transition-colors duration-300 ${
-                      isActive ? "text-foreground" : "text-muted-foreground/70 group-hover:text-foreground/80"
-                    }`}
-                  >
-                    {step.title}
+                  </span>
+                  <span className={`text-sm font-medium transition-colors duration-300 ${on ? "text-foreground" : "text-muted-foreground/70 group-hover:text-foreground/80"}`}>
+                    {s.title}
                   </span>
                 </button>
               );
             })}
           </div>
 
-          <div className="min-w-0">
+          {/* Active step */}
+          <div className="min-w-0" role="tabpanel">
             <AnimatePresence mode="wait">
               <motion.div
-                key={activeIndex}
-                initial={{ opacity: 0, y: 16 }}
+                key={step.id}
+                initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -16, transition: { duration: 0.25, ease: [0.25, 0.1, 0.25, 1] } }}
-                transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={SPRING}
                 className="py-2"
               >
-                <div className="flex items-center gap-2.5 mb-4">
-                  {createElement(steps[activeIndex].icon, {
-                    className: "h-5 w-5 text-primary",
-                  })}
-                  <p className="eyebrow">
-                    Step {activeIndex + 1}
-                  </p>
-                </div>
-                <h3 className="heading-3 text-foreground mb-4">
-                  {steps[activeIndex].title}
-                </h3>
-                <p className="text-muted-foreground text-base leading-relaxed mb-6 max-w-lg">
-                  {steps[activeIndex].description}
-                </p>
-                <p className="text-sm text-primary font-medium">
-                  {steps[activeIndex].highlight}
-                </p>
+                <p className="eyebrow mb-4">Step {active + 1} of {STEPS.length}</p>
+                <h3 className="heading-3 text-foreground mb-4">{step.title}</h3>
+                <p className="text-muted-foreground text-base leading-relaxed mb-6 max-w-lg">{step.body}</p>
+                <p className="text-sm text-primary font-medium mb-6">{step.highlight}</p>
+                <Button asChild variant="link" size="sm">
+                  <Link href={`/how-it-works#step-${step.id}`}>
+                    See this step in full <ArrowRightIcon />
+                  </Link>
+                </Button>
               </motion.div>
             </AnimatePresence>
+          </div>
+
+          {/* One sub, as the GC sees it at this step */}
+          <div className="rounded-xl border border-border bg-card p-4 md:p-5 self-center">
+            <p className="eyebrow mb-3">In your weekly email</p>
+            <div className="rounded-lg border border-border bg-background px-3">
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={step.id}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Roster
+                    subs={[row]}
+                    showRing={step.row.showRing ?? true}
+                    chipLabel={() => step.row.label}
+                    expandedId={step.row.expanded ? row.id : null}
+                  />
+                </motion.div>
+              </AnimatePresence>
+            </div>
           </div>
         </div>
       </div>
