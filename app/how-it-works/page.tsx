@@ -7,6 +7,7 @@ import { ArrowRightIcon, ChevronDownIcon } from "lucide-react";
 import WhatWeDoSteps from "@/components/v2/what-we-do-steps";
 import { StepActivityProvider } from "@/components/v2/step-activity";
 import { Button } from "@/components/ui/button";
+import EscalationDemo from "@/components/v2/how-it-works/escalation-demo";
 
 // TODO: confirm the intake address. Meeting notes reference service@midpointverify.com;
 // the site uses the midpointverified.com domain everywhere else.
@@ -46,13 +47,6 @@ const youGet = [
     title: "A portal, if you want it",
     body: "Log in any time for a real-time view. You won't need to. The work doesn't depend on it.",
   },
-];
-
-const decisions = [
-  "Hold a payment until the coverage is in place",
-  "Restrict site access for that trade partner",
-  "Accept an exception or alternative documentation",
-  "Replace the subcontractor",
 ];
 
 const faqs = [
@@ -171,24 +165,15 @@ export default function HowItWorksPage() {
 
         {/* When a sub won't respond */}
         <section id="escalation" className="w-full min-h-[calc(100svh-5rem)] flex items-center section-y border-t border-border snap-start scroll-mt-20">
-          <div className="container-site w-full grid md:grid-cols-[1fr_1.2fr] gap-10 md:gap-16">
+          <div className="container-site w-full grid md:grid-cols-[1fr_1.2fr] gap-10 md:gap-16 items-center">
             <div>
               <p className="eyebrow mb-4">When a sub won&apos;t respond</p>
-              <h2 className="heading-2 text-foreground">We chase. You decide.</h2>
-            </div>
-            <div className="flex flex-col gap-6">
+              <h2 className="heading-2 text-foreground mb-6">We chase. You decide.</h2>
               <p className="text-muted-foreground text-base md:text-lg leading-relaxed">
-                We contact the sub and their agent repeatedly. After roughly thirty days without resolution, or fifteen days past an expiration, that trade partner shows up in your weekly status email with what&apos;s missing, every attempt we&apos;ve made to get it, and a recommended next step. The decision stays yours:
+                We contact the sub and their agent repeatedly. After roughly thirty days without resolution, or fifteen days past an expiration, that trade partner shows up in your weekly status email with what&apos;s missing, every attempt we&apos;ve made to get it, and a recommended next step. The decision stays yours.
               </p>
-              <ul className="flex flex-col gap-3">
-                {decisions.map((d) => (
-                  <li key={d} className="flex items-start gap-3 text-foreground/90">
-                    <span className="mt-2 h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
-                    {d}
-                  </li>
-                ))}
-              </ul>
             </div>
+            <EscalationDemo />
           </div>
         </section>
 

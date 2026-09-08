@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { animate, motion, useMotionValue, useMotionValueEvent, useReducedMotion } from "framer-motion";
+import { Roster, SUBS, type Sub, type SubStatus } from "@/components/v2/report";
 
 /**
  * Step 4: a policy heading toward expiration. Drag the handle along the
@@ -17,6 +18,17 @@ const MARKERS = [
   { at: 1, label: "15 days past", status: "Your decision", note: "Flagged in your weekly email with the history and a recommended next step." },
 ];
 
+// The sub whose policy is heading toward expiration, as the GC sees it at each point.
+const BASE = SUBS.find((s) => s.id === "bluebird")!;
+const ROW_STATE: { status: SubStatus; score: number; label?: string }[] = [
+  { status: "compliant", score: 100 },
+  { status: "expiring", score: 100, label: "Renewal requested" },
+  { status: "expiring", score: 100, label: "Renewal requested" },
+  { status: "expiring", score: 100, label: "Escalating" },
+  { status: "noncompliant", score: 60, label: "Coverage lapsed" },
+  { status: "noncompliant", score: 60, label: "Your decision" },
+];
+
 // Apple's momentum projection: where a flick would come to rest.
 const project = (v: number, rate = 0.998) => (v / 1000) * rate / (1 - rate);
 
@@ -26,6 +38,7 @@ export default function ChaseGraphic({ isActive }: { isActive: boolean }) {
   const x = useMotionValue(0); // px along the track
   const [width, setWidth] = useState(1);
   const [idx, setIdx] = useState(0);
+  const idxRef = useRef(0); // keyboard steps read this so fast repeats don't use a stale index
   const [touched, setTouched] = useState(false);
   const drag = useRef<{ offset: number; hist: { t: number; x: number }[] } | null>(null);
 
@@ -45,6 +58,7 @@ export default function ChaseGraphic({ isActive }: { isActive: boolean }) {
     MARKERS.forEach((m, i) => {
       if (Math.abs(m.at - p) < Math.abs(MARKERS[best].at - p)) best = i;
     });
+    idxRef.current = best;
     setIdx(best);
   });
 
@@ -102,15 +116,22 @@ export default function ChaseGraphic({ isActive }: { isActive: boolean }) {
     if (!dir) return;
     e.preventDefault();
     setTouched(true);
-    const next = Math.min(MARKERS.length - 1, Math.max(0, idx + dir));
+    const next = Math.min(MARKERS.length - 1, Math.max(0, idxRef.current + dir));
+    idxRef.current = next;
     animate(x, MARKERS[next].at * width, { type: "spring", bounce: 0, duration: 0.4 });
   };
 
   const m = MARKERS[idx];
   const late = idx >= 4;
+  const row: Sub = { ...BASE, status: ROW_STATE[idx].status, score: ROW_STATE[idx].score, evidence: [] };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-5">
+      {/* The row in your weekly email, reacting to where the handle is */}
+      <div className="rounded-lg border border-border bg-background px-3">
+        <Roster subs={[row]} chipLabel={() => ROW_STATE[idx].label} />
+      </div>
+
       {/* Status card */}
       <div className={`rounded-lg border p-4 transition-colors ${late ? "border-destructive/40 bg-destructive/5" : "border-border bg-background"}`}>
         <div className="flex items-baseline justify-between gap-3">
