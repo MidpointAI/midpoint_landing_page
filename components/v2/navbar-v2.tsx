@@ -10,7 +10,6 @@ import {
   BarChart3Icon,
   ChevronDownIcon,
   BookOpenIcon,
-  CalculatorIcon,
   MessageSquareQuoteIcon,
   MailIcon,
   ClipboardListIcon,
@@ -26,8 +25,6 @@ interface MenuItem {
   icon: LucideIcon;
   description?: string;
   href: string;
-  /** Span the full panel width (used for a trailing item like Pricing). */
-  wide?: boolean;
 }
 
 interface MenuSection {
@@ -38,6 +35,7 @@ interface MenuSection {
 // Services don't have dedicated pages yet, so each item points at the
 // How It Works page, which covers all of them.
 const HOW_IT_WORKS = "/how-it-works";
+const PRICING = "/pricing/how-it-works";
 
 const servicesMenu: MenuSection[] = [
   {
@@ -49,7 +47,6 @@ const servicesMenu: MenuSection[] = [
       { label: "Sub Outreach", icon: MailIcon, description: "We chase non-compliant subs for you", href: HOW_IT_WORKS },
       { label: "Audit Support", icon: ClipboardListIcon, description: "Pull documents on demand", href: HOW_IT_WORKS },
       { label: "Risk Scoring", icon: BarChart3Icon, description: "Score sub compliance at a glance", href: HOW_IT_WORKS },
-      { label: "Pricing", icon: CalculatorIcon, description: "Per sub under 100 subs, per project above", href: "/pricing/how-it-works", wide: true },
     ],
   },
 ];
@@ -110,9 +107,7 @@ function MenuPanelContent({ menu, onNavigate }: { menu: MenuDef; onNavigate: () 
                   key={item.label}
                   href={item.href}
                   onClick={onNavigate}
-                  className={`flex items-start gap-3 px-4 py-3.5 rounded-lg text-left transition-colors hover:bg-secondary group w-full ${
-                    item.wide && menu.columns === 2 ? "col-span-2 mt-1 border-t border-border pt-4 rounded-t-none" : ""
-                  }`}
+                  className="flex items-start gap-3 px-4 py-3.5 rounded-lg text-left transition-colors hover:bg-secondary group w-full"
                 >
                   <Icon className="h-4 w-4 text-muted-foreground/70 group-hover:text-primary transition-colors flex-shrink-0 mt-0.5" />
                   <div className="flex-1 min-w-0">
@@ -271,6 +266,14 @@ export default function NavbarV2() {
               </button>
             );
           })}
+
+          <Link
+            href={PRICING}
+            onMouseEnter={closeMenu}
+            className="px-3 py-1.5 text-sm font-medium rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+          >
+            Pricing
+          </Link>
 
           <Button asChild size="sm" className="ml-3">
             <Link href="/contact" onMouseEnter={closeMenu}>
@@ -432,6 +435,16 @@ export default function NavbarV2() {
                     </motion.div>
                   )}
                 </AnimatePresence>
+              </div>
+
+              <div className="border-t border-border pt-6">
+                <Link
+                  href={PRICING}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block w-full text-left text-2xl font-semibold tracking-tight py-3 text-foreground"
+                >
+                  Pricing
+                </Link>
               </div>
 
               <div className="border-t border-border pt-6">
