@@ -105,6 +105,10 @@ const MAX_ROWS = Math.max(
   ...COVERAGES.map((c) => c.details.length)
 );
 const CARD_H = PAD * 2 + MAX_ROWS * ROW_H;
+// Height the card actually needs for a given coverage; the card animates
+// between these instead of sitting at the worst case with dead space below.
+const cardHeightFor = (c: Coverage) =>
+  PAD * 2 + Math.max(COVERAGES.length, c.details.length) * ROW_H;
 
 // Animation
 const CYCLE_MS = 5000;
@@ -161,18 +165,20 @@ function DesktopCard({
   coverage: Coverage;
 }) {
   return (
-    <div
+    <motion.div
       className="hidden xl:block relative rounded-xl bg-card shadow-lg ring-1 ring-border"
+      initial={false}
+      animate={{ height: cardHeightFor(coverage) }}
+      transition={{ duration: 0.45, ease: EASE_TECH }}
       style={{
         width: CARD_W,
-        height: CARD_H,
         fontFamily: "var(--font-dm-mono), monospace",
       }}
     >
-      {/* Connectors under the labels — fixed size since the card itself
-          only renders when there's room for the full CARD_W. */}
+      {/* Connectors under the labels — drawn at the max size so row
+          coordinates stay fixed while the card height animates. */}
       <svg
-        className="absolute inset-0 pointer-events-none"
+        className="absolute left-0 top-0 pointer-events-none"
         width={CARD_W}
         height={CARD_H}
         viewBox={`0 0 ${CARD_W} ${CARD_H}`}
@@ -256,7 +262,7 @@ function DesktopCard({
 
       {/* Inset highlight ring per Figma */}
       <div className="absolute inset-0 pointer-events-none rounded-xl shadow-none" />
-    </div>
+    </motion.div>
   );
 }
 
