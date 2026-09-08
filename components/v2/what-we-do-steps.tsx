@@ -6,35 +6,49 @@ import { useStepActivity } from "@/components/v2/step-activity";
 
 type StepDef = {
   step: number;
+  id: string;
   title: string;
   body: string;
-  layout: "text-and-image" | "centered-graphic" | "text-right";
+  layout: "text-left" | "text-and-image" | "centered-graphic" | "text-right";
 };
 
+// The five things Midpoint does once a subcontract is signed, in the order
+// Tyler walks GCs through them on onboarding calls.
 const STEPS: StepDef[] = [
   {
+    step: 1,
+    id: "requirements",
+    title: "Pull the requirements from your agreement.",
+    body: "Every executed subcontract sets the insurance requirements for that sub on that project. Change the contract and the requirements change with it.",
+    layout: "text-left",
+  },
+  {
     step: 2,
-    title: "Collect requirements, policy certificates, endorsements.",
-    body: "We systematically collect new certificates and policy endorsements from your trade partners.",
+    id: "collect",
+    title: "Contact the sub and their agent.",
+    body: "We request certificates and endorsements directly from the subcontractor and the agent who wrote the policy, so your team stops chasing.",
     layout: "text-and-image",
   },
   {
     step: 3,
-    title: "Experts verify policy info matches your project.",
-    body: "We establish project by project insurance requirements based on your agreements.",
+    id: "verify",
+    title: "Verify the coverage, not the certificate.",
+    body: "Limits, additional insured, primary and non-contributory, waivers, and the endorsement forms behind them. A line in the description-of-operations box doesn't count. The form does.",
     layout: "centered-graphic",
   },
   {
     step: 4,
-    title: "Compliance is determined and reported back to you.",
-    body: "Every requirement is checked against the actual policy language, and you get the result without doing the reading.",
+    id: "chase",
+    title: "Chase gaps and renewals.",
+    body: "Automated follow-ups to the sub and the agent, warnings ahead of every expiration, and escalation to you only when repeated outreach hasn't worked.",
     layout: "text-right",
   },
   {
     step: 5,
-    title: "Ongoing expiration monitoring and reporting.",
-    body: "We monitor and collect future policy information to keep trade partners compliant and report back to you.",
-    layout: "text-right",
+    id: "monitor",
+    title: "Report weekly. Monitor for years.",
+    body: "A digest every week, and monitoring that continues for two years after the project closes, because claims arrive late.",
+    layout: "text-left",
   },
 ];
 
@@ -83,7 +97,19 @@ function StepItem({ step }: { step: StepDef }) {
   const { ref, isActive } = useStepActivity(`step-${step.step}`);
 
   return (
-    <div ref={ref} className="relative w-full py-12 md:py-20">
+    <div ref={ref} id={`step-${step.id}`} className="relative w-full py-12 md:py-20 scroll-mt-28">
+      {step.layout === "text-left" && (
+        <div className="flex flex-col items-start">
+          <div className="flex flex-col gap-8 w-full max-w-[560px]">
+            <div className="flex flex-col gap-4 items-start w-full">
+              <StepPill step={step.step} isActive={isActive} />
+              <StepTitle isActive={isActive}>{step.title}</StepTitle>
+            </div>
+            <StepBody isActive={isActive}>{step.body}</StepBody>
+          </div>
+        </div>
+      )}
+
       {step.layout === "text-and-image" && (
         <div className="flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-16">
           <div className="flex flex-col gap-8 w-full lg:w-[500px] flex-shrink-0">
@@ -142,7 +168,7 @@ function StepItem({ step }: { step: StepDef }) {
 
 export default function WhatWeDoSteps() {
   return (
-    <section className="w-full bg-card border-y border-border section-y">
+    <section id="what-we-do" className="w-full bg-card border-y border-border section-y scroll-mt-20">
       <div className="container-site flex flex-col items-center gap-6">
         <p className="eyebrow text-center">What we do</p>
         <div className="w-full flex flex-col">
