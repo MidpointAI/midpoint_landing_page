@@ -36,7 +36,7 @@ const footerColumns: FooterColumn[] = [
     links: [
       { label: "Insurance Terms", href: "/resources" },
       { label: "Proper Risk Transfer", href: "/resources/proper-risk-transfer" },
-      { label: "How Pricing Works", href: "/pricing/how-it-works" },
+      { label: "Pricing", href: "/pricing/how-it-works" },
       { label: "Success Stories", href: "/#testimonials" },
     ],
   },

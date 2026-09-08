@@ -63,7 +63,7 @@ const resourcesMenu: MenuSection[] = [
     category: "Materials",
     items: [
       { label: "Proper Risk Transfer", icon: FileTextIcon, description: "Step-by-step guide, with PDF", href: "/resources/proper-risk-transfer" },
-      { label: "How Pricing Works", icon: CalculatorIcon, description: "Transparent, formula-based pricing", href: "/pricing/how-it-works" },
+      { label: "Pricing", icon: CalculatorIcon, description: "Subs × complexity, billed yearly", href: "/pricing/how-it-works" },
     ],
   },
 ];
