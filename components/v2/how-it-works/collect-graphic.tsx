@@ -55,7 +55,7 @@ export default function CollectGraphic({ isActive }: { isActive: boolean }) {
           {received > 0 && received < SUBS.length && "Certificates and endorsements coming back."}
           {received === SUBS.length && "All six returned. Your team sent nothing."}
         </p>
-        <button type="button" onClick={() => setRun((r) => r + 1)} className="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:underline shrink-0">
+        <button type="button" onClick={() => setRun((r) => r + 1)} className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:underline shrink-0">
           <RotateCcwIcon className="h-3.5 w-3.5" /> Replay
         </button>
       </div>

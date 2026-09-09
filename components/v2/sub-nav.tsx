@@ -1,13 +1,16 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { LayoutGroup, motion } from "framer-motion";
+import { SPRING } from "./motion";
 
 /**
  * Secondary navigation for long pages, in the Stripe product-page pattern:
  * a slim bar that sticks under the main nav with the page name on the left
  * and its sections on the right. The section nearest the top of the viewport
- * is underlined as the reader scrolls. Sections need `scroll-mt-28` so the
- * two bars don't cover their headings when a link is followed.
+ * carries the indicator, a 2px accent line on the bar's bottom edge that
+ * slides between items. Sections need `scroll-mt-28` so the two bars don't
+ * cover their headings when a link is followed.
  */
 export interface SubNavItem {
   label: string;
@@ -19,6 +22,23 @@ export interface SubNavItem {
 
 /** Main nav (64px) plus this bar (44px) plus the hairline between them. */
 const OFFSET = 64 + 44 + 1;
+
+/**
+ * The current-section marker: one accent line, always on the bar's bottom
+ * hairline, that slides to whichever link is current. Every page with a
+ * secondary nav gets it through SubNav, so it looks and moves the same
+ * everywhere.
+ */
+export function SubNavIndicator() {
+  return (
+    <motion.span
+      layoutId="sub-nav-indicator"
+      className="absolute inset-x-0 -bottom-px h-0.5 bg-primary"
+      transition={SPRING}
+      aria-hidden="true"
+    />
+  );
+}
 
 export function SubNav({ title, items }: { title: string; items: SubNavItem[] }) {
   const [active, setActive] = useState<string | null>(null);
@@ -34,10 +54,11 @@ export function SubNav({ title, items }: { title: string; items: SubNavItem[] })
         if (!el) continue;
         if (el.getBoundingClientRect().top - OFFSET <= 8) current = item.id;
       }
-      // At the bottom of the page the last section may never reach the bar,
-      // so it is the active one by definition.
+      // Before any section has reached the bar the first one is current, and at
+      // the bottom of the page the last one is, even if it never reaches the bar.
       const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
-      setActive(atBottom && items.length ? items[items.length - 1].id : current);
+      const fallback = items[0]?.id ?? null;
+      setActive(atBottom && items.length ? items[items.length - 1].id : (current ?? fallback));
     };
     const onScroll = () => {
       if (!frame) frame = requestAnimationFrame(update);
@@ -52,21 +73,10 @@ export function SubNav({ title, items }: { title: string; items: SubNavItem[] })
     };
   }, [items]);
 
-  // Follow a link with snapping suspended: on a page that snaps sections, a
-  // long smooth scroll can be captured by a snap point on the way and stop short.
   const follow = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     const el = document.getElementById(id);
     if (!el) return;
     e.preventDefault();
-    const html = document.documentElement;
-    const snapped = html.classList.contains("snap-sections");
-    html.classList.remove("snap-sections");
-    const restore = () => {
-      if (snapped) html.classList.add("snap-sections");
-      window.removeEventListener("scrollend", restore);
-    };
-    window.addEventListener("scrollend", restore, { once: true });
-    window.setTimeout(restore, 1500);
     history.pushState(null, "", `#${id}`);
     el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
@@ -83,29 +93,36 @@ export function SubNav({ title, items }: { title: string; items: SubNavItem[] })
   }, [active]);
 
   return (
-    <nav aria-label={`${title} sections`} className="sticky top-16 z-30 border-b border-border bg-background/90" style={{ backdropFilter: "blur(4px)", WebkitBackdropFilter: "blur(4px)" }}>
+    <nav
+      aria-label={`${title} sections`}
+      className="sticky top-16 z-30 border-b border-border bg-background/90"
+      style={{ backdropFilter: "blur(4px)", WebkitBackdropFilter: "blur(4px)" }}
+    >
       <div className="container-site flex h-11 items-center gap-6">
         <p className="shrink-0 text-sm font-medium text-foreground">{title}</p>
-        <ul ref={listRef} className="ml-auto flex h-full items-stretch gap-5 overflow-x-auto scrollbar-hide">
-          {items.map((item) => {
-            const on = item.id === active;
-            return (
-              <li key={item.id} className="flex shrink-0 items-center gap-3">
-                <a
-                  href={`#${item.id}`}
-                  onClick={(e) => follow(e, item.id)}
-                  aria-current={on ? "location" : undefined}
-                  className={`flex items-center border-b-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset rounded-sm ${
-                    on ? "border-primary text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  {item.label}
-                </a>
-                {on && item.detail ? <div className="flex items-center">{item.detail}</div> : null}
-              </li>
-            );
-          })}
-        </ul>
+        <LayoutGroup id="sub-nav">
+          <ul ref={listRef} className="ml-auto flex h-full items-stretch gap-5 overflow-x-auto scrollbar-hide">
+            {items.map((item) => {
+              const on = item.id === active;
+              return (
+                <li key={item.id} className="flex shrink-0 items-stretch gap-3">
+                  <a
+                    href={`#${item.id}`}
+                    onClick={(e) => follow(e, item.id)}
+                    aria-current={on ? "location" : undefined}
+                    className={`relative flex items-center text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset ${
+                      on ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {item.label}
+                    {on ? <SubNavIndicator /> : null}
+                  </a>
+                  {on && item.detail ? <div className="flex items-center self-center">{item.detail}</div> : null}
+                </li>
+              );
+            })}
+          </ul>
+        </LayoutGroup>
       </div>
     </nav>
   );

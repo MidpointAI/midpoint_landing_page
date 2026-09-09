@@ -64,7 +64,7 @@ export default function RequirementsGraphic({ isActive }: { isActive: boolean })
             role="radio"
             aria-checked={version === v}
             onClick={() => pick(v)}
-            className={`relative rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors ${
+            className={`focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm relative rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors ${
               version === v ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"
             }`}
           >

@@ -43,7 +43,7 @@ export default function Roster({
               onFocus={() => onRowEnter?.(s.id)}
               onClick={() => onRowSelect?.(s.id)}
               aria-expanded={open}
-              className={`w-full flex items-center gap-3 py-2.5 text-left transition-colors rounded-md -mx-2 px-2 ${
+              className={`w-full flex items-center gap-3 py-2.5 text-left transition-colors rounded-md -mx-2 px-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                 open ? "bg-secondary/50" : "hover:bg-secondary/40"
               }`}
             >

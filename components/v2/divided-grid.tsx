@@ -18,8 +18,10 @@ interface DividedGridProps {
 }
 
 export const DIVIDED_CELL = "bg-card p-7 md:p-8";
-/** Cell styling for `frame="rules"`: page colour, padding kept off the rail edges. */
+/** Cell styling for `frame="rules"` in a two-column grid: page colour, padding kept off the rail edges. */
 export const RULED_CELL = "bg-background py-7 md:py-8 md:px-8 md:odd:pl-0 md:even:pr-0";
+/** The same for a grid that is one row wide: first cell flush left, last flush right. */
+export const RULED_ROW_CELL = "bg-background py-7 md:py-8 md:px-8 md:first:pl-0 md:last:pr-0";
 
 export function DividedGrid({ cols, children, className = "", frame = "card" }: DividedGridProps) {
   const frameClass =

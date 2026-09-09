@@ -191,7 +191,7 @@ html::-webkit-scrollbar {
   @apply text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-semibold leading-[0.95] tracking-tight;
 }
 @utility heading-1 {
-  @apply text-4xl md:text-5xl font-bold tracking-tight;
+  @apply text-4xl md:text-5xl font-semibold tracking-tight;
 }
 @utility heading-2 {
   @apply text-3xl md:text-4xl font-semibold tracking-tight;
@@ -220,15 +220,6 @@ p, li, h1, h2, h3, h4, h5, h6 {
 .text-reveal-line {
   overflow: hidden;
   display: block;
-}
-
-/* Section snapping for guided pages (opt in by adding .snap-sections to <html>).
-   `proximity` nudges a section into place when the user pauses near it but
-   never traps scrolling on sections taller than the viewport. */
-@media (min-width: 768px) {
-  html.snap-sections {
-    scroll-snap-type: y proximity;
-  }
 }
 
 /* Selection highlight - theme responsive */

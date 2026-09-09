@@ -93,7 +93,7 @@ export default function VerifyGraphic({ isActive }: { isActive: boolean }) {
           {finished && shown <= total && "One endorsement missing. Score reflects it."}
           {shown > total && `Reviewed by Midpoint · ${formatDaysAgo(SUB.reviewedDaysAgo ?? 0)}. The gap is already being chased.`}
         </p>
-        <button type="button" onClick={() => setRun((r) => r + 1)} className="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:underline shrink-0">
+        <button type="button" onClick={() => setRun((r) => r + 1)} className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:underline shrink-0">
           <RotateCcwIcon className="h-3.5 w-3.5" /> Replay
         </button>
       </div>

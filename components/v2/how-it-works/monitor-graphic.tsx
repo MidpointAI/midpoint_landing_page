@@ -77,10 +77,10 @@ export default function MonitorGraphic({ isActive }: { isActive: boolean }) {
           <p className="text-sm font-medium text-foreground truncate">{week.label}</p>
         </div>
         <div className="flex items-center gap-1 shrink-0">
-          <button type="button" aria-label="Previous week" onClick={() => go(-1)} className="h-7 w-7 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors">
+          <button type="button" aria-label="Previous week" onClick={() => go(-1)} className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm h-7 w-7 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors">
             <ChevronLeftIcon className="h-3.5 w-3.5" />
           </button>
-          <button type="button" aria-label="Next week" onClick={() => go(1)} className="h-7 w-7 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors">
+          <button type="button" aria-label="Next week" onClick={() => go(1)} className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm h-7 w-7 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors">
             <ChevronRightIcon className="h-3.5 w-3.5" />
           </button>
         </div>

@@ -151,7 +151,7 @@ function StepItem({ step }: { step: StepDef }) {
 
 export default function WhatWeDoSteps() {
   return (
-    <section id="what-we-do" className="w-full section-rule scroll-mt-28">
+    <section id="what-we-do" className="w-full section-rule scroll-mt-28 pb-4 md:pb-8">
       <div className="container-site">
         <p className="eyebrow-accent pt-16 md:pt-20">What we do</p>
         <div className="mt-6">

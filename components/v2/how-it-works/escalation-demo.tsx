@@ -48,7 +48,7 @@ export default function EscalationDemo() {
     <FigureFrame n={6} label="Your decision" className="flex flex-col gap-4">
       <div className="flex items-baseline justify-between gap-4">
         <p className="eyebrow">From your weekly email</p>
-        <button type="button" onClick={() => setShowHistory((v) => !v)} className="text-xs font-medium text-primary hover:underline">
+        <button type="button" onClick={() => setShowHistory((v) => !v)} className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm text-xs font-medium text-primary hover:underline">
           {showHistory ? "Hide what we did" : "What we did first"}
         </button>
       </div>
@@ -112,7 +112,7 @@ export default function EscalationDemo() {
           </motion.p>
         </AnimatePresence>
         {decision ? (
-          <button type="button" onClick={() => setDecision(null)} className="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:underline shrink-0">
+          <button type="button" onClick={() => setDecision(null)} className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:underline shrink-0">
             <RotateCcwIcon className="h-3.5 w-3.5" /> Reset
           </button>
         ) : null}
