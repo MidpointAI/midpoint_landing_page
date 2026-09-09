@@ -14,21 +14,17 @@ interface FooterColumn {
   links: FooterLink[];
 }
 
-// Services have no dedicated pages yet; they point at the How It Works
-// walkthrough, matching the navbar. Labels mirror the navbar's Services menu.
-const HOW_IT_WORKS = "/how-it-works";
+// Every link goes somewhere real. The blurb beside the logo says what we
+// do; the columns only list pages that exist.
 const SUPPORT_EMAIL = "service@midpointverified.com";
 
 const footerColumns: FooterColumn[] = [
   {
-    title: "Services",
+    title: "Midpoint",
     links: [
-      { label: "COI Verification", href: HOW_IT_WORKS },
-      { label: "Endorsement Review", href: HOW_IT_WORKS },
-      { label: "Ongoing Monitoring", href: HOW_IT_WORKS },
-      { label: "Sub Outreach", href: HOW_IT_WORKS },
-      { label: "Audit Support", href: HOW_IT_WORKS },
-      { label: "Risk Scoring", href: HOW_IT_WORKS },
+      { label: "How It Works", href: "/how-it-works" },
+      { label: "Customers", href: "/customers" },
+      { label: "Pricing", href: "/pricing/how-it-works" },
     ],
   },
   {
@@ -36,8 +32,7 @@ const footerColumns: FooterColumn[] = [
     links: [
       { label: "Insurance Terms", href: "/resources" },
       { label: "Proper Risk Transfer", href: "/resources/proper-risk-transfer" },
-      { label: "Pricing", href: "/pricing/how-it-works" },
-      { label: "Customers", href: "/customers" },
+      { label: "One-pager", href: "/one-pager" },
     ],
   },
   {
