@@ -8,8 +8,9 @@ import OnePager, { ONE_PAGER_HEIGHT, ONE_PAGER_WIDTH } from "@/components/one-pa
 import { Button } from "@/components/ui/button";
 
 const ONE_PAGER_PATH = "/one-pager";
-const TOOLBAR = 52; // px, the bar above the sheet
 const GUTTER = 24; // px, breathing room around the dialog
+const ACTIONS = 56; // px, the action row floating under the sheet
+const CLOSE = 48; // px, the close button; sits beside the sheet, or above it on narrow screens
 
 /** Viewport size as an external store, so the sheet can refit without setState in an effect. */
 function subscribe(cb: () => void) {
@@ -32,7 +33,8 @@ interface OnePagerOverlayProps {
 /**
  * The one-pager as a dismissable overlay. Escape, the backdrop, and the Close
  * button all dismiss it. The sheet is scaled to fit the viewport, so the
- * 612x916 layout never scrolls inside the dialog.
+ * 612x916 layout never scrolls inside the dialog. Nothing is attached to the
+ * sheet: Close floats beside its top corner and the actions float underneath.
  */
 export function OnePagerOverlay({ open, onClose }: OnePagerOverlayProps) {
   const [copied, setCopied] = useState(false);
@@ -40,9 +42,14 @@ export function OnePagerOverlay({ open, onClose }: OnePagerOverlayProps) {
   const viewport = useViewport();
 
   const [vw, vh] = viewport.split("x").map(Number);
+  const closeBeside = vw >= 640; // Tailwind sm, matching the sm:* classes below
   const scale =
     vw > 0
-      ? Math.min(1, (vw - GUTTER * 2) / ONE_PAGER_WIDTH, (vh - GUTTER * 2 - TOOLBAR) / ONE_PAGER_HEIGHT)
+      ? Math.min(
+          1,
+          (vw - GUTTER * 2 - (closeBeside ? CLOSE * 2 : 0)) / ONE_PAGER_WIDTH,
+          (vh - GUTTER * 2 - ACTIONS - (closeBeside ? 0 : CLOSE)) / ONE_PAGER_HEIGHT
+        )
       : 1;
 
   // Escape closes; the page behind stops scrolling; focus moves in and back out.
@@ -102,37 +109,27 @@ export function OnePagerOverlay({ open, onClose }: OnePagerOverlayProps) {
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} aria-hidden="true" />
 
           <motion.div
-            className="relative flex flex-col"
+            className="relative"
             style={{ width: Math.round(ONE_PAGER_WIDTH * scale) }}
             initial={{ opacity: 0, y: 12, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.98 }}
             transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
           >
-            {/* Toolbar */}
-            <div
-              className="flex items-center justify-between gap-3 rounded-t-xl border border-b-0 border-border bg-background px-3"
-              style={{ height: TOOLBAR }}
+            {/* Close floats at the sheet's top corner: beside it when there's room, above it when not */}
+            <button
+              ref={closeRef}
+              type="button"
+              onClick={onClose}
+              aria-label="Close the one-pager"
+              className="absolute right-0 -top-12 sm:top-0 sm:-right-12 flex size-10 items-center justify-center rounded-full border border-border bg-background text-foreground shadow-lg transition-colors hover:bg-secondary focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-transparent cursor-pointer"
             >
-              <Button ref={closeRef} size="xs" variant="ghost" onClick={onClose}>
-                <XIcon />
-                Close
-              </Button>
-              <div className="flex items-center gap-2">
-                <Button size="xs" variant="outline" onClick={copyLink}>
-                  {copied ? <CheckIcon className="text-primary" /> : <CopyIcon />}
-                  <span className="hidden sm:inline">{copied ? "Copied" : "Copy link"}</span>
-                </Button>
-                <Button size="xs" variant="outline" onClick={share}>
-                  <Share2Icon />
-                  <span className="hidden sm:inline">Share</span>
-                </Button>
-              </div>
-            </div>
+              <XIcon className="size-4" />
+            </button>
 
             {/* The sheet, scaled to fit */}
             <div
-              className="overflow-hidden rounded-b-xl border border-t-0 border-border bg-white shadow-[0_28px_90px_rgba(0,0,0,0.45)]"
+              className="overflow-hidden rounded-xl bg-white shadow-[0_28px_90px_rgba(0,0,0,0.45)]"
               style={{ height: Math.round(ONE_PAGER_HEIGHT * scale) }}
             >
               <div
@@ -145,6 +142,18 @@ export function OnePagerOverlay({ open, onClose }: OnePagerOverlayProps) {
               >
                 <OnePager />
               </div>
+            </div>
+
+            {/* Actions float under the sheet */}
+            <div className="mt-4 flex items-center justify-center gap-2">
+              <Button size="sm" variant="outline" className="bg-background shadow-md hover:bg-secondary" onClick={copyLink}>
+                {copied ? <CheckIcon className="text-primary" /> : <CopyIcon />}
+                {copied ? "Copied" : "Copy link"}
+              </Button>
+              <Button size="sm" variant="outline" className="bg-background shadow-md hover:bg-secondary" onClick={share}>
+                <Share2Icon />
+                Share
+              </Button>
             </div>
           </motion.div>
         </motion.div>
