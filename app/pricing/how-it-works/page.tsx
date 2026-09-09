@@ -152,29 +152,37 @@ export default function PricingPage() {
         </DividedGrid>
       </section>
 
-      {/* Fine print + CTA */}
-      <section id="fine-print" className="section-rule scroll-mt-28">
-        <div className="container-prose pt-16 md:pt-20 pb-20 md:pb-28">
-        <dl className="divide-y divide-border border-y border-border">
-          {[
-            ["Active sub", "Any subcontractor with a signed agreement on a project that's currently open. The same sub on two projects counts once for per-sub pricing, and is verified separately against each project's requirements."],
-            ["Renewal", "Your first year is locked at signing. At renewal we recount active subs, or re-scope your projects, and the price moves with your business."],
-            ["Changing paths", `Grow past ${THRESHOLD} subs, or take on a large commercial job, and we'll move you to per-project pricing at renewal.`],
-          ].map(([k, v]) => (
-            <div key={k} className="grid sm:grid-cols-[180px_1fr] gap-2 sm:gap-8 py-6">
-              <dt className="text-sm font-medium text-foreground">{k}</dt>
-              <dd className="text-sm text-muted-foreground leading-relaxed">{v}</dd>
-            </div>
-          ))}
-        </dl>
-        <div className="mt-12 text-center">
-          <h2 className="heading-3 text-foreground mb-3">Want a number for your roster or your next project?</h2>
-          <p className="text-muted-foreground mb-6">Tell us how many subs and what you build. You&apos;ll have it on the first call.</p>
+      {/* Fine print: heading on the rail, terms as ruled rows */}
+      <section id="fine-print" className="section-rule container-site pt-16 md:pt-20 pb-16 md:pb-20 scroll-mt-28">
+        <div className="grid lg:grid-cols-12 gap-x-8 gap-y-10 items-start">
+          <div className="lg:col-span-5">
+            <p className="eyebrow-accent mb-4">Fine print</p>
+            <h2 className="heading-2 text-foreground measure-column">Three things to know before you sign.</h2>
+          </div>
+          <dl className="lg:col-span-7 divide-y divide-border border-y border-border">
+            {[
+              ["Active sub", "Any subcontractor with a signed agreement on a project that's currently open. The same sub on two projects counts once for per-sub pricing, and is verified separately against each project's requirements."],
+              ["Renewal", "Your first year is locked at signing. At renewal we recount active subs, or re-scope your projects, and the price moves with your business."],
+              ["Changing paths", `Grow past ${THRESHOLD} subs, or take on a large commercial job, and we'll move you to per-project pricing at renewal.`],
+            ].map(([k, v]) => (
+              <div key={k} className="grid sm:grid-cols-[160px_1fr] gap-2 sm:gap-8 py-5">
+                <dt className="text-sm font-medium text-foreground">{k}</dt>
+                <dd className="text-sm text-muted-foreground leading-relaxed">{v}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="section-rule">
+        <div className="container-site section-y">
+          <h2 className="heading-2 text-foreground mb-3">Want a number for your roster or your next project?</h2>
+          <p className="text-muted-foreground mb-6 measure-intro">Tell us how many subs and what you build. You&apos;ll have it on the first call.</p>
           <Button size="lg" asChild>
             <Link href="/contact">Contact us</Link>
           </Button>
           <p className="mt-4 text-sm text-muted-foreground">We reply within one business day.</p>
-        </div>
         </div>
       </section>
     </main>
