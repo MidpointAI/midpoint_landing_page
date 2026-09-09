@@ -118,16 +118,16 @@ export default function PricingPage() {
         </div>
       </section>
 
-      {/* Included */}
+      {/* Included: no card, the rails and the row rules are the structure */}
       <section id="included" className="section-rule container-site pt-16 md:pt-20 pb-16 md:pb-20 scroll-mt-28">
-        <div className="rounded-xl border border-border bg-card p-7 md:p-9 grid md:grid-cols-[1fr_1.4fr] gap-8 md:gap-12">
-          <div>
-            <p className="eyebrow-accent mb-3">Included in both</p>
-            <h2 className="heading-3 text-foreground">No modules. No add-ons. Nothing to log into.</h2>
+        <div className="grid lg:grid-cols-12 gap-x-8 gap-y-10 items-start">
+          <div className="lg:col-span-5">
+            <p className="eyebrow-accent mb-4">Included in both</p>
+            <h2 className="heading-2 text-foreground measure-column">No modules. No add-ons. Nothing to log into.</h2>
           </div>
-          <ul className="space-y-3">
+          <ul className="lg:col-span-7 divide-y divide-border border-y border-border">
             {included.map((item) => (
-              <li key={item} className="flex gap-3 text-sm md:text-base text-foreground/90">
+              <li key={item} className="flex gap-4 py-4 text-base text-foreground/90">
                 <CheckIcon className="mt-1 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
                 {item}
               </li>
