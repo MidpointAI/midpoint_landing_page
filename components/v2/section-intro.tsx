@@ -28,7 +28,7 @@ export function SectionIntro({
   const measureClass = measure === "column" ? "measure-column" : "measure-intro";
   return (
     <div className={className}>
-      {eyebrow ? <p className="eyebrow mb-4">{eyebrow}</p> : null}
+      {eyebrow ? <p className="eyebrow-accent mb-4">{eyebrow}</p> : null}
       <Heading className={`${Heading === "h1" ? "heading-1" : "heading-2"} text-foreground`}>{title}</Heading>
       {description ? (
         <p className={`mt-4 text-base md:text-lg leading-relaxed text-muted-foreground ${measureClass}`}>

@@ -152,7 +152,7 @@ export default function WhatWeDoSteps() {
         <div className="lg:grid lg:grid-cols-[200px_1fr] lg:gap-12">
           <StepRail steps={STEPS} />
           <div className="flex flex-col">
-            <p className="eyebrow pt-16 -mb-8">What we do</p>
+            <p className="eyebrow-accent pt-16 -mb-8">What we do</p>
             {STEPS.map((step) => (
               <StepItem key={step.step} step={step} />
             ))}

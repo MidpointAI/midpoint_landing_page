@@ -128,7 +128,7 @@ export function ProperRiskTransferContent() {
 
           <div className="h-px bg-border/30 mb-10" />
 
-          <p className="eyebrow mb-8">
+          <p className="eyebrow-accent mb-8">
             The Risk Transfer Flow
           </p>
 

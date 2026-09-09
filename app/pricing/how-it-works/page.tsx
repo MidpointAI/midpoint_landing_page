@@ -122,7 +122,7 @@ export default function PricingPage() {
       <section id="included" className="section-rule container-site pt-16 md:pt-20 pb-16 md:pb-20 scroll-mt-28">
         <div className="rounded-xl border border-border bg-card p-7 md:p-9 grid md:grid-cols-[1fr_1.4fr] gap-8 md:gap-12">
           <div>
-            <p className="eyebrow mb-3">Included in both</p>
+            <p className="eyebrow-accent mb-3">Included in both</p>
             <h2 className="heading-3 text-foreground">No modules. No add-ons. Nothing to log into.</h2>
           </div>
           <ul className="space-y-3">
@@ -139,7 +139,7 @@ export default function PricingPage() {
       {/* Why the price is what it is */}
       <section id="why" className="section-rule container-site pt-16 md:pt-20 pb-16 md:pb-20 scroll-mt-28">
         <div className="measure-intro mb-10">
-          <p className="eyebrow mb-4">Why it&apos;s priced this way</p>
+          <p className="eyebrow-accent mb-4">Why it&apos;s priced this way</p>
           <h2 className="heading-2 text-foreground">You&apos;re paying for the nuance, and for not having to manage it.</h2>
         </div>
         <DividedGrid cols="md:grid-cols-2">

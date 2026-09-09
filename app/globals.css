@@ -205,6 +205,11 @@ html::-webkit-scrollbar {
 @utility eyebrow {
   @apply text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground;
 }
+/* The label above a section heading takes the accent, so sections read as
+   owned. Labels inside components (chips, cards, menus) keep `eyebrow`. */
+@utility eyebrow-accent {
+  @apply text-xs font-medium uppercase tracking-[0.2em] text-primary;
+}
 
 /* Widow/orphan prevention (Chrome 117+, Firefox 121+, Safari 17.5+). */
 p, li, h1, h2, h3, h4, h5, h6 {

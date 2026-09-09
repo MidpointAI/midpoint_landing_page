@@ -38,7 +38,7 @@ export default function HeroV2() {
 
       <main className="relative z-10 flex flex-col justify-center flex-1">
         <div className="container-site">
-        <p className="eyebrow mb-8">Insurance verification, off your plate</p>
+        <p className="eyebrow-accent mb-8">Insurance verification, off your plate</p>
         <h1 className="heading-display mb-8">
           <span className="text-foreground block">
             Trade Partner <span className="text-primary">Compliance</span>

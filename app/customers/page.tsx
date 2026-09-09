@@ -116,7 +116,7 @@ export default function CustomersPage() {
 
       {/* Hero story */}
       <section id={hero.outcome} className="container-site pt-16 md:pt-20 pb-6 scroll-mt-28">
-        <p className="eyebrow mb-4">{OUTCOME_LABEL[hero.outcome]}</p>
+        <p className="eyebrow-accent mb-4">{OUTCOME_LABEL[hero.outcome]}</p>
         <article className="rounded-xl border border-primary/30 bg-card p-7 md:p-10 grid lg:grid-cols-[1.4fr_1fr] gap-10 lg:gap-14">
           <div>
             <StoryMeta story={hero} size="lg" className="mb-8" />
@@ -144,7 +144,7 @@ export default function CustomersPage() {
                 id={story.outcome}
                 className={`${DIVIDED_CELL} flex flex-col scroll-mt-28`}
               >
-                <p className="eyebrow mb-4">{OUTCOME_LABEL[story.outcome]}</p>
+                <p className="eyebrow-accent mb-4">{OUTCOME_LABEL[story.outcome]}</p>
                 <StoryMeta story={story} className="mb-6" />
                 <h2 className="heading-3 text-foreground mb-6">{story.headline}</h2>
                 <Narrative story={story} compact />

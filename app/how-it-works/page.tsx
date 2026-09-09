@@ -102,7 +102,7 @@ export default function HowItWorksPage() {
         {/* Hero */}
         <section className="w-full min-h-[calc(100svh-6.75rem)] flex items-center snap-start">
           <div className="container-site flex flex-col items-center text-center gap-6">
-            <p className="eyebrow">How it works</p>
+            <p className="eyebrow-accent">How it works</p>
             <h1 className="heading-1 md:text-6xl text-foreground max-w-3xl">
               Sign the sub. CC us.
               <br />
@@ -128,7 +128,7 @@ export default function HowItWorksPage() {
         <section id="what-you-do" className="w-full min-h-[calc(100svh-6.75rem)] flex items-center section-y section-rule snap-start scroll-mt-28">
           <div className="container-site w-full">
             <div className="max-w-2xl mb-12">
-              <p className="eyebrow mb-4">What you do</p>
+              <p className="eyebrow-accent mb-4">What you do</p>
               <h2 className="heading-2 text-foreground">Three things. Then you&apos;re done.</h2>
             </div>
             <ol className="grid md:grid-cols-3 gap-4">
@@ -150,7 +150,7 @@ export default function HowItWorksPage() {
         <section id="what-you-get" className="w-full min-h-[calc(100svh-6.75rem)] flex items-center section-y snap-start scroll-mt-28">
           <div className="container-site w-full">
             <div className="max-w-2xl mb-12">
-              <p className="eyebrow mb-4">What you get back</p>
+              <p className="eyebrow-accent mb-4">What you get back</p>
               <h2 className="heading-2 text-foreground">Visibility without the busywork.</h2>
             </div>
             <div className="grid md:grid-cols-3 gap-4">
@@ -179,7 +179,7 @@ export default function HowItWorksPage() {
         <section id="escalation" className="w-full min-h-[calc(100svh-6.75rem)] flex items-center section-y section-rule snap-start scroll-mt-28">
           <div className="container-site w-full grid md:grid-cols-[1fr_1.2fr] gap-10 md:gap-16 items-center">
             <div>
-              <p className="eyebrow mb-4">When a sub won&apos;t respond</p>
+              <p className="eyebrow-accent mb-4">When a sub won&apos;t respond</p>
               <h2 className="heading-2 text-foreground mb-6">We chase. You decide.</h2>
               <p className="text-muted-foreground text-base md:text-lg leading-relaxed">
                 We contact the sub and their agent repeatedly. After roughly thirty days without resolution, or fifteen days past an expiration, that trade partner shows up in your weekly status email with what&apos;s missing, every attempt we&apos;ve made to get it, and a recommended next step. The decision stays yours.
@@ -193,7 +193,7 @@ export default function HowItWorksPage() {
         <section id="claims" className="w-full min-h-[calc(100svh-6.75rem)] flex items-center section-y section-rule snap-start scroll-mt-28">
           <div className="container-site w-full grid md:grid-cols-[1fr_1.2fr] gap-10 md:gap-16">
             <div>
-              <p className="eyebrow mb-4">When a claim comes</p>
+              <p className="eyebrow-accent mb-4">When a claim comes</p>
               <h2 className="heading-2 text-foreground">Insurance responds to paperwork, not intentions.</h2>
             </div>
             <div className="rounded-xl border border-primary/25 bg-primary/5 p-7 md:p-8">
@@ -209,7 +209,7 @@ export default function HowItWorksPage() {
         {/* FAQ */}
         <section id="faq" className="w-full section-y section-rule snap-start scroll-mt-28">
           <div className="container-prose">
-            <p className="eyebrow mb-4">Questions builders ask</p>
+            <p className="eyebrow-accent mb-4">Questions builders ask</p>
             <h2 className="heading-2 text-foreground mb-10">Before you hand it off</h2>
             <div className="divide-y divide-border border-y border-border">
               {faqs.map((f) => (
