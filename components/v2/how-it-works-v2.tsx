@@ -1,245 +1,179 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, createElement } from "react";
-import { motion, AnimatePresence, useInView, useScroll, useTransform } from "framer-motion";
-import {
-  ClipboardListIcon,
-  MailIcon,
-  ShieldCheckIcon,
-  UserCheckIcon,
-  RefreshCwIcon,
-} from "lucide-react";
+import { useState } from "react";
+import Link from "next/link";
+import { AnimatePresence, motion } from "framer-motion";
+import { ArrowRightIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { SectionIntro } from "./section-intro";
+import { SPRING } from "./motion";
+import { FigureFrame } from "./figure-frame";
+import { Roster, SUBS, type Sub, type SubStatus } from "@/components/v2/report";
 
-const INTERVAL = 20000;
 
+// Same five steps as /how-it-works, condensed. Each shows one sub in the
+// state the GC would see it at that point.
 interface Step {
+  id: string;
   title: string;
-  description: string;
-  icon: React.ElementType;
+  body: string;
   highlight: string;
+  row: { status: SubStatus; score: number; label?: string; showRing?: boolean; expanded?: boolean };
 }
 
-const steps: Step[] = [
+const STEPS: Step[] = [
   {
-    title: "Subcontractor Insurance Requirements",
-    description:
-      "You provide your subcontract agreement, project list, and sub roster. Midpoint uploads your contract requirements as the compliance benchmark.",
-    icon: ClipboardListIcon,
-    highlight: "Your standards become the benchmark",
+    id: "requirements",
+    title: "Pull the requirements from your agreement",
+    body: "Every executed subcontract sets the insurance requirements for that sub on that project. You CC us on the signed agreement and that's the trigger.",
+    highlight: "Your contract is the benchmark",
+    row: { status: "collecting", score: 0, label: "Requirements set", showRing: false },
   },
   {
-    title: "Contract Triggering",
-    description:
-      "When a sub signs a contract, your team simply CCs service@midpointverified.com. Our AI extracts and processes the contract automatically — zero manual entry.",
-    icon: MailIcon,
-    highlight: "One CC, fully automated",
+    id: "collect",
+    title: "Contact the sub and their agent",
+    body: "We request certificates and endorsements directly from the subcontractor and the agent who wrote the policy. Your team stops chasing.",
+    highlight: "You send nothing",
+    row: { status: "collecting", score: 0, label: "Requested", showRing: false },
   },
   {
-    title: "Deep Compliance Verification",
-    description:
-      "We verify every sub's certificate of insurance and endorsement documents against your contract requirements — additional insured, primary & non-contributory, waivers of subrogation, and more.",
-    icon: ShieldCheckIcon,
-    highlight: "Every endorsement, every date",
+    id: "verify",
+    title: "Verify the coverage, not the certificate",
+    body: "Limits, additional insured, waivers, and the endorsement forms behind them, read by our compliance team and scored against your project.",
+    highlight: "Reviewed by people, reported to you",
+    row: { status: "noncompliant", score: 80, expanded: true },
   },
   {
-    title: "Human Review",
-    description:
-      "A dedicated Midpoint analyst reviews every AI output to catch edge cases across 3,500+ P&C carriers. No false positives, no missed gaps.",
-    icon: UserCheckIcon,
-    highlight: "AI + human, no gaps missed",
+    id: "chase",
+    title: "Chase gaps and renewals",
+    body: "Automated follow-ups to the sub and the agent, warnings ahead of every expiration, and escalation to you only when repeated outreach hasn't worked.",
+    highlight: "It reaches you only when it needs you",
+    row: { status: "expiring", score: 100, label: "Renewal requested" },
   },
   {
-    title: "Ongoing Management",
-    description:
-      "We handle outreach to non-compliant subs, track expirations, and pull documents for audits on demand. Verified compliance unlocks preferred carrier rates.",
-    icon: RefreshCwIcon,
-    highlight: "Compliance that saves you money",
+    id: "monitor",
+    title: "Report weekly. Monitor for years",
+    body: "One short email a week listing each trade partner and where they stand, and monitoring that continues for two years after the project closes.",
+    highlight: "One email. No login.",
+    row: { status: "compliant", score: 100 },
   },
 ];
 
+const BASE = SUBS.find((s) => s.id === "redrock")!;
+
 export default function HowItWorksV2() {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
-  const [, setProgress] = useState(0);
-  const sectionRef = useRef<HTMLElement>(null);
-  const isInView = useInView(sectionRef, { once: true, amount: 0.2 });
-
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start end", "end start"],
-  });
-
-  // Parallax layers
-  const headerY = useTransform(scrollYProgress, [0, 1], [60, -40]);
-  const contentY = useTransform(scrollYProgress, [0, 1], [40, -20]);
-
-  const advance = useCallback(() => {
-    setActiveIndex((prev) => (prev + 1) % steps.length);
-    setProgress(0);
-  }, []);
-
-  useEffect(() => {
-    if (isPaused) return;
-    const tick = 50;
-    const timer = setInterval(() => {
-      setProgress((prev) => {
-        const next = prev + (tick / INTERVAL) * 100;
-        if (next >= 100) {
-          advance();
-          return 0;
-        }
-        return next;
-      });
-    }, tick);
-    return () => clearInterval(timer);
-  }, [isPaused, advance, activeIndex]);
-
-  const handleClick = (index: number) => {
-    setActiveIndex(index);
-    setProgress(0);
-    setIsPaused(true);
-    setTimeout(() => setIsPaused(false), INTERVAL);
-  };
+  const [active, setActive] = useState(0);
+  const step = STEPS[active];
+  const row: Sub = { ...BASE, status: step.row.status, score: step.row.score };
 
   return (
-    <section ref={sectionRef} id="how-it-works" className="w-full bg-white dark:bg-zinc-950 py-24 overflow-hidden scroll-mt-24 md:flex-1">
-      <div className="max-w-7xl mx-auto px-4 md:px-6 pb-[80px]">
-        <motion.div
-          className="text-center mb-16 max-w-3xl mx-auto"
-          style={{ y: headerY }}
-        >
-          <motion.p
-            className="text-zinc-400 dark:text-zinc-500 text-xs tracking-[0.2em] uppercase mb-4"
-            initial={{ opacity: 0, y: 20, filter: "blur(4px)" }}
-            animate={isInView ? { opacity: 1, y: 0, filter: "blur(0px)" } : { opacity: 0, y: 20, filter: "blur(4px)" }}
-            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          >
-            Beyond COI checks
-          </motion.p>
+    <section id="how-it-works" className="w-full bg-background section-y section-rule overflow-hidden scroll-mt-24">
+      <div className="container-site">
+        <SectionIntro
+          className="mb-14"
+          eyebrow="Beyond COI checks"
+          title={
+            <>
+              We don&apos;t just store documents.
+              <br />
+              We <span className="text-primary">verify</span> them.
+            </>
+          }
+          description="Most builders assume their construction software, accounting platform, or bookkeeper is handling trade partner compliance. They're storing documents. Midpoint reads the policy language itself and reports back what it means for each sub on each project."
+        />
 
-          {/* Heading with clip-mask reveal */}
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-5">
-            <span className="text-reveal-line text-zinc-900 dark:text-white">
-              <motion.span
-                className="block"
-                initial={{ y: "110%" }}
-                animate={isInView ? { y: "0%" } : { y: "110%" }}
-                transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
-              >
-                We Don&apos;t Just Store Documents —
-              </motion.span>
-            </span>
-            <span className="text-reveal-line">
-              <motion.span
-                className="block text-zinc-900 dark:text-white"
-                initial={{ y: "110%" }}
-                animate={isInView ? { y: "0%" } : { y: "110%" }}
-                transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-              >
-                We <span className="text-lime-600 dark:text-lime-400">Verify</span> Them
-              </motion.span>
-            </span>
-          </h2>
-
-          <motion.p
-            className="text-zinc-500 dark:text-zinc-400 text-base md:text-lg leading-relaxed"
-            initial={{ opacity: 0, y: 30, filter: "blur(4px)" }}
-            animate={isInView ? { opacity: 1, y: 0, filter: "blur(0px)" } : { opacity: 0, y: 30, filter: "blur(4px)" }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
-          >
-            Most General Contractors assume their construction management software,
-            accounting platform, or bookkeeper is handling trade partner compliance —
-            they&apos;re not. They&apos;re storing documents. Midpoint goes further: we read
-            the policy language itself to confirm your trade partners are truly
-            compliant, so you&apos;re protected when it matters — not just organized.
-          </motion.p>
-        </motion.div>
-
-        <div className="flex md:hidden overflow-x-auto gap-2 mb-8 pb-2 -mx-2 px-2">
-          {steps.map((step, i) => (
+        {/* Mobile: step chips */}
+        <div className="flex md:hidden overflow-x-auto gap-2 mb-8 pb-2 -mx-2 px-2" role="tablist" aria-label="Steps">
+          {STEPS.map((s, i) => (
             <button
-              key={step.title}
-              onClick={() => handleClick(i)}
-              className={`flex-shrink-0 px-4 py-2 rounded-full text-xs font-medium transition-colors whitespace-nowrap ${
-                i === activeIndex
-                  ? "bg-lime-400 text-zinc-950"
-                  : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
+              key={s.id}
+              role="tab"
+              aria-selected={i === active}
+              onClick={() => setActive(i)}
+              className={`flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors whitespace-nowrap ${
+                i === active ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground hover:text-foreground"
               }`}
             >
-              {step.title}
+              {i + 1}. {s.title}
             </button>
           ))}
         </div>
 
-        <motion.div
-          className="flex flex-col md:flex-row md:gap-16 items-center justify-center gap-[48px]"
-          style={{ y: contentY }}
-          initial={{ opacity: 0, y: 50, filter: "blur(8px)" }}
-          animate={isInView ? { opacity: 1, y: 0, filter: "blur(0px)" } : { opacity: 0, y: 50, filter: "blur(8px)" }}
-          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
-        >
-          <div className="hidden md:flex flex-col w-[280px] flex-shrink-0 relative">
-            <div className="absolute left-[4px] top-3 bottom-3 w-px bg-zinc-200 dark:bg-zinc-800" />
-            {steps.map((step, i) => {
-              const isActive = i === activeIndex;
+        <div className="grid md:grid-cols-[260px_1fr_minmax(0,380px)] gap-10 lg:gap-14 items-start">
+          {/* Desktop: step list */}
+          <div className="hidden md:flex flex-col relative" role="tablist" aria-label="Steps">
+            <div className="absolute left-[4px] top-3 bottom-3 w-px bg-border" />
+            {STEPS.map((s, i) => {
+              const on = i === active;
               return (
                 <button
-                  key={step.title}
-                  onClick={() => handleClick(i)}
+                  key={s.id}
+                  role="tab"
+                  aria-selected={on}
+                  onClick={() => setActive(i)}
                   className="relative flex items-center gap-4 text-left group py-3"
                 >
-                  <div className="relative flex-shrink-0 z-10">
-                    <motion.div
-                      animate={isActive ? { scale: [1, 1.3, 1] } : { scale: 1 }}
-                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                      className={`h-[9px] w-[9px] rounded-full transition-colors duration-300 ${
-                        isActive ? "bg-lime-400" : "bg-zinc-300 dark:bg-zinc-600 group-hover:bg-zinc-400"
-                      }`}
+                  <span className="relative flex-shrink-0 z-10">
+                    <motion.span
+                      animate={{ scale: on ? [1, 1.3, 1] : 1 }}
+                      transition={on ? { duration: 2, repeat: Infinity, ease: "easeInOut" } : { duration: 0.2 }}
+                      className={`block h-[9px] w-[9px] rounded-full transition-colors duration-300 ${on ? "bg-primary" : "bg-muted-foreground/50 group-hover:bg-muted-foreground"}`}
                     />
-                  </div>
-                  <span
-                    className={`text-sm font-medium transition-colors duration-300 ${
-                      isActive ? "text-zinc-900 dark:text-white" : "text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-600 dark:group-hover:text-zinc-300"
-                    }`}
-                  >
-                    {step.title}
+                  </span>
+                  <span className={`text-sm font-medium transition-colors duration-300 ${on ? "text-foreground" : "text-muted-foreground/70 group-hover:text-foreground/80"}`}>
+                    {s.title}
                   </span>
                 </button>
               );
             })}
           </div>
 
-          <div className="min-w-0">
+          {/* Active step */}
+          <div className="min-w-0" role="tabpanel">
             <AnimatePresence mode="wait">
               <motion.div
-                key={activeIndex}
-                initial={{ opacity: 0, y: 24, filter: "blur(6px)" }}
-                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                exit={{ opacity: 0, y: -24, filter: "blur(6px)", transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] } }}
-                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                key={step.id}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={SPRING}
                 className="py-2"
               >
-                <div className="flex items-center gap-2.5 mb-4">
-                  {createElement(steps[activeIndex].icon, {
-                    className: "h-5 w-5 text-lime-600 dark:text-lime-400",
-                  })}
-                  <p className="text-xs text-zinc-400 dark:text-zinc-500 font-medium uppercase tracking-wider">
-                    Step {activeIndex + 1}
-                  </p>
-                </div>
-                <h3 className="text-2xl text-zinc-900 dark:text-white font-semibold tracking-tight mb-4">
-                  {steps[activeIndex].title}
-                </h3>
-                <p className="text-zinc-500 dark:text-zinc-400 text-base leading-relaxed mb-6 max-w-lg">
-                  {steps[activeIndex].description}
-                </p>
-                <p className="text-sm text-lime-600 dark:text-lime-400 font-medium">
-                  {steps[activeIndex].highlight}
-                </p>
+                <p className="eyebrow mb-4">Step {active + 1} of {STEPS.length}</p>
+                <h3 className="heading-3 text-foreground mb-4">{step.title}</h3>
+                <p className="text-muted-foreground text-base leading-relaxed mb-6 max-w-lg">{step.body}</p>
+                <p className="text-sm text-primary font-medium mb-6">{step.highlight}</p>
+                <Button asChild variant="link" size="sm">
+                  <Link href={`/how-it-works#step-${step.id}`}>
+                    See this step in full <ArrowRightIcon />
+                  </Link>
+                </Button>
               </motion.div>
             </AnimatePresence>
           </div>
-        </motion.div>
+
+          {/* One sub, as the GC sees it at this step */}
+          <FigureFrame n={2} label="In your weekly email" className="self-center">
+            <div className="rounded-lg border border-border bg-background px-3">
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={step.id}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Roster
+                    subs={[row]}
+                    showRing={step.row.showRing ?? true}
+                    chipLabel={() => step.row.label}
+                    expandedId={step.row.expanded ? row.id : null}
+                  />
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </FigureFrame>
+        </div>
       </div>
     </section>
   );

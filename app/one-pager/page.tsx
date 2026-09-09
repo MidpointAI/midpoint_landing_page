@@ -1,10 +1,10 @@
 import { Metadata } from "next";
-import OnePager from "@/components/one-pager";
+import OnePagerRoute from "./one-pager-route";
 
 export const metadata: Metadata = {
   title: "What is Midpoint? | One-Pager Overview",
   description:
-    "Learn how Midpoint helps residential builders and general contractors manage subcontractor insurance compliance with AI-powered COI analysis.",
+    "Learn how Midpoint helps residential builders and general contractors manage subcontractor insurance compliance.",
   openGraph: {
     title: "What is Midpoint? | One-Pager Overview",
     description:
@@ -17,5 +17,5 @@ export const metadata: Metadata = {
 };
 
 export default function OnePagerPage() {
-  return <OnePager />;
+  return <OnePagerRoute />;
 }

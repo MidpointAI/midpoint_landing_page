@@ -1,85 +1,90 @@
 "use client";
 
 import { motion } from "framer-motion";
-import ExpertsVerifyGraphic from "@/components/v2/experts-verify-graphic";
 import { useStepActivity } from "@/components/v2/step-activity";
+import { FigureFrame } from "@/components/v2/figure-frame";
+import RequirementsGraphic from "@/components/v2/how-it-works/requirements-graphic";
+import CollectGraphic from "@/components/v2/how-it-works/collect-graphic";
+import ChaseGraphic from "@/components/v2/how-it-works/chase-graphic";
+import VerifyGraphic from "@/components/v2/how-it-works/verify-graphic";
+import MonitorGraphic from "@/components/v2/how-it-works/monitor-graphic";
 
-// Layout per Figma (node 11133:1164):
-//   Step 2 — text left, papers image right
-//   Step 3 — centered headline + animated verify graphic
-//   Step 4 — text right-aligned (no media)
-//   Step 5 — text right-aligned (originally had a radial-gradient highlight;
-//            since removed, it now shares the text-right layout)
 type StepDef = {
   step: number;
+  id: string;
   title: string;
+  /** Short name for the figure label. */
+  figure: string;
   body: string;
-  layout: "text-and-image" | "centered-graphic" | "text-right";
 };
 
+// The five things Midpoint does once a subcontract is signed, in the order
+// Tyler walks GCs through them on onboarding calls.
 const STEPS: StepDef[] = [
   {
+    step: 1,
+    id: "requirements",
+    figure: "Requirements",
+    title: "Pull the requirements from your agreement.",
+    body: "Every executed subcontract sets the insurance requirements for that sub on that project. Change the contract and the requirements change with it.",
+  },
+  {
     step: 2,
-    title: "Collect requirements, policy certificates, endorsements.",
-    body: "We systematically collect new certificates and policy endorsements from your trade partners.",
-    layout: "text-and-image",
+    id: "collect",
+    figure: "Outreach",
+    title: "Contact the sub and their agent.",
+    body: "We request certificates and endorsements directly from the subcontractor and the agent who wrote the policy, so your team stops chasing.",
   },
   {
     step: 3,
-    title: "Experts verify policy info matches your project.",
-    body: "We establish project by project insurance requirements based on your agreements",
-    layout: "centered-graphic",
+    id: "verify",
+    figure: "Verification",
+    title: "Verify the coverage, not the certificate.",
+    body: "Limits, additional insured, primary and non-contributory, waivers, and the endorsement forms behind them. A line in the description-of-operations box doesn't count. The form does.",
   },
   {
     step: 4,
-    title: "Compliance is determined and reported back to the general contractor",
-    body: "We establish project by project insurance requirements based on your agreements",
-    layout: "text-right",
+    id: "chase",
+    figure: "Follow-up",
+    title: "Chase gaps and renewals.",
+    body: "Automated follow-ups to the sub and the agent, warnings ahead of every expiration, and escalation to you only when repeated outreach hasn't worked.",
   },
   {
     step: 5,
-    title: "Ongoing expiration monitoring and reporting",
-    body: "We monitor and collect future policy information to keep them compliant and report back to you.",
-    layout: "text-right",
+    id: "monitor",
+    figure: "Weekly report",
+    title: "Report weekly. Monitor for years.",
+    body: "Every week you get one short email listing each trade partner and where they stand: verified, expiring soon, missing a document, or waiting on a decision from you. Nothing to log into. And it doesn't stop when the project does: we keep tracking every sub's coverage for two years after completion, because claims arrive late.",
   },
 ];
 
-const EASE: [number, number, number, number] = [0.25, 0.1, 0.25, 1];
+const EASE = [0.25, 0.1, 0.25, 1] as const;
 
-/* --------------------------------- StepPill -------------------------------- */
-function StepPill({ step, isActive }: { step: number; isActive: boolean }) {
+/** Step ids, numbers, and titles for anything that navigates the steps. */
+export const STEP_META = STEPS.map(({ id, step, title }) => ({ id, step, title }));
+
+/** Text never dims below 60%: an off-focus step should still be readable. */
+const TEXT_DIM = 0.6;
+
+/** "Step 3 of 5" in the mono label style, in the accent while the step is current. */
+function StepCount({ step, isActive }: { step: number; isActive: boolean }) {
   return (
-    <motion.div
-      className="relative inline-flex items-center justify-center rounded-full border-[0.5px] px-4 py-1 md:px-6 md:py-1.5 backdrop-blur-md"
-      animate={{
-        borderColor: isActive ? "rgba(242,242,242,1)" : "rgba(242,242,242,0.3)",
-        backgroundColor: isActive ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0)",
-        boxShadow: isActive
-          ? "inset 0 4px 12.6px 0 rgba(255,255,255,0.25)"
-          : "inset 0 0 0 0 rgba(255,255,255,0)",
-      }}
+    <motion.p
+      className={`font-mono text-[11px] uppercase tracking-[0.16em] ${isActive ? "text-primary" : "text-muted-foreground"}`}
+      animate={{ opacity: isActive ? 1 : TEXT_DIM }}
       transition={{ duration: 0.4, ease: EASE }}
     >
-      <motion.span
-        className="text-[13px] tracking-[3.5px] md:text-[18px] md:tracking-[5.76px] font-medium leading-[1.5] whitespace-nowrap"
-        style={{ fontFamily: "var(--font-dm-mono), monospace" }}
-        animate={{ color: isActive ? "rgb(201,255,100)" : "rgba(201,255,100,0.35)" }}
-        transition={{ duration: 0.4 }}
-      >
-        STEP {step}
-      </motion.span>
-    </motion.div>
+      Step {step} of {STEPS.length}
+    </motion.p>
   );
 }
 
-/* ------------------------------- StepTitle/Body ------------------------------ */
 function StepTitle({ children, isActive }: { children: React.ReactNode; isActive: boolean }) {
   return (
     <motion.h3
-      className="text-2xl md:text-[36px] font-bold tracking-[-0.01em] leading-[1.2]"
-      style={{ fontFamily: "var(--font-display), sans-serif" }}
-      animate={{ color: isActive ? "rgb(255,255,255)" : "rgba(255,255,255,0.3)" }}
-      transition={{ duration: 0.5 }}
+      className="heading-2 text-foreground"
+      animate={{ opacity: isActive ? 1 : TEXT_DIM }}
+      transition={{ duration: 0.5, ease: EASE }}
     >
       {children}
     </motion.h3>
@@ -89,110 +94,67 @@ function StepTitle({ children, isActive }: { children: React.ReactNode; isActive
 function StepBody({ children, isActive }: { children: React.ReactNode; isActive: boolean }) {
   return (
     <motion.p
-      className="text-base md:text-[20px] font-light leading-[1.37]"
-      style={{ fontFamily: "var(--font-display), sans-serif" }}
-      animate={{ color: isActive ? "rgba(255,255,255,0.6)" : "rgba(255,255,255,0.22)" }}
-      transition={{ duration: 0.5 }}
+      className="text-muted-foreground text-base md:text-lg leading-relaxed measure-column"
+      animate={{ opacity: isActive ? 1 : TEXT_DIM }}
+      transition={{ duration: 0.5, ease: EASE }}
     >
       {children}
     </motion.p>
   );
 }
 
-/* ---------------------------------- StepItem -------------------------------- */
+function StepGraphic({ id, isActive }: { id: string; isActive: boolean }) {
+  switch (id) {
+    case "requirements":
+      return <RequirementsGraphic isActive={isActive} />;
+    case "collect":
+      return <CollectGraphic isActive={isActive} />;
+    case "verify":
+      return <VerifyGraphic isActive={isActive} />;
+    case "chase":
+      return <ChaseGraphic isActive={isActive} />;
+    default:
+      return <MonitorGraphic isActive={isActive} />;
+  }
+}
+
+/**
+ * One stage per step on the site's five/seven split: text on the rail, an
+ * interactive graphic in the other seven columns. Stages take their own
+ * height, with the same padding and a hairline between them, so the gap
+ * from one step to the next is always the same.
+ */
 function StepItem({ step }: { step: StepDef }) {
-  const { ref, isActive } = useStepActivity(`step-${step.step}`);
+  const { ref, isActive } = useStepActivity(`step-${step.id}`);
 
   return (
-    <div ref={ref} className="relative w-full">
-        {/* Step 2 — text left, image right (Figma spec: p-[112px], gap-[43px]) */}
-        {step.layout === "text-and-image" && (
-          <div className="px-4 md:px-16 lg:px-28 py-16 md:py-20 lg:py-28 flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-[43px]">
-            <div className="flex flex-col gap-[43px] w-full lg:w-[500px] flex-shrink-0">
-              <div className="flex flex-col gap-6 items-start">
-                <StepPill step={step.step} isActive={isActive} />
-                <StepTitle isActive={isActive}>{step.title}</StepTitle>
-              </div>
-              <StepBody isActive={isActive}>{step.body}</StepBody>
-            </div>
-            <motion.div
-              className="w-full max-w-[520px] flex-shrink-0"
-              animate={{ opacity: isActive ? 1 : 0.25 }}
-              transition={{ duration: 0.5 }}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/papers-flying-figma.png"
-                alt="Insurance documents and certificates being collected"
-                className="w-full h-auto object-contain"
-              />
-            </motion.div>
-          </div>
-        )}
-
-        {/* Step 3 — centered headline + animated graphic (p-[112px], gap-[48px]) */}
-        {step.layout === "centered-graphic" && (
-          <div className="px-0 md:px-16 lg:px-28 py-16 md:py-20 lg:py-28 flex flex-col items-center gap-12">
-            <div className="flex flex-col gap-4 items-center text-center max-w-5xl">
-              <StepPill step={step.step} isActive={isActive} />
-              <h3
-                className="text-2xl md:text-[36px] font-bold tracking-[-0.01em] leading-[1.2] md:whitespace-nowrap"
-                style={{
-                  fontFamily: "var(--font-display), sans-serif",
-                  color: isActive ? "rgb(255,255,255)" : "rgba(255,255,255,0.3)",
-                  transition: "color 0.5s",
-                }}
-              >
-                {step.title}
-              </h3>
-              <StepBody isActive={isActive}>{step.body}</StepBody>
-            </div>
-            <motion.div
-              className="w-full flex justify-center overflow-x-auto"
-              animate={{ opacity: isActive ? 1 : 0.35 }}
-              transition={{ duration: 0.5 }}
-            >
-              <ExpertsVerifyGraphic />
-            </motion.div>
-          </div>
-        )}
-
-        {/* Step 4 — right-aligned text, large gap between title and body */}
-        {step.layout === "text-right" && (
-          <div className="px-4 md:px-16 lg:px-20 py-16 md:py-20 lg:py-28 flex flex-col items-end">
-            <div className="flex flex-col gap-[80px] lg:gap-[109px] w-full max-w-[529px]">
-              <div className="flex flex-col gap-4 items-start w-full">
-                <StepPill step={step.step} isActive={isActive} />
-                <StepTitle isActive={isActive}>{step.title}</StepTitle>
-              </div>
-              <div className="w-full">
-                <StepBody isActive={isActive}>{step.body}</StepBody>
-              </div>
-            </div>
-          </div>
-        )}
-
+    <div
+      ref={ref}
+      id={`step-${step.id}`}
+      className="relative w-full py-16 md:py-20 border-t border-border first:border-t-0 scroll-mt-28"
+    >
+      <div className="w-full grid lg:grid-cols-12 gap-x-8 gap-y-10 items-center">
+        <div className="lg:col-span-5 flex flex-col gap-5">
+          <StepCount step={step.step} isActive={isActive} />
+          <StepTitle isActive={isActive}>{step.title}</StepTitle>
+          <StepBody isActive={isActive}>{step.body}</StepBody>
+        </div>
+        <div className="lg:col-span-7 flex lg:justify-end">
+          <FigureFrame n={step.step} label={step.figure} isActive={isActive}>
+            <StepGraphic id={step.id} isActive={isActive} />
+          </FigureFrame>
+        </div>
       </div>
+    </div>
   );
 }
 
-/* -------------------------------- Container --------------------------------- */
 export default function WhatWeDoSteps() {
   return (
-    <section className="w-full bg-[#001512] py-16 md:py-28 px-4 md:px-12 lg:px-28">
-      <div className="max-w-7xl mx-auto flex flex-col items-center gap-10 md:gap-12">
-        {/* Header */}
-        <p
-          className="text-[#dadad9] text-[18px] tracking-[5.76px] text-center leading-[1.5]"
-          style={{ fontFamily: "var(--font-dm-mono), monospace" }}
-        >
-          WHAT WE DO.
-        </p>
-
-        {/* Steps — free-floating, no outer box. Each StepItem registers
-            itself with the shared StepActivityProvider so only one step
-            across the whole page is active at a time. */}
-        <div className="w-full flex flex-col">
+    <section id="what-we-do" className="w-full section-rule scroll-mt-28 pb-4 md:pb-8">
+      <div className="container-site">
+        <p className="eyebrow-accent pt-16 md:pt-20">What we do</p>
+        <div className="mt-6">
           {STEPS.map((step) => (
             <StepItem key={step.step} step={step} />
           ))}

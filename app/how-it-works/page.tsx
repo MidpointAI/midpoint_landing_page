@@ -1,190 +1,247 @@
 "use client";
 
-import { motion } from "framer-motion";
+import Link from "next/link";
+import { MotionConfig } from "framer-motion";
+import { ArrowRightIcon, ChevronDownIcon } from "lucide-react";
 import WhatWeDoSteps from "@/components/v2/what-we-do-steps";
-import FooterV2 from "@/components/v2/footer-v2";
-import NoOrphans from "@/components/v2/no-orphans";
-import {
-  StepActivityProvider,
-  useStepActivity,
-} from "@/components/v2/step-activity";
+import { StepActivityProvider } from "@/components/v2/step-activity";
+import { Button } from "@/components/ui/button";
+import EscalationDemo from "@/components/v2/how-it-works/escalation-demo";
+import { SubNav } from "@/components/v2/sub-nav";
+import StepTicks from "@/components/v2/how-it-works/step-ticks";
+import { SectionIntro } from "@/components/v2/section-intro";
+import { SplitSection } from "@/components/v2/split-section";
+import { DividedGrid, RULED_ROW_CELL } from "@/components/v2/divided-grid";
 
-const youGet = [
+const SECTIONS = [
+  { label: "What you do", id: "what-you-do" },
+  { label: "What we do", id: "what-we-do", detail: <StepTicks /> },
+  { label: "What you get", id: "what-you-get" },
+  { label: "Your decisions", id: "escalation" },
+  { label: "Claims", id: "claims" },
+  { label: "FAQ", id: "faq" },
+];
+
+// TODO: confirm the intake address. Meeting notes reference service@midpointverify.com;
+// the site uses the midpointverified.com domain everywhere else.
+const INTAKE_EMAIL = "service@midpointverified.com";
+
+const youDo = [
   {
-    title: "Weekly compliance digest",
-    body: "A clear summary lands in your inbox every week — who’s verified, who’s outstanding, who needs a push.",
+    title: "Send us your sub list and project list once.",
+    body: "That's the whole onboarding. We build the roster and start from your active projects.",
   },
   {
-    title: "Records organized by project",
-    body: "Every document for every sub, sorted by project and ready to pull whenever you or an auditor needs it.",
+    title: `CC ${INTAKE_EMAIL} on every executed subcontract.`,
+    body: "When in doubt, send it. The signed agreement is what triggers everything we do.",
   },
   {
-    title: "Optional portal access",
-    body: "Log in any time you want a real-time view. Or don’t — the work doesn’t depend on you using it.",
+    title: "Read one weekly email.",
+    body: "A short status report every week: which subs are verified, whose coverage expires soon, who still owes us a document, and anything that needs your call.",
   },
 ];
 
-function Step1Hero() {
-  const { ref, isActive } = useStepActivity("step-1");
+const youGet = [
+  {
+    title: "One weekly status email",
+    body: "A plain-English list of every trade partner: who's verified, whose coverage expires soon, who still owes us a document, and which items need a decision from you. It takes two minutes to read and there's nothing to log into.",
+    example: [
+      { label: "Verified", value: "24 trade partners" },
+      { label: "Expiring in 30 days", value: "3" },
+      { label: "Missing a document", value: "2, being chased" },
+      { label: "Needs your decision", value: "1" },
+    ],
+  },
+  {
+    title: "Records filed by project",
+    body: "Every certificate and endorsement for every sub, ready the day an auditor or a carrier asks.",
+  },
+  {
+    title: "A portal, if you want it",
+    body: "Log in any time for a real-time view. You won't need to. The work doesn't depend on it.",
+  },
+];
 
-  // Same easing as the rest of the steps for visual continuity.
-  const EASE = [0.25, 0.1, 0.25, 1] as const;
-
-  // We use OPACITY-based animation (not color) so the underlying Tailwind
-  // dark-mode color classes (text-black dark:text-white, etc.) still apply.
-  // motion.animate.color would override Tailwind in both modes.
-  return (
-    <section
-      ref={ref}
-      className="w-full pt-36 pb-24 md:pt-44 md:pb-32 px-4 md:px-6 bg-[#f4ffe0] dark:bg-zinc-900"
-    >
-      <div className="max-w-5xl mx-auto flex flex-col items-center gap-10 md:gap-14">
-        {/* Section subhead — matches the "WHAT WE DO." subhead on the
-            WhatWeDoSteps section below, just inverted for the lighter
-            background here. */}
-        <motion.p
-          className="text-zinc-700 dark:text-[#dadad9] text-[18px] tracking-[5.76px] text-center leading-[1.5]"
-          style={{ fontFamily: "var(--font-dm-mono), monospace" }}
-          animate={{ opacity: isActive ? 1 : 0.4 }}
-          transition={{ duration: 0.5, ease: EASE }}
-        >
-          WHAT YOU DO.
-        </motion.p>
-
-        <div className="flex flex-col items-center gap-10 md:gap-12 max-w-[794px]">
-          <div className="flex flex-col items-center gap-5 md:gap-6">
-            {/* Step pill — frosted glass when active, fades to outline when inactive */}
-            <motion.div
-              className="relative inline-flex items-center justify-center rounded-full border-[0.5px] border-zinc-900/80 dark:border-white px-4 py-1 md:px-6 md:py-1.5 backdrop-blur-md"
-              animate={{
-                backgroundColor: isActive
-                  ? "rgba(24,24,27,0.04)"
-                  : "rgba(24,24,27,0)",
-                boxShadow: isActive
-                  ? "inset 0 4px 12.6px 0 rgba(255,255,255,0.25)"
-                  : "inset 0 0 0 0 rgba(255,255,255,0)",
-                opacity: isActive ? 1 : 0.4,
-              }}
-              transition={{ duration: 0.5, ease: EASE }}
-            >
-              <span
-                className="text-[13px] tracking-[3.5px] md:text-[18px] md:tracking-[5.76px] font-medium leading-[1.5] whitespace-nowrap text-zinc-900 dark:text-[#c9ff64]"
-                style={{ fontFamily: "var(--font-dm-mono), monospace" }}
-              >
-                STEP 1
-              </span>
-            </motion.div>
-
-            {/* Heading */}
-            <motion.h1
-              className="text-4xl md:text-6xl lg:text-[72px] font-bold text-black dark:text-white tracking-tight text-center leading-[1.2]"
-              style={{ fontFamily: "var(--font-display), sans-serif" }}
-              animate={{ opacity: isActive ? 1 : 0.3 }}
-              transition={{ duration: 0.5, ease: EASE }}
-            >
-              Sign the sub. CC us.
-              <br />
-              Go back to building.
-            </motion.h1>
-          </div>
-
-          {/* Body */}
-          <motion.p
-            className="text-[#001512] dark:text-zinc-300 text-base md:text-lg lg:text-[22px] leading-relaxed text-center"
-            animate={{ opacity: isActive ? 1 : 0.3 }}
-            transition={{ duration: 0.5, ease: EASE }}
-          >
-            <NoOrphans>
-              After a subcontractor signs, you CC us on the agreement. From that
-              moment on, we collect every certificate, chase every renewal, verify
-              every endorsement, flag every gap, and stand behind your risk transfer
-              when a claim shows up. You read one weekly report. We handle the rest.
-            </NoOrphans>
-          </motion.p>
-        </div>
-
-        {/* "See if your file holds up" CTA (opens the quote modal) hidden
-            until we're ready to go live with quoting. */}
-      </div>
-    </section>
-  );
-}
+const faqs = [
+  {
+    q: "Do I have to use a portal?",
+    a: "No. You CC us on agreements and read a weekly email. A portal exists for a real-time view whenever you want one, but nothing depends on you logging in.",
+  },
+  {
+    q: "Will my subs actually respond?",
+    a: "We contact the subcontractor and the agent who wrote their policy, follow up automatically, and escalate to you only after repeated outreach hasn't worked. Most respond in the first cycle because the request comes with the exact requirements from their own signed agreement.",
+  },
+  {
+    q: "Are you replacing my staff?",
+    a: "We take the chasing and the document review. Your team keeps the decisions and gets its time back for the build.",
+  },
+  {
+    q: "What about projects already underway?",
+    a: "Send the executed agreements you have. Active projects go into monitoring immediately, and we work through the backlog as documents come in.",
+  },
+  {
+    q: "What happens after a project ends?",
+    a: "Monitoring continues for two years after completion. Claims arrive late, and the coverage that was in force on the day of the work is what matters.",
+  },
+  {
+    q: "What does it cost?",
+    a: "It depends on how many trade partners and active projects you run. Tell us about your projects and we'll give you a number on the first call.",
+  },
+];
 
 export default function HowItWorksPage() {
   return (
+    <MotionConfig reducedMotion="user">
     <StepActivityProvider>
-      <HowItWorksContent />
-    </StepActivityProvider>
-  );
-}
+      <main className="min-h-screen bg-background text-foreground">
+        <SubNav title="How It Works" items={SECTIONS} />
 
-function HowItWorksContent() {
-  return (
-    <main className="relative bg-white dark:bg-zinc-950 text-zinc-900 dark:text-white min-h-screen">
-      <Step1Hero />
-
-      {/* Steps 2–5: What we do */}
-      <WhatWeDoSteps />
-
-
-      {/* What you get back */}
-      <section className="w-full py-24 px-4 md:px-6 bg-white dark:bg-zinc-950 border-t border-zinc-200 dark:border-zinc-900">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-14 max-w-3xl mx-auto">
-            <p
-              className="text-zinc-400 dark:text-zinc-500 text-xs tracking-[0.2em] uppercase mb-4"
-              style={{ fontFamily: "var(--font-dm-mono), monospace" }}
-            >
-              What you get back
-            </p>
-            <h2
-              className="text-3xl md:text-4xl font-bold text-zinc-900 dark:text-white tracking-tight"
-              style={{ fontFamily: "var(--font-display), sans-serif" }}
-            >
-              Visibility without the busywork.
-            </h2>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            {youGet.map(({ title, body }) => (
-              <div
-                key={title}
-                className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/60 dark:bg-zinc-900/40 p-6"
-              >
-                <h3
-                  className="text-lg font-semibold text-zinc-900 dark:text-white tracking-tight mb-3"
-                  style={{ fontFamily: "var(--font-display), sans-serif" }}
-                >
-                  {title}
-                </h3>
-                <p className="text-zinc-500 dark:text-zinc-400 text-sm leading-relaxed">{body}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Not software callout */}
-      <section className="w-full py-24 px-4 md:px-6 bg-white dark:bg-zinc-950 border-t border-zinc-200 dark:border-zinc-900">
-        <div className="max-w-3xl mx-auto text-center">
-          <h2
-            className="text-3xl md:text-4xl font-bold text-zinc-900 dark:text-white tracking-tight mb-6"
-            style={{ fontFamily: "var(--font-display), sans-serif" }}
+        {/* Hero: on the rail, like the home page */}
+        <section className="container-site pt-14 md:pt-20 pb-16 md:pb-20">
+          <SectionIntro
+            as="h1"
+            eyebrow="How it works"
+            title={
+              <>
+                Sign the sub. CC us.
+                <br />
+                Go back to building.
+              </>
+            }
+            description="From the moment a subcontract is signed, we collect the certificates, verify the coverage against your contract, chase what's missing, and report back weekly. You don't log in to anything."
           >
-            Not another tool to manage.
-          </h2>
-          <p className="text-zinc-500 dark:text-zinc-400 text-lg leading-relaxed">
-            There&apos;s a portal if you ever want to look. You don&apos;t need to.
-            <br className="hidden sm:block" />
-            Our team does the work — you stay focused on building.
-          </p>
-        </div>
-      </section>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+              <Button size="lg" asChild>
+                <Link href="/contact">Contact us</Link>
+              </Button>
+              <Button variant="ghost" size="lg" className="self-start sm:self-auto" asChild>
+                <Link href="/resources/proper-risk-transfer">
+                  Read the risk transfer guide <ArrowRightIcon />
+                </Link>
+              </Button>
+            </div>
+          </SectionIntro>
+        </section>
 
-      {/* Final "Ready to stop collecting COIs?" / "Get a Quote Now" CTA
-          hidden until we're ready to go live with quoting. */}
+        {/* What you do */}
+        <section id="what-you-do" className="w-full section-y section-rule scroll-mt-28">
+          <div className="container-site">
+            <SectionIntro className="mb-12" eyebrow="What you do" title={<>Three things. Then you&apos;re done.</>} />
+            <DividedGrid cols="md:grid-cols-3" frame="rules">
+              {youDo.map((item, i) => (
+                <div key={item.title} className={`${RULED_ROW_CELL} flex flex-col gap-4`}>
+                  <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-primary">0{i + 1}</span>
+                  <h3 className="heading-4 text-base text-foreground">{item.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{item.body}</p>
+                </div>
+              ))}
+            </DividedGrid>
+          </div>
+        </section>
 
-      <FooterV2 />
-    </main>
+        {/* What we do: five steps */}
+        <WhatWeDoSteps />
+
+        {/* What you get back */}
+        <section id="what-you-get" className="w-full section-y section-rule scroll-mt-28">
+          <div className="container-site">
+            <SectionIntro className="mb-12" eyebrow="What you get back" title="Visibility without the busywork." />
+            <DividedGrid cols="md:grid-cols-3" frame="rules">
+              {youGet.map((item) => (
+                <div key={item.title} className={`${RULED_ROW_CELL} flex flex-col`}>
+                  <h3 className="heading-4 text-base text-foreground mb-3">{item.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{item.body}</p>
+                  {"example" in item && item.example ? (
+                    <dl className="mt-6 text-sm font-mono">
+                      <p className="eyebrow mb-2">Example, one week</p>
+                      <div className="divide-y divide-border border-y border-border">
+                        {item.example.map((row) => (
+                          <div key={row.label} className="flex items-baseline justify-between gap-4 py-2">
+                            <dt className="text-muted-foreground">{row.label}</dt>
+                            <dd className={row.label === "Needs your decision" ? "text-primary" : "text-foreground"}>{row.value}</dd>
+                          </div>
+                        ))}
+                      </div>
+                    </dl>
+                  ) : null}
+                </div>
+              ))}
+            </DividedGrid>
+          </div>
+        </section>
+
+        {/* When a sub won't respond */}
+        <section id="escalation" className="w-full section-y section-rule scroll-mt-28">
+          <div className="container-site">
+            <SplitSection
+              text={
+                <SectionIntro
+                  eyebrow="When a sub won't respond"
+                  title="We chase. You decide."
+                  measure="column"
+                  description="We contact the sub and their agent repeatedly. After roughly thirty days without resolution, or fifteen days past an expiration, that trade partner shows up in your weekly status email with what's missing, every attempt we've made to get it, and a recommended next step. The decision stays yours."
+                />
+              }
+              media={
+                <div className="flex lg:justify-end">
+                  <EscalationDemo />
+                </div>
+              }
+            />
+          </div>
+        </section>
+
+        {/* When a claim comes */}
+        <section id="claims" className="w-full section-y section-rule scroll-mt-28">
+          <div className="container-site">
+            <SplitSection
+              text={<SectionIntro eyebrow="When a claim comes" title="Insurance responds to paperwork, not intentions." measure="column" />}
+              media={
+                <blockquote className="border-y border-border py-6 md:py-8">
+                  <p className="text-foreground/90 text-base md:text-lg leading-relaxed">
+                    A $6M custom home flooded. The claim came to roughly $300K, including the owner&apos;s mortgage while the house was unlivable. Because the signed subcontract and the verified coverage were already in place, the claim was tendered correctly and covered in full.
+                  </p>
+                  {/* TODO: name Starwood Custom Homes once approved; confirm the $300K figure with Tyler. */}
+                  <footer className="mt-5 eyebrow">Custom home builder, Arizona</footer>
+                </blockquote>
+              }
+            />
+          </div>
+        </section>
+
+        {/* FAQ */}
+        <section id="faq" className="w-full section-y section-rule scroll-mt-28">
+          <div className="container-site grid lg:grid-cols-12 gap-x-8 gap-y-10 items-start">
+            <SectionIntro className="lg:col-span-5" eyebrow="Questions builders ask" title="Before you hand it off" />
+            <div className="lg:col-span-7 divide-y divide-border border-y border-border">
+              {faqs.map((f) => (
+                <details key={f.q} className="group py-5">
+                  <summary className="flex items-center justify-between gap-6 cursor-pointer list-none text-base md:text-lg font-medium text-foreground [&::-webkit-details-marker]:hidden rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset">
+                    {f.q}
+                    <ChevronDownIcon className="h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200 group-open:rotate-180" />
+                  </summary>
+                  <p className="mt-3 max-w-xl text-muted-foreground leading-relaxed">{f.a}</p>
+                </details>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Closing CTA */}
+        <section className="w-full section-rule">
+          <div className="container-site section-y">
+            <h2 className="heading-2 text-foreground mb-4">Ready to stop thinking about insurance?</h2>
+            <p className="text-muted-foreground text-lg leading-relaxed mb-8 measure-intro">
+              Tell us about your projects and trade partners. We&apos;ll walk you through how the handoff works.
+            </p>
+            <Button size="lg" asChild>
+              <Link href="/contact">Contact us</Link>
+            </Button>
+            <p className="mt-4 text-sm text-muted-foreground">We reply within one business day.</p>
+          </div>
+        </section>
+      </main>
+    </StepActivityProvider>
+    </MotionConfig>
   );
 }

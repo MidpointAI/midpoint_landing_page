@@ -33,7 +33,7 @@ export function ResourcesMobileNav({
   };
 
   return (
-    <div className="lg:hidden sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b border-border/20">
+    <div className="lg:hidden sticky top-16 z-30 bg-background/80 backdrop-blur-md border-b border-border/20">
       <div className="overflow-x-auto scrollbar-hide">
         <div className="flex gap-2 px-4 py-3 min-w-max">
           {navItems.map((item) => (

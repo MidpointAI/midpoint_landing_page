@@ -1,22 +1,24 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
+import BrandLogo from "@/components/v2/brand-logo";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FileTextIcon,
   ChevronDownIcon,
-  ClipboardCheckIcon,
+  BookOpenIcon,
   MenuIcon,
   XIcon,
   type LucideIcon,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface MenuItem {
   label: string;
   icon: LucideIcon;
   description?: string;
-  href?: string;
+  href: string;
 }
 
 interface MenuSection {
@@ -24,40 +26,149 @@ interface MenuSection {
   items: MenuItem[];
 }
 
+const HOW_IT_WORKS = "/how-it-works";
+const PRICING = "/pricing/how-it-works";
+const CUSTOMERS = "/customers";
+
 const resourcesMenu: MenuSection[] = [
-  // The "Learn" category (Blog / Success Stories / Video Walkthroughs /
-  // ROI Calculator) is hidden until those pages exist.
+  {
+    category: "Learn",
+    items: [
+      { label: "Insurance Terms", icon: BookOpenIcon, description: "Plain-English guide to coverage terms", href: "/resources" },
+    ],
+  },
   {
     category: "Materials",
     items: [
-      { label: "Proper Risk Transfer", icon: FileTextIcon, description: "Download the PDF guide", href: "/resources" },
-      { label: "Compliance Checklist", icon: ClipboardCheckIcon, description: "Verify your coverage", href: "/resources" },
+      { label: "Proper Risk Transfer", icon: FileTextIcon, description: "Step-by-step guide, with PDF", href: "/resources/proper-risk-transfer" },
     ],
   },
 ];
 
-interface NavbarV2Props {
-  // Kept on the prop signature so callers don't have to change; the
-  // CTA itself is hidden until we're ready to go live with quoting.
-  onQuoteClick?: () => void;
+type MenuKey = "resources";
+
+interface MenuDef {
+  key: MenuKey;
+  label: string;
+  sections: MenuSection[];
+  /** Items per row inside each section. */
+  columns: 1 | 2;
 }
 
-export default function NavbarV2({}: NavbarV2Props) {
-  const [resourcesOpen, setResourcesOpen] = useState(false);
+// Order matters: it decides which way the shared panel's content slides.
+const MENUS: MenuDef[] = [
+  { key: "resources", label: "Resources", sections: resourcesMenu, columns: 1 },
+];
+
+const PANEL_EASE = [0.25, 0.1, 0.25, 1] as const;
+
+// Content slides toward the direction of travel: moving to a menu further
+// right enters from the right and the old content exits left, and vice versa.
+const slideVariants = {
+  enter: (dir: number) => ({ x: dir > 0 ? 28 : dir < 0 ? -28 : 0, opacity: 0 }),
+  center: { x: 0, opacity: 1 },
+  exit: (dir: number) => ({ x: dir > 0 ? -28 : dir < 0 ? 28 : 0, opacity: 0 }),
+};
+
+function MenuPanelContent({ menu, onNavigate }: { menu: MenuDef; onNavigate: () => void }) {
+  return (
+    <div className="flex gap-6">
+      {menu.sections.map((section) => (
+        <div key={section.category} className="flex-1 min-w-0">
+          <p className="eyebrow mb-3">{section.category}</p>
+          <div className={menu.columns === 2 ? "grid grid-cols-2 gap-1" : "space-y-1.5"}>
+            {section.items.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  onClick={onNavigate}
+                  className="flex items-start gap-3 px-4 py-3.5 rounded-lg text-left transition-colors hover:bg-secondary group w-full"
+                >
+                  <Icon className="h-4 w-4 text-muted-foreground/70 group-hover:text-primary transition-colors flex-shrink-0 mt-0.5" />
+                  <div className="flex-1 min-w-0">
+                    <span className="text-sm text-foreground/80 group-hover:text-foreground transition-colors block whitespace-nowrap">
+                      {item.label}
+                    </span>
+                    {item.description && (
+                      <span className="text-xs text-muted-foreground/50 group-hover:text-muted-foreground transition-colors leading-snug mt-0.5 block">
+                        {item.description}
+                      </span>
+                    )}
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export default function NavbarV2() {
+  const [activeMenu, setActiveMenu] = useState<MenuKey | null>(null);
+  const [direction, setDirection] = useState(0);
+  const [panelHeight, setPanelHeight] = useState<number | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileResourcesOpen, setMobileResourcesOpen] = useState(false);
   const closeTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const panelContentRef = useRef<HTMLDivElement | null>(null);
 
-  const handleResourcesEnter = () => {
+  const cancelClose = useCallback(() => {
     if (closeTimeout.current) {
       clearTimeout(closeTimeout.current);
       closeTimeout.current = null;
     }
-    setResourcesOpen(true);
-  };
-  const handleResourcesLeave = () => {
-    closeTimeout.current = setTimeout(() => setResourcesOpen(false), 150);
-  };
+  }, []);
+
+  const closeMenu = useCallback(() => {
+    cancelClose();
+    setActiveMenu(null);
+  }, [cancelClose]);
+
+  const scheduleClose = useCallback(() => {
+    cancelClose();
+    closeTimeout.current = setTimeout(() => setActiveMenu(null), 150);
+  }, [cancelClose]);
+
+  const openMenu = useCallback(
+    (key: MenuKey) => {
+      cancelClose();
+      setActiveMenu((current) => {
+        if (current && current !== key) {
+          const from = MENUS.findIndex((m) => m.key === current);
+          const to = MENUS.findIndex((m) => m.key === key);
+          setDirection(Math.sign(to - from));
+        } else if (!current) {
+          setDirection(0);
+        }
+        return key;
+      });
+    },
+    [cancelClose]
+  );
+
+  // Keep the shared panel's height in step with whichever content is showing.
+  useLayoutEffect(() => {
+    const el = panelContentRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver(() => setPanelHeight(el.offsetHeight));
+    observer.observe(el);
+    setPanelHeight(el.offsetHeight);
+    return () => observer.disconnect();
+  }, [activeMenu]);
+
+  useEffect(() => {
+    if (!activeMenu) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeMenu();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [activeMenu, closeMenu]);
+
   useEffect(() => {
     document.body.style.overflow = mobileMenuOpen ? "hidden" : "";
     return () => {
@@ -66,159 +177,137 @@ export default function NavbarV2({}: NavbarV2Props) {
   }, [mobileMenuOpen]);
 
   return (
-    <>
-    <header
-      className="sticky top-0 z-50 w-full border-b border-zinc-200/60 dark:border-white/[0.06] bg-white/90 dark:bg-zinc-950/85 backdrop-blur-md"
-      style={{ backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)" }}
-    >
-      <div className="max-w-7xl mx-auto px-4 md:px-6 h-20 flex items-center justify-between">
-        <div className="flex items-center">
-          <Link
-            href="/"
-            className="focus:outline-none flex items-center"
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            {/* Below md: icon-only mark. md and up: full wordmark.
-                Each is a single <img> shown/hidden by a CSS-only
-                visibility filter, so light/dark just swaps the filter. */}
-
-            {/* Mobile: just the mark — light mode (dark fill) */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/v2/Mark.svg"
-              alt="Midpoint"
-              className="h-8 w-8 object-contain md:hidden dark:hidden"
-              style={{ filter: "brightness(0) saturate(100%)" }}
-            />
-            {/* Mobile: just the mark — dark mode (uses original lime color) */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/v2/Mark.svg"
-              alt="Midpoint"
-              className="h-8 w-8 object-contain hidden dark:block md:dark:hidden"
-            />
-
-            {/* Desktop: full wordmark — light mode */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/v2/Property_1Frame_2.svg"
-              alt="Midpoint"
-              className="h-8 max-w-[180px] object-left object-contain hidden md:block dark:hidden"
-              style={{ filter: "brightness(0) saturate(100%)" }}
-            />
-            {/* Desktop: full wordmark — dark mode */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/v2/Property_1Frame_2.svg"
-              alt="Midpoint"
-              className="h-8 max-w-[180px] object-left object-contain hidden md:dark:block"
-            />
+    <header className="sticky top-0 z-40 w-full">
+      {/* The blur sits on this bar, not on <header>: a backdrop filter would make the
+          header the containing block for the fixed mobile overlay below and clip it.
+          The bar is raised above that overlay so the logo and the menu toggle stay
+          reachable while the menu is open. */}
+      <div
+        className="relative z-50 border-b border-border bg-background/90"
+        style={{ backdropFilter: "blur(4px)", WebkitBackdropFilter: "blur(4px)" }}
+      >
+      <div className="container-site h-16 flex items-center justify-between">
+        <div className="flex items-center z-50">
+          <Link href="/" className="focus:outline-none flex items-center" onClick={() => setMobileMenuOpen(false)}>
+            <BrandLogo className="h-8" />
           </Link>
         </div>
 
-        {/* Mobile header — just the menu toggle (Get-a-Quote moves into the
-            open menu, so the header stays minimal until the user taps in). */}
-        <div className="flex md:hidden items-center">
+        {/* Mobile header */}
+        <div className="flex md:hidden items-center gap-3 z-50">
           <button
             onClick={() => setMobileMenuOpen((v) => !v)}
-            className="p-2 -mr-2 text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors"
+            className="p-2 -mr-2 text-muted-foreground hover:text-foreground transition-colors"
             aria-label="Toggle menu"
           >
             {mobileMenuOpen ? <XIcon className="h-6 w-6" /> : <MenuIcon className="h-6 w-6" />}
           </button>
+          <Button asChild size="sm" className="ml-1">
+            <Link href="/contact" onClick={() => setMobileMenuOpen(false)}>
+              Contact us
+            </Link>
+          </Button>
         </div>
 
-        {/* Desktop nav */}
-        <div className="hidden md:flex items-center gap-1">
-          <a
-            href="/how-it-works"
-            className="px-3 py-1.5 text-sm font-medium rounded-full text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+        {/* Desktop nav: triggers plus one shared panel */}
+        <div
+          className="hidden md:flex items-center gap-1 relative"
+          onMouseEnter={cancelClose}
+          onMouseLeave={scheduleClose}
+        >
+          <Link
+            href={HOW_IT_WORKS}
+            onMouseEnter={closeMenu}
+            className="px-3 py-1.5 text-sm font-medium rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
           >
             How It Works
-          </a>
+          </Link>
+          <Link
+            href={CUSTOMERS}
+            onMouseEnter={closeMenu}
+            className="px-3 py-1.5 text-sm font-medium rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+          >
+            Customers
+          </Link>
 
-          <div className="relative" onMouseEnter={handleResourcesEnter} onMouseLeave={handleResourcesLeave}>
-            <button
-              className={`inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium rounded-full transition-colors ${
-                resourcesOpen ? "text-zinc-900 dark:text-white bg-zinc-100 dark:bg-zinc-800" : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800"
-              }`}
-            >
-              Resources
-              <ChevronDownIcon
-                className={`h-3.5 w-3.5 transition-transform duration-200 ${resourcesOpen ? "rotate-180" : ""}`}
-              />
-            </button>
-            <AnimatePresence>
-              {resourcesOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: 8, scale: 0.97 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 8, scale: 0.97 }}
-                  transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
-                  className="absolute right-0 top-full mt-2 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-6 shadow-2xl shadow-zinc-200/40 dark:shadow-black/40 w-auto"
-                  style={{ transformOrigin: "top right" }}
-                >
-                  <div className="flex gap-6">
-                    {resourcesMenu.map((section) => (
-                      <div key={section.category} className="flex-1 min-w-0">
-                        <p className="text-zinc-400 dark:text-zinc-500 text-xs font-medium uppercase tracking-[0.15em] mb-3">
-                          {section.category}
-                        </p>
-                        <div className="space-y-1.5">
-                          {section.items.map((item) => {
-                            const Icon = item.icon;
-                            const inner = (
-                              <>
-                                <Icon className="h-4 w-4 text-zinc-400 dark:text-zinc-500 group-hover:text-lime-600 dark:group-hover:text-lime-400 transition-colors flex-shrink-0 mt-0.5" />
-                                <div className="flex-1">
-                                  <span className="text-sm text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors block whitespace-nowrap">
-                                    {item.label}
-                                  </span>
-                                  {item.description && (
-                                    <span className="text-xs text-zinc-400 dark:text-zinc-600 group-hover:text-zinc-500 dark:group-hover:text-zinc-400 transition-colors leading-snug mt-0.5 block">
-                                      {item.description}
-                                    </span>
-                                  )}
-                                </div>
-                              </>
-                            );
-                            return item.href ? (
-                              <Link
-                                key={item.label}
-                                href={item.href}
-                                className="flex items-start gap-3 px-4 py-3.5 rounded-lg text-left transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800 group w-full"
-                              >
-                                {inner}
-                              </Link>
-                            ) : (
-                              <button
-                                key={item.label}
-                                type="button"
-                                className="flex items-start gap-3 px-4 py-3.5 rounded-lg text-left transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800 group w-full"
-                              >
-                                {inner}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+          {MENUS.map((menu) => {
+            const isActive = activeMenu === menu.key;
+            return (
+              <button
+                key={menu.key}
+                type="button"
+                aria-expanded={isActive}
+                aria-controls="site-menu-panel"
+                onMouseEnter={() => openMenu(menu.key)}
+                onFocus={() => openMenu(menu.key)}
+                onClick={() => (isActive ? closeMenu() : openMenu(menu.key))}
+                className={`inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium rounded-full transition-colors ${
+                  isActive
+                    ? "text-foreground bg-secondary"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+                }`}
+              >
+                {menu.label}
+                <ChevronDownIcon
+                  className={`h-3.5 w-3.5 transition-transform duration-200 ${isActive ? "rotate-180" : ""}`}
+                />
+              </button>
+            );
+          })}
 
           <Link
-            href="/contact"
-            className="px-3 py-1.5 text-sm font-medium text-zinc-500 dark:text-zinc-400 rounded-full hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+            href={PRICING}
+            onMouseEnter={closeMenu}
+            className="px-3 py-1.5 text-sm font-medium rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
           >
-            Contact
+            Pricing
           </Link>
-          {/* "Get a quote" CTA hidden site-wide until we're ready to go live */}
+
+          <Button asChild size="sm" className="ml-3">
+            <Link href="/contact" onMouseEnter={closeMenu}>
+              Contact us
+            </Link>
+          </Button>
+
+          <AnimatePresence>
+            {activeMenu && (
+              <motion.div
+                id="site-menu-panel"
+                key="panel"
+                initial={{ opacity: 0, y: 8, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1, height: panelHeight ?? "auto" }}
+                exit={{ opacity: 0, y: 8, scale: 0.98 }}
+                transition={{
+                  duration: 0.18,
+                  ease: PANEL_EASE,
+                  height: { duration: 0.25, ease: PANEL_EASE },
+                }}
+                style={{ transformOrigin: "top right" }}
+                className="absolute right-0 top-full mt-2 w-[560px] overflow-hidden rounded-xl bg-card border border-border shadow-2xl shadow-black/40"
+              >
+                <AnimatePresence initial={false} custom={direction} mode="popLayout">
+                  {MENUS.filter((m) => m.key === activeMenu).map((menu) => (
+                    <motion.div
+                      key={menu.key}
+                      ref={panelContentRef}
+                      custom={direction}
+                      variants={slideVariants}
+                      initial="enter"
+                      animate="center"
+                      exit="exit"
+                      transition={{ duration: 0.22, ease: PANEL_EASE }}
+                      className="p-5"
+                    >
+                      <MenuPanelContent menu={menu} onNavigate={closeMenu} />
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
-    </header>
+      </div>
 
       {/* Mobile menu overlay */}
       <AnimatePresence>
@@ -228,25 +317,35 @@ export default function NavbarV2({}: NavbarV2Props) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
-            className="fixed inset-0 z-40 bg-white dark:bg-zinc-950 pt-20 overflow-y-auto"
+            className="fixed inset-0 z-40 bg-background pt-16 overflow-y-auto"
           >
-            <div className="px-4 md:px-6 py-8 space-y-6">
-              <a
-                href="/how-it-works"
+            <div className="px-6 py-8 space-y-6">
+              <Link
+                href={HOW_IT_WORKS}
                 onClick={() => setMobileMenuOpen(false)}
-                className="block w-full text-left text-2xl font-semibold tracking-tight py-3 text-zinc-900 dark:text-white"
+                className="block w-full text-left text-2xl font-semibold tracking-tight py-3 text-foreground"
               >
                 How It Works
-              </a>
+              </Link>
 
-              <div className="border-t border-zinc-200/60 dark:border-white/[0.06] pt-6">
+              <div className="border-t border-border pt-6">
+                <Link
+                  href={CUSTOMERS}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block w-full text-left text-2xl font-semibold tracking-tight py-3 text-foreground"
+                >
+                  Customers
+                </Link>
+              </div>
+
+              <div className="border-t border-border pt-6">
                 <button
                   onClick={() => setMobileResourcesOpen((v) => !v)}
-                  className="flex items-center justify-between w-full text-2xl font-semibold tracking-tight text-zinc-900 dark:text-white py-3"
+                  className="flex items-center justify-between w-full text-2xl font-semibold tracking-tight text-foreground py-3"
                 >
                   Resources
                   <ChevronDownIcon
-                    className={`h-6 w-6 text-zinc-400 dark:text-zinc-500 transition-transform duration-300 ${
+                    className={`h-6 w-6 text-muted-foreground/70 transition-transform duration-300 ${
                       mobileResourcesOpen ? "rotate-180" : ""
                     }`}
                   />
@@ -263,30 +362,21 @@ export default function NavbarV2({}: NavbarV2Props) {
                       <div className="pt-4 pb-2 space-y-8">
                         {resourcesMenu.map((section) => (
                           <div key={section.category} className="space-y-4">
-                            <p className="text-xs font-medium uppercase tracking-[0.15em] text-zinc-400 dark:text-zinc-500">
+                            <p className="eyebrow">
                               {section.category}
                             </p>
                             {section.items.map((item) => {
                               const Icon = item.icon;
-                              return item.href ? (
+                              return (
                                 <Link
                                   key={item.label}
                                   href={item.href}
                                   onClick={() => setMobileMenuOpen(false)}
                                   className="flex items-center gap-4 w-full text-left py-2"
                                 >
-                                  <Icon className="h-5 w-5 text-zinc-400 dark:text-zinc-500" />
-                                  <span className="text-base text-zinc-600 dark:text-zinc-300">{item.label}</span>
+                                  <Icon className="h-5 w-5 text-muted-foreground/70" />
+                                  <span className="text-base text-foreground/80">{item.label}</span>
                                 </Link>
-                              ) : (
-                                <button
-                                  key={item.label}
-                                  type="button"
-                                  className="flex items-center gap-4 w-full text-left py-2"
-                                >
-                                  <Icon className="h-5 w-5 text-zinc-400 dark:text-zinc-500" />
-                                  <span className="text-base text-zinc-600 dark:text-zinc-300">{item.label}</span>
-                                </button>
                               );
                             })}
                           </div>
@@ -297,20 +387,29 @@ export default function NavbarV2({}: NavbarV2Props) {
                 </AnimatePresence>
               </div>
 
-              <div className="border-t border-zinc-200/60 dark:border-white/[0.06] pt-6">
+              <div className="border-t border-border pt-6">
+                <Link
+                  href={PRICING}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block w-full text-left text-2xl font-semibold tracking-tight py-3 text-foreground"
+                >
+                  Pricing
+                </Link>
+              </div>
+
+              <div className="border-t border-border pt-6">
                 <Link
                   href="/contact"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="block w-full text-left text-2xl font-semibold tracking-tight py-3 text-zinc-900 dark:text-white"
+                  className="block w-full text-left text-2xl font-semibold tracking-tight py-3 text-foreground"
                 >
                   Contact
                 </Link>
               </div>
-              {/* Get a quote CTA hidden until we're ready to go live */}
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-    </>
+    </header>
   );
 }

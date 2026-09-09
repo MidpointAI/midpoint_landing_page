@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useState, useRef, useEffect, createElement } from "react";
 import { useTheme } from "next-themes";
 import {
@@ -22,16 +21,18 @@ import {
   Share2,
   LinkIcon,
 } from "lucide-react";
-import { OnePagerModal } from "./one-pager-modal";
+import { OnePagerTrigger } from "@/components/one-pager-trigger";
 import {
   type DocPage,
   type GlossaryTerm,
   glossaryTerms,
   faqItems,
   downloads,
+  resolveDownloadHref,
   getTermById,
   getAdjacentTerms,
 } from "./resources-data";
+import { Button } from "@/components/ui/button";
 
 interface ResourcesContentProps {
   activePage: DocPage;
@@ -47,7 +48,7 @@ export function ResourcesContent({
 
   return (
     <main className="flex-1 min-w-0 flex justify-center" id="resources-content">
-      <div className="max-w-3xl w-full px-4 lg:px-8 py-16 lg:py-24">
+      <div className="max-w-3xl w-full px-4 lg:px-8 pt-2 pb-20 md:pb-28">
         {activePage === "overview" && <OverviewPage onNavigate={onNavigate} />}
         {activePage === "what-is-midpoint" && <WhatIsMidpointPage />}
         {activePage === "proper-risk-transfer" && <ProperRiskTransferPage />}
@@ -65,6 +66,7 @@ export function ResourcesContent({
    Overview Page
    ───────────────────────────────────────────── */
 function OverviewPage({ onNavigate }: { onNavigate: (p: DocPage) => void }) {
+  const { resolvedTheme } = useTheme();
   return (
     <article>
       {/* Proper Risk Transfer highlight */}
@@ -131,9 +133,17 @@ function OverviewPage({ onNavigate }: { onNavigate: (p: DocPage) => void }) {
                 {item.description}
               </p>
             </div>
-            <button className="text-xs md:text-sm font-medium text-primary hover:underline cursor-pointer flex-shrink-0">
-              Download PDF
-            </button>
+            {item.overlay ? (
+              <OnePagerTrigger variant="link" size="sm" className="flex-shrink-0">
+                {item.cta}
+              </OnePagerTrigger>
+            ) : (
+              <Button asChild variant="link" size="sm" className="flex-shrink-0">
+                <a href={resolveDownloadHref(item, resolvedTheme)} download={item.download}>
+                  {item.cta}
+                </a>
+              </Button>
+            )}
           </div>
         ))}
       </div>
@@ -151,12 +161,9 @@ function OverviewPage({ onNavigate }: { onNavigate: (p: DocPage) => void }) {
             <ChevronRight className="w-4 h-4 text-muted-foreground/50 ml-auto flex-shrink-0" />
           </button>
         ))}
-        <button
-          onClick={() => onNavigate("faq")}
-          className="text-xs md:text-sm text-primary font-medium mt-3 self-start hover:underline cursor-pointer"
-        >
+        <Button variant="link" size="sm" onClick={() => onNavigate("faq")} className="mt-3 self-start">
           View all questions
-        </button>
+        </Button>
       </div>
     </article>
   );
@@ -166,20 +173,18 @@ function OverviewPage({ onNavigate }: { onNavigate: (p: DocPage) => void }) {
    What is Midpoint? Page
    ───────────────────────────────────────────── */
 function WhatIsMidpointPage() {
-  const [modalOpen, setModalOpen] = useState(false);
-
   return (
     <article>
       <Breadcrumb items={["Resources", "What is Midpoint?"]} />
 
-      <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl lg:text-[42px] font-bold tracking-tight text-foreground mt-6 mb-4">
+      <h2 className="heading-1 text-foreground mt-6 mb-4">
         What is Midpoint?
-      </h1>
+      </h2>
       <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-8 max-w-2xl">
-        Midpoint is an AI-powered platform that helps residential home builders
-        and general contractors manage subcontractor insurance compliance. We
-        eliminate the paperwork headache by automatically reviewing certificates
-        and endorsements to uncover missing coverage, outdated limits, and
+        Midpoint is a compliance service that helps residential home builders
+        and general contractors manage subcontractor insurance. Our compliance
+        team takes the paperwork off your desk, reviewing every certificate
+        and endorsement to uncover missing coverage, outdated limits, and
         hidden exposures.
       </p>
 
@@ -222,16 +227,10 @@ function WhatIsMidpointPage() {
         View our one-pager to learn more about how Midpoint works:
       </p>
 
-      <button
-        onClick={() => setModalOpen(true)}
-        className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg text-sm md:text-base font-medium hover:opacity-90 transition-opacity cursor-pointer"
-      >
-        <FileText className="w-5 h-5" />
-        Open One Pager
-      </button>
-
-      {/* Modal */}
-      <OnePagerModal isOpen={modalOpen} onClose={() => setModalOpen(false)} />
+      <OnePagerTrigger size="lg">
+        <FileText />
+        Open the one-pager
+      </OnePagerTrigger>
     </article>
   );
 }
@@ -289,9 +288,9 @@ function ProperRiskTransferPage() {
           <ShieldCheck className="w-6 h-6 md:w-7 md:h-7" />
         </div>
         <div>
-          <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl lg:text-[42px] font-bold tracking-tight text-foreground">
+          <h2 className="heading-1 text-foreground">
             Proper Risk Transfer
-          </h1>
+          </h2>
           <p className="text-sm md:text-base text-muted-foreground mt-2">
             How it works — step by step
           </p>
@@ -300,36 +299,27 @@ function ProperRiskTransferPage() {
 
       {/* Action bar */}
       <div className="flex items-center gap-3 mt-6 mb-8 flex-wrap">
-        <button
-          onClick={handleDownloadPDF}
-          className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity cursor-pointer"
-        >
-          <Download className="w-4 h-4" />
+        <Button onClick={handleDownloadPDF}>
+          <Download />
           Download PDF
-        </button>
-        <button
-          onClick={handleShare}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium border border-border/40 text-foreground/80 hover:border-primary/40 hover:text-primary transition-all cursor-pointer"
-        >
-          <Share2 className="w-4 h-4" />
+        </Button>
+        <Button variant="outline" onClick={handleShare}>
+          <Share2 />
           Share
-        </button>
-        <button
-          onClick={handleCopyLink}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium border border-border/40 text-foreground/80 hover:border-primary/40 hover:text-primary transition-all cursor-pointer"
-        >
+        </Button>
+        <Button variant="outline" onClick={handleCopyLink}>
           {copied ? (
             <>
-              <Check className="w-4 h-4 text-primary" />
+              <Check className="text-primary" />
               <span className="text-primary">Copied!</span>
             </>
           ) : (
             <>
-              <LinkIcon className="w-4 h-4" />
+              <LinkIcon />
               Copy Link
             </>
           )}
-        </button>
+        </Button>
       </div>
 
       {/* Intro */}
@@ -345,7 +335,7 @@ function ProperRiskTransferPage() {
       <div className="h-px bg-border/30 mb-10" />
 
       {/* THE RISK TRANSFER FLOW */}
-      <p className="text-xs uppercase tracking-[0.15em] text-muted-foreground/60 font-medium mb-8">
+      <p className="eyebrow-accent mb-8">
         The Risk Transfer Flow
       </p>
 
@@ -416,13 +406,13 @@ function ProperRiskTransferPage() {
       <div className="rounded-xl border border-yellow-500/30 bg-yellow-500/5 p-6 md:p-8 my-10">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-8 h-8 rounded-lg bg-yellow-500/10 flex items-center justify-center flex-shrink-0">
-            <AlertTriangle className="w-4 h-4 text-yellow-500" />
+            <AlertTriangle className="w-4 h-4 text-chart-4" />
           </div>
-          <span className="text-xs uppercase tracking-[0.12em] font-semibold text-yellow-500">
+          <span className="eyebrow text-chart-4">
             Critical — Often Overlooked
           </span>
         </div>
-        <h3 className="text-xl md:text-2xl font-bold text-foreground mb-3">
+        <h3 className="heading-3 text-foreground mb-3">
           Request Exclusions List & GL Rating Pages
         </h3>
         <p className="text-base text-foreground/70 leading-relaxed mb-6">
@@ -434,7 +424,7 @@ function ProperRiskTransferPage() {
           <div className="rounded-lg border border-border/30 bg-background/50 p-5">
             <div className="flex items-center gap-2 mb-2">
               <Eye className="w-4 h-4 text-primary" />
-              <h4 className="text-sm font-semibold text-foreground">Why Exclusions Matter</h4>
+              <h4 className="heading-4 text-foreground">Why Exclusions Matter</h4>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
               A sub&apos;s policy may exclude the exact type of work being performed.
@@ -444,7 +434,7 @@ function ProperRiskTransferPage() {
           <div className="rounded-lg border border-border/30 bg-background/50 p-5">
             <div className="flex items-center gap-2 mb-2">
               <FileText className="w-4 h-4 text-primary" />
-              <h4 className="text-sm font-semibold text-foreground">Why GL Rating Pages Matter</h4>
+              <h4 className="heading-4 text-foreground">Why GL Rating Pages Matter</h4>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
               If the sub&apos;s actual scope isn&apos;t listed, the insurer may deny the
@@ -485,12 +475,12 @@ function ProperRiskTransferPage() {
             <CheckCircle2 className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <span className="text-xs uppercase tracking-[0.12em] font-semibold text-primary block">
+            <span className="eyebrow text-primary block">
               Step 5 — Risk Successfully Transferred
             </span>
           </div>
         </div>
-        <h3 className="text-xl md:text-2xl font-bold text-foreground mb-3">
+        <h3 className="heading-3 text-foreground mb-3">
           The GC Is Protected — Coverage Responds Correctly
         </h3>
         <p className="text-base text-foreground/70 leading-relaxed">
@@ -515,7 +505,6 @@ function RiskTransferStep({
   checks,
   warnings,
   callout,
-  icon,
 }: {
   number: number;
   badge: string;
@@ -535,10 +524,10 @@ function RiskTransferStep({
           {number}
         </div>
         <div>
-          <span className="text-xs uppercase tracking-[0.12em] text-primary font-semibold block mb-1">
+          <span className="eyebrow text-primary block mb-1">
             {badge}
           </span>
-          <h2 className="text-xl md:text-2xl font-bold text-foreground">
+          <h2 className="heading-3 text-foreground">
             {title}
           </h2>
         </div>
@@ -557,7 +546,7 @@ function RiskTransferStep({
                 key={card.title}
                 className="rounded-lg border border-border/30 p-5"
               >
-                <h4 className="text-sm font-semibold text-foreground mb-2">
+                <h4 className="heading-4 text-foreground mb-2">
                   {card.title}
                 </h4>
                 <p className="text-sm text-muted-foreground leading-relaxed">
@@ -582,7 +571,7 @@ function RiskTransferStep({
               <div className="space-y-2">
                 {warnings.map((item) => (
                   <div key={item} className="flex items-start gap-3">
-                    <AlertTriangle className="w-4 h-4 text-yellow-500 flex-shrink-0 mt-0.5" />
+                    <AlertTriangle className="w-4 h-4 text-chart-4 flex-shrink-0 mt-0.5" />
                     <span className="text-sm text-muted-foreground">{item}</span>
                   </div>
                 ))}
@@ -642,9 +631,9 @@ function GlossaryPage({
             {createElement(term.icon, { className: "w-6 h-6 md:w-7 md:h-7" })}
           </div>
           <div>
-            <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl lg:text-[42px] font-bold tracking-tight text-foreground">
+            <h2 className="heading-1 text-foreground">
               {term.title}
-            </h1>
+            </h2>
             <p className="text-sm md:text-base text-muted-foreground mt-2">
               {term.tagline}
             </p>
@@ -703,7 +692,7 @@ function GlossaryPage({
                 <ArrowLeft className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors duration-200" />
               </div>
               <div>
-                <span className="text-xs text-muted-foreground/50 uppercase tracking-[0.15em] block">
+                <span className="eyebrow block">
                   Previous
                 </span>
                 <span className="text-base md:text-lg font-medium text-foreground group-hover:text-primary transition-colors duration-200">
@@ -722,7 +711,7 @@ function GlossaryPage({
               className="group flex items-center gap-4 text-right cursor-pointer"
             >
               <div>
-                <span className="text-xs text-muted-foreground/50 uppercase tracking-[0.15em] block">
+                <span className="eyebrow block">
                   Next
                 </span>
                 <span className="text-base md:text-lg font-medium text-foreground group-hover:text-primary transition-colors duration-200">
@@ -746,13 +735,14 @@ function GlossaryPage({
    Downloads Page
    ───────────────────────────────────────────── */
 function DownloadsPage() {
+  const { resolvedTheme } = useTheme();
   return (
     <article>
       <Breadcrumb items={["Resources", "Downloads"]} />
 
-      <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl lg:text-[42px] font-bold tracking-tight text-foreground mt-6 mb-4">
+      <h2 className="heading-1 text-foreground mt-6 mb-4">
         Helpful Resources
-      </h1>
+      </h2>
       <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-8 max-w-2xl">
         Real tools from contractors who transformed their risk management.
         Download these resources to improve your insurance compliance.
@@ -771,16 +761,25 @@ function DownloadsPage() {
                 <Download className="w-6 h-6 text-primary" />
               </div>
               <div className="flex-1">
-                <h3 className="text-lg md:text-xl font-semibold text-foreground mb-2">
+                <h3 className="heading-3 text-foreground mb-2">
                   {item.title}
                 </h3>
                 <p className="text-sm md:text-base text-muted-foreground leading-relaxed mb-5">
                   {item.description}
                 </p>
-                <button className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg text-sm md:text-base font-medium hover:opacity-90 transition-opacity cursor-pointer">
-                  <Download className="w-4 h-4" />
-                  {item.cta}
-                </button>
+                {item.overlay ? (
+                  <OnePagerTrigger size="lg">
+                    <FileText />
+                    {item.cta}
+                  </OnePagerTrigger>
+                ) : (
+                  <Button asChild size="lg">
+                    <a href={resolveDownloadHref(item, resolvedTheme)} download={item.download}>
+                      <Download />
+                      {item.cta}
+                    </a>
+                  </Button>
+                )}
               </div>
             </div>
           </div>
@@ -800,9 +799,9 @@ function FaqPage() {
     <article>
       <Breadcrumb items={["Resources", "FAQ"]} />
 
-      <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl lg:text-[42px] font-bold tracking-tight text-foreground mt-6 mb-4">
+      <h2 className="heading-1 text-foreground mt-6 mb-4">
         Common Questions
-      </h1>
+      </h2>
       <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-8 max-w-2xl">
         Get clarity on how Midpoint transforms insurance management for
         residential contractors.
@@ -824,26 +823,22 @@ function FaqPage() {
 
       {/* Contact CTA card */}
       <div className="mt-16 rounded-xl border border-border/30 p-8 md:p-10 text-center">
-        <h3 className="text-xl md:text-2xl font-semibold text-foreground mb-3">
+        <h3 className="heading-3 text-foreground mb-3">
           Need more information?
         </h3>
         <p className="text-sm md:text-base text-muted-foreground mb-8 max-w-md mx-auto">
           Our team is ready to answer your specific questions and concerns.
         </p>
         <div className="flex items-center justify-center gap-5 flex-wrap">
-          <a
-            href="/contact"
-            className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-7 py-3 rounded-lg text-sm md:text-base font-medium hover:opacity-90 transition-opacity cursor-pointer"
-          >
-            Contact Us
-          </a>
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-sm md:text-base text-foreground hover:text-primary transition-colors cursor-pointer"
-          >
-            Learn More
-            <ArrowRight className="w-4 h-4" />
-          </Link>
+          <Button asChild size="lg">
+            <Link href="/contact">Contact us</Link>
+          </Button>
+          <Button asChild variant="ghost" size="lg">
+            <Link href="/">
+              Learn More
+              <ArrowRight />
+            </Link>
+          </Button>
         </div>
       </div>
     </article>
@@ -857,7 +852,7 @@ function FaqPage() {
 function SectionLabel({ label }: { label: string }) {
   return (
     <div className="flex items-center gap-4 mb-6">
-      <span className="text-xs md:text-sm uppercase tracking-[0.08em] text-muted-foreground/60 flex-shrink-0 font-medium">
+      <span className="eyebrow flex-shrink-0">
         {label}
       </span>
       <div className="flex-1 h-px bg-border/20" />

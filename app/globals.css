@@ -18,38 +18,10 @@ html::-webkit-scrollbar {
   display: none;
 }
 
-/* Scroll-snap: sections gently align as the user pauses scrolling (desktop
-   only). `proximity` instead of `mandatory` — mandatory snap can trap
-   scrolling when a snap section is taller than the viewport (e.g., the
-   HowItWorks + Footer wrapper on smaller laptops). */
-@media (min-width: 768px) {
-  html {
-    scroll-snap-type: y proximity;
-  }
-}
-
-/* Clip-mask text reveal utility */
-.text-reveal-line {
-  overflow: hidden;
-  display: block;
-}
-
-/* =============================================
-   TYPOGRAPHY — prevent orphans/widows
-   Modern browsers (Chrome 117+, Firefox 121+, Safari 17.5+) apply a
-   widow/orphan-prevention algorithm when text-wrap is `pretty`. Combined
-   with the `<NoOrphans>` component for explicit control on important
-   body copy, no line should end up with ≤2 words.
-   ============================================= */
-p,
-li,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  text-wrap: pretty;
+/* Brand accent — the lime in the logo (#C9FF64). Every green on the site
+   derives from this hue; only lightness changes between themes for contrast. */
+:root {
+  --accent-hue: 126;
 }
 
 :root,
@@ -61,22 +33,22 @@ h6 {
   --card-foreground: oklch(0.19 0.01 120);
   --popover: oklch(0.996 0.002 95);
   --popover-foreground: oklch(0.19 0.01 120);
-  --primary: oklch(0.54 0.17 118);
+  --primary: oklch(0.5 0.16 var(--accent-hue));
   --primary-foreground: oklch(0.98 0.004 95);
   --secondary: oklch(0.955 0.006 120);
   --secondary-foreground: oklch(0.23 0.01 120);
   --muted: oklch(0.955 0.004 115);
   --muted-foreground: oklch(0.44 0.01 120);
-  --accent: oklch(0.54 0.17 118);
-  --accent-foreground: oklch(0.98 0.004 95);
+  --accent: var(--primary);
+  --accent-foreground: var(--primary-foreground);
   --destructive: oklch(0.57 0.22 28);
   --destructive-foreground: oklch(0.98 0.004 95);
   --border: oklch(0.89 0.008 118);
   --input: oklch(0.89 0.008 118);
-  --ring: oklch(0.54 0.17 118);
+  --ring: var(--primary);
   --radius: 0.75rem;
   --chart-1: var(--primary);
-  --chart-2: oklch(0.49 0.15 152);
+  --chart-2: oklch(0.55 0.13 200);
   --chart-3: oklch(0.48 0.18 255);
   --chart-4: oklch(0.58 0.16 70);
   --chart-5: var(--destructive);
@@ -90,22 +62,22 @@ h6 {
   --card-foreground: oklch(0.965 0.004 95);
   --popover: oklch(0.17 0.008 130);
   --popover-foreground: oklch(0.965 0.004 95);
-  --primary: oklch(0.94 0.20 118);
+  --primary: oklch(0.933 0.19 var(--accent-hue));
   --primary-foreground: oklch(0.1 0.005 130);
   --secondary: oklch(0.215 0.006 128);
   --secondary-foreground: oklch(0.94 0.004 95);
   --muted: oklch(0.215 0.006 128);
   --muted-foreground: oklch(0.72 0.006 110);
-  --accent: oklch(0.94 0.20 118);
-  --accent-foreground: oklch(0.1 0.005 130);
+  --accent: var(--primary);
+  --accent-foreground: var(--primary-foreground);
   --destructive: oklch(0.63 0.24 27);
   --destructive-foreground: oklch(0.965 0.004 95);
   --border: oklch(0.27 0.008 128);
   --input: oklch(0.27 0.008 128);
-  --ring: oklch(0.94 0.20 118);
+  --ring: var(--primary);
   --radius: 0.75rem;
   --chart-1: var(--primary);
-  --chart-2: oklch(0.64 0.17 152);
+  --chart-2: oklch(0.7 0.13 200);
   --chart-3: oklch(0.62 0.21 255);
   --chart-4: oklch(0.75 0.18 70);
   --chart-5: var(--destructive);
@@ -139,6 +111,115 @@ h6 {
   --shader-4: color-mix(in oklch, var(--background) 50%, var(--primary) 50%);
   --shader-5: color-mix(in oklch, var(--background) 30%, var(--primary) 70%);
   --shader-6: var(--primary);
+}
+
+/* =============================================
+   PAGE SHELL
+   One site width (aligned with the navbar), one reading width for
+   long-form pages, and one vertical rhythm for stacked sections.
+   ============================================= */
+@utility container-site {
+  margin-inline: auto;
+  width: 100%;
+  max-width: var(--container-7xl);
+  padding-inline: --spacing(6);
+}
+
+@utility container-prose {
+  margin-inline: auto;
+  width: 100%;
+  max-width: var(--container-3xl);
+  padding-inline: --spacing(6);
+}
+
+@utility section-y {
+  @apply py-20 md:py-28;
+}
+
+/* Page rails: two hairlines at the site container's edges, running the full
+   height of the page, so every section reads as a cell in one structure.
+   Shown only once the viewport is wider than the container, where they have
+   somewhere to be. Mounted once in SiteChrome. */
+.page-rails {
+  position: fixed;
+  inset-block: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(100%, var(--container-7xl));
+  border-inline: 1px solid color-mix(in oklch, var(--border) 70%, transparent);
+  pointer-events: none;
+  z-index: 10;
+  display: none;
+}
+@media (min-width: 84rem) {
+  .page-rails {
+    display: block;
+  }
+}
+
+/* A hairline across the top of a section, spanning rail to rail rather than
+   the whole viewport. Replaces whitespace-only section boundaries. */
+.section-rule {
+  position: relative;
+}
+.section-rule::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(100%, var(--container-7xl));
+  height: 1px;
+  background: var(--border);
+}
+
+/* Two text measures, and only two: body copy inside a column, and a
+   section intro that sits alone above a grid. */
+@utility measure-column {
+  max-width: 28rem;
+}
+@utility measure-intro {
+  max-width: 40rem;
+}
+
+/* =============================================
+   TYPE SCALE
+   DM Sans for everything. One display size for heroes, four heading
+   levels, and one eyebrow label style. Colour is left to the call site.
+   ============================================= */
+@utility heading-display {
+  @apply text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-semibold leading-[0.95] tracking-tight;
+}
+@utility heading-1 {
+  @apply text-4xl md:text-5xl font-semibold tracking-tight;
+}
+@utility heading-2 {
+  @apply text-3xl md:text-4xl font-semibold tracking-tight;
+}
+@utility heading-3 {
+  @apply text-xl md:text-2xl font-semibold tracking-tight;
+}
+@utility heading-4 {
+  @apply text-sm font-semibold;
+}
+@utility eyebrow {
+  @apply text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground;
+}
+/* The label above a section heading takes the accent, so sections read as
+   owned. Labels inside components (chips, cards, menus) keep `eyebrow`. */
+@utility eyebrow-accent {
+  @apply text-xs font-medium uppercase tracking-[0.2em] text-primary;
+}
+
+/* Widow/orphan prevention (Chrome 117+, Firefox 121+, Safari 17.5+). */
+p, li, h1, h2, h3, h4, h5, h6 {
+  text-wrap: pretty;
+}
+
+/* Clip-mask text reveal: wrap a line, animate the inner block up into view. */
+.text-reveal-line {
+  overflow: hidden;
+  display: block;
 }
 
 /* Selection highlight - theme responsive */
@@ -206,42 +287,30 @@ h6 {
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  /* Accent color overrides */
-  --color-lime-300: #DBFF99;
-  --color-lime-400: #C9FF64;
-  --color-lime-500: #A8D94E;
-  --color-lime-600: #7BAE24;
-  --color-lime-700: #5C8A14;
-
   /* Design tokens */
   --radius: var(--radius);
-  --font-sans: var(--font-sans);
+  --font-sans: var(--font-dm-sans);
   --font-mono: var(--font-dm-mono);
-  --font-display: var(--font-display, var(--font-dm-sans));
-  --font-heading: var(--font-sans);
   --color-sidebar: var(--sidebar);
   --color-chart-5: var(--chart-5);
   --color-chart-4: var(--chart-4);
   --color-chart-3: var(--chart-3);
   --color-chart-2: var(--chart-2);
   --color-chart-1: var(--chart-1);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
+  /* Radius scale on whole pixels: 8 / 8 / 12 / 16 / 20 / 24 / 32. */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.5rem;
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
+  --radius-3xl: 1.5rem;
+  --radius-4xl: 2rem;
 }
 
 html,
 body {
   background: var(--background);
   color: var(--foreground);
-}
-
-body {
-  font-family: var(--font-dm-sans), sans-serif;
 }
 
 /* Custom Scrollbar - Hidden globally, see html rule above */
@@ -515,10 +584,6 @@ body {
    Disables all animations for users who prefer reduced motion
    ============================================ */
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-snap-type: none !important;
-  }
-
   *,
   *::before,
   *::after {

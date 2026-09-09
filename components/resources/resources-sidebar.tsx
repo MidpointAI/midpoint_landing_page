@@ -11,6 +11,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { glossaryTerms, type DocPage } from "./resources-data";
+import { Button } from "@/components/ui/button";
 
 interface ResourcesSidebarProps {
   activePage: DocPage;
@@ -35,7 +36,7 @@ export function ResourcesSidebar({
   };
 
   return (
-    <aside className="hidden lg:flex w-60 xl:w-64 sticky top-0 h-svh flex-col py-8 pr-4">
+    <aside className="hidden lg:flex w-60 xl:w-64 sticky top-16 h-[calc(100svh_-_4rem)] flex-col py-8 pr-4">
       <nav className="flex flex-col flex-1">
         {/* Overview */}
         <NavItem
@@ -126,20 +127,19 @@ export function ResourcesSidebar({
 
         {/* Help card */}
         <div className="rounded-xl border border-border/30 p-5 mt-4">
-          <h4 className="text-base font-medium text-foreground mb-2">
+          <h4 className="heading-4 text-foreground mb-2">
             Need help?
           </h4>
           <p className="text-sm text-muted-foreground leading-relaxed mb-4">
             Our team is ready to answer your questions about insurance
             compliance.
           </p>
-          <a
-            href="/contact"
-            className="inline-flex items-center gap-2 text-sm text-primary font-medium hover:underline cursor-pointer"
-          >
-            Contact us
-            <ArrowUpRight className="w-3.5 h-3.5" />
-          </a>
+          <Button asChild variant="link" size="sm">
+            <a href="/contact">
+              Contact us
+              <ArrowUpRight />
+            </a>
+          </Button>
         </div>
       </nav>
     </aside>
@@ -180,7 +180,7 @@ function NavItem({
 export function GradientDivider() {
   return (
     <div className="hidden lg:block w-px">
-      <div className="sticky top-0 h-svh bg-gradient-to-b from-transparent via-border/50 to-transparent" />
+      <div className="sticky top-16 h-[calc(100svh_-_4rem)] bg-gradient-to-b from-transparent via-border/50 to-transparent" />
     </div>
   );
 }

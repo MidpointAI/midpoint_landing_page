@@ -1,21 +1,21 @@
 import HeroV2 from "@/components/v2/hero-v2";
-import BuilderTestimonials from "@/components/v2/builder-testimonials";
-import BuiltForBuilders from "@/components/v2/built-for-builders";
+import StatsStrip from "@/components/v2/stats-strip";
 import WhyDeeper from "@/components/v2/why-deeper";
+import BuiltForBuilders from "@/components/v2/built-for-builders";
+import CustomerStories from "@/components/v2/customer-stories";
 import HowItWorksV2 from "@/components/v2/how-it-works-v2";
-import FooterV2 from "@/components/v2/footer-v2";
+import FinalCta from "@/components/v2/final-cta";
 
 export default function Home() {
   return (
-    <main className="relative bg-white dark:bg-zinc-950 text-zinc-900 dark:text-white min-h-screen">
+    <main className="relative bg-background text-foreground min-h-screen">
       <HeroV2 />
-      <BuilderTestimonials />
-      <BuiltForBuilders />
+      <StatsStrip />
       <WhyDeeper />
-      <div className="md:snap-start md:min-h-[100dvh] md:flex md:flex-col">
-        <HowItWorksV2 />
-        <FooterV2 />
-      </div>
+      <BuiltForBuilders />
+      <CustomerStories />
+      <HowItWorksV2 />
+      <FinalCta />
     </main>
   );
 }

@@ -1,11 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { DM_Mono, DM_Sans, Figtree, Geist } from "next/font/google";
+import { DM_Mono, DM_Sans } from "next/font/google";
 import { Providers } from "@/components/providers";
 import SiteChrome from "@/components/v2/site-chrome";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
@@ -21,17 +19,10 @@ const dmMono = DM_Mono({
   display: "swap",
 });
 
-const figtree = Figtree({
-  variable: "--font-display",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800", "900"],
-  display: "swap",
-});
-
 export const metadata: Metadata = {
-  title: "Midpoint - AI-Powered Insurance Compliance for Builders",
+  title: "Midpoint - Subcontractor Insurance Compliance for Builders",
   description:
-    "Eliminate subcontractor paperwork with AI that reviews certificates and endorsements to uncover missing coverage, outdated limits, and hidden exposures.",
+    "Our compliance team collects, verifies, and monitors every subcontractor's certificates and endorsements, and flags missing coverage, outdated limits, and hidden exposures before they cost you.",
   keywords: [
     "insurance compliance",
     "COI verification",
@@ -39,7 +30,7 @@ export const metadata: Metadata = {
     "certificate of insurance",
     "construction insurance",
     "risk management",
-    "AI insurance",
+    "subcontractor compliance",
   ],
   authors: [{ name: "Midpoint" }],
   creator: "Midpoint",
@@ -53,24 +44,15 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://midpointverified.com",
     siteName: "Midpoint",
-    title: "Midpoint - AI-Powered Insurance Compliance for Builders",
+    title: "Midpoint - Subcontractor Insurance Compliance for Builders",
     description:
-      "Eliminate subcontractor paperwork with AI that reviews certificates and endorsements to uncover missing coverage, outdated limits, and hidden exposures.",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Midpoint - AI-Powered Insurance Compliance",
-      },
-    ],
+      "Our compliance team collects, verifies, and monitors every subcontractor's certificates and endorsements, and flags missing coverage, outdated limits, and hidden exposures before they cost you.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Midpoint - AI-Powered Insurance Compliance for Builders",
+    title: "Midpoint - Subcontractor Insurance Compliance for Builders",
     description:
-      "Eliminate subcontractor paperwork with AI that reviews certificates and endorsements.",
-    images: ["/og-image.png"],
+      "Our compliance team collects, verifies, and monitors every subcontractor's certificates and endorsements.",
   },
   robots: {
     index: true,
@@ -98,9 +80,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={cn("font-sans", geist.variable)}>
+    <html lang="en" suppressHydrationWarning className="font-sans">
       <body
-        className={`${dmSans.variable} ${dmMono.variable} ${figtree.variable} bg-background font-sans text-foreground antialiased`}
+        className={cn(dmSans.variable, dmMono.variable, "bg-background font-sans text-foreground antialiased")}
       >
         <Providers>
           <SiteChrome>{children}</SiteChrome>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Footer from "@/components/v2/footer-v2";
+import { PageHeader } from "@/components/page-header";
 import {
   ResourcesSidebar,
   GradientDivider,
@@ -19,11 +19,17 @@ export default function ResourcesPage() {
 
   return (
     <div className="min-h-svh bg-background text-foreground">
+      <PageHeader
+        eyebrow="Resources"
+        title="Insurance terms"
+        description="Essential knowledge to help builders navigate complex insurance landscapes and optimize risk transfer strategies."
+      />
+
       {/* Mobile Navigation */}
       <ResourcesMobileNav activePage={activePage} onNavigate={handleNavigate} />
 
       {/* Docs Body */}
-      <div className="max-w-[1400px] mx-auto px-4 md:px-6 lg:px-8 xl:px-12">
+      <div className="container-site">
         <div className="flex">
           {/* Desktop Sidebar */}
           <ResourcesSidebar
@@ -42,8 +48,6 @@ export default function ResourcesPage() {
         </div>
       </div>
 
-      {/* Footer */}
-      <Footer />
     </div>
   );
 }

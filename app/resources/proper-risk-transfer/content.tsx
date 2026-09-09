@@ -3,20 +3,19 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
-import Footer from "@/components/v2/footer-v2";
 import {
   ShieldCheck,
   AlertTriangle,
   Eye,
   FileText,
   Check,
-  RefreshCw,
   CheckCircle2,
   ArrowLeft,
   Download,
   Share2,
   LinkIcon,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export function ProperRiskTransferContent() {
   const [copied, setCopied] = useState(false);
@@ -61,8 +60,8 @@ export function ProperRiskTransferContent() {
 
   return (
     <div className="min-h-svh bg-background text-foreground">
-      <section className="pt-32 pb-24 px-6">
-        <div className="max-w-3xl mx-auto">
+      <section className="section-y">
+        <div className="container-prose">
           <div>
             <Link
               href="/resources"
@@ -79,7 +78,7 @@ export function ProperRiskTransferContent() {
                 <ShieldCheck className="w-7 h-7" />
               </div>
               <div>
-                <h1 className="font-[family-name:var(--font-display)] text-4xl md:text-5xl lg:text-[56px] font-bold tracking-tight text-foreground">
+                <h1 className="heading-1 text-foreground">
                   Proper Risk Transfer
                 </h1>
                 <p className="text-base md:text-lg text-muted-foreground mt-2">
@@ -90,36 +89,27 @@ export function ProperRiskTransferContent() {
 
             {/* Action bar */}
             <div className="flex items-center gap-3 mt-6 flex-wrap">
-              <button
-                onClick={handleDownloadPDF}
-                className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity cursor-pointer"
-              >
-                <Download className="w-4 h-4" />
+              <Button onClick={handleDownloadPDF}>
+                <Download />
                 Download PDF
-              </button>
-              <button
-                onClick={handleShare}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium border border-border/40 text-foreground/80 hover:border-primary/40 hover:text-primary transition-all cursor-pointer"
-              >
-                <Share2 className="w-4 h-4" />
+              </Button>
+              <Button variant="outline" onClick={handleShare}>
+                <Share2 />
                 Share
-              </button>
-              <button
-                onClick={handleCopyLink}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium border border-border/40 text-foreground/80 hover:border-primary/40 hover:text-primary transition-all cursor-pointer"
-              >
+              </Button>
+              <Button variant="outline" onClick={handleCopyLink}>
                 {copied ? (
                   <>
-                    <Check className="w-4 h-4 text-primary" />
+                    <Check className="text-primary" />
                     <span className="text-primary">Copied!</span>
                   </>
                 ) : (
                   <>
-                    <LinkIcon className="w-4 h-4" />
+                    <LinkIcon />
                     Copy Link
                   </>
                 )}
-              </button>
+              </Button>
             </div>
 
             {/* Intro callout */}
@@ -138,7 +128,7 @@ export function ProperRiskTransferContent() {
 
           <div className="h-px bg-border/30 mb-10" />
 
-          <p className="text-xs uppercase tracking-[0.15em] text-muted-foreground/60 font-medium mb-8">
+          <p className="eyebrow-accent mb-8">
             The Risk Transfer Flow
           </p>
 
@@ -213,13 +203,13 @@ export function ProperRiskTransferContent() {
           <div className="rounded-xl border border-yellow-500/30 bg-yellow-500/5 p-6 md:p-8 my-10">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-8 h-8 rounded-lg bg-yellow-500/10 flex items-center justify-center flex-shrink-0">
-                <AlertTriangle className="w-4 h-4 text-yellow-500" />
+                <AlertTriangle className="w-4 h-4 text-chart-4" />
               </div>
-              <span className="text-xs uppercase tracking-[0.12em] font-semibold text-yellow-500">
+              <span className="eyebrow text-chart-4">
                 Critical — Often Overlooked
               </span>
             </div>
-            <h3 className="text-xl md:text-2xl font-bold text-foreground mb-3">
+            <h3 className="heading-3 text-foreground mb-3">
               Request Exclusions List & GL Rating Pages
             </h3>
             <p className="text-base text-foreground/70 leading-relaxed mb-6">
@@ -232,7 +222,7 @@ export function ProperRiskTransferContent() {
               <div className="rounded-lg border border-border/30 bg-background/50 p-5">
                 <div className="flex items-center gap-2 mb-2">
                   <Eye className="w-4 h-4 text-primary" />
-                  <h4 className="text-sm font-semibold text-foreground">
+                  <h4 className="heading-4 text-foreground">
                     Why Exclusions Matter
                   </h4>
                 </div>
@@ -244,7 +234,7 @@ export function ProperRiskTransferContent() {
               <div className="rounded-lg border border-border/30 bg-background/50 p-5">
                 <div className="flex items-center gap-2 mb-2">
                   <FileText className="w-4 h-4 text-primary" />
-                  <h4 className="text-sm font-semibold text-foreground">
+                  <h4 className="heading-4 text-foreground">
                     Why GL Rating Pages Matter
                   </h4>
                 </div>
@@ -287,11 +277,11 @@ export function ProperRiskTransferContent() {
               <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
                 <CheckCircle2 className="w-5 h-5 text-primary" />
               </div>
-              <span className="text-xs uppercase tracking-[0.12em] font-semibold text-primary block">
+              <span className="eyebrow text-primary block">
                 Step 5 — Risk Successfully Transferred
               </span>
             </div>
-            <h3 className="text-xl md:text-2xl font-bold text-foreground mb-3">
+            <h3 className="heading-3 text-foreground mb-3">
               The GC Is Protected — Coverage Responds Correctly
             </h3>
             <p className="text-base text-foreground/70 leading-relaxed">
@@ -306,18 +296,15 @@ export function ProperRiskTransferContent() {
 
           {/* Back to resources */}
           <div className="mt-16 pt-8 border-t border-border/20 text-center">
-            <Link
-              href="/resources"
-              className="inline-flex items-center gap-2 text-sm text-primary font-medium hover:underline"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back to all resources
-            </Link>
+            <Button asChild variant="link" size="sm">
+              <Link href="/resources">
+                <ArrowLeft />
+                Back to all resources
+              </Link>
+            </Button>
           </div>
         </div>
       </section>
-
-      <Footer />
     </div>
   );
 }
@@ -348,10 +335,10 @@ function StandaloneStep({
           {number}
         </div>
         <div>
-          <span className="text-xs uppercase tracking-[0.12em] text-primary font-semibold block mb-1">
+          <span className="eyebrow text-primary block mb-1">
             {badge}
           </span>
-          <h2 className="text-xl md:text-2xl font-bold text-foreground">
+          <h2 className="heading-3 text-foreground">
             {title}
           </h2>
         </div>
@@ -369,7 +356,7 @@ function StandaloneStep({
                 key={card.title}
                 className="rounded-lg border border-border/30 p-5"
               >
-                <h4 className="text-sm font-semibold text-foreground mb-2">
+                <h4 className="heading-4 text-foreground mb-2">
                   {card.title}
                 </h4>
                 <p className="text-sm text-muted-foreground leading-relaxed">
@@ -393,7 +380,7 @@ function StandaloneStep({
               <div className="space-y-2">
                 {warnings.map((item) => (
                   <div key={item} className="flex items-start gap-3">
-                    <AlertTriangle className="w-4 h-4 text-yellow-500 flex-shrink-0 mt-0.5" />
+                    <AlertTriangle className="w-4 h-4 text-chart-4 flex-shrink-0 mt-0.5" />
                     <span className="text-sm text-muted-foreground">
                       {item}
                     </span>
