@@ -15,7 +15,7 @@ export default function StatsStrip() {
             {...reveal(i * 0.05)}
             className="py-6 sm:py-7 sm:px-8 first:pl-0 last:pr-0"
           >
-            <p className="text-3xl md:text-4xl font-semibold tracking-tight text-primary tabular-nums">{stat.value}</p>
+            <p className="font-mono text-3xl md:text-4xl text-primary tabular-nums leading-none">{stat.value}</p>
             <p className="mt-2 text-sm text-foreground/90 leading-snug max-w-xs">{stat.label}</p>
             <p className="mt-1.5 eyebrow">{stat.source}</p>
           </motion.div>

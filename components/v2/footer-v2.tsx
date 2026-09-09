@@ -69,14 +69,14 @@ export default function FooterV2() {
                       {link.href.startsWith("mailto:") ? (
                         <a
                           href={link.href}
-                          className="text-sm text-muted-foreground/70 hover:text-foreground/80 transition-colors"
+                          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                         >
                           {link.label}
                         </a>
                       ) : (
                         <Link
                           href={link.href}
-                          className="text-sm text-muted-foreground/70 hover:text-foreground/80 transition-colors"
+                          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                         >
                           {link.label}
                         </Link>
@@ -90,13 +90,13 @@ export default function FooterV2() {
         </div>
 
         <div className="mt-16 pt-6 border-t border-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground/50">
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
             <p>111 E Monroe Ave, Buckeye, AZ 85396</p>
-            <Link href="/privacy" className="hover:text-foreground/80 transition-colors">Privacy</Link>
-            <Link href="/terms" className="hover:text-foreground/80 transition-colors">Terms</Link>
+            <Link href="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
+            <Link href="/terms" className="hover:text-foreground transition-colors">Terms</Link>
           </div>
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
-            <p className="text-sm text-muted-foreground/50">
+            <p className="text-sm text-muted-foreground">
               © {new Date().getFullYear()} Midpoint. All rights reserved.
             </p>
             <ThemeSwitcher />

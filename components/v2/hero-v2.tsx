@@ -49,7 +49,7 @@ export default function HeroV2() {
               <h1 className="text-5xl md:text-6xl font-semibold leading-[1.02] tracking-tight text-foreground mb-8">
                 Trade Partner <span className="text-primary">Compliance</span> Without the Headache
               </h1>
-              <p className="text-muted-foreground text-lg md:text-xl measure-column mb-10 leading-relaxed">
+              <p className="text-muted-foreground text-base md:text-lg measure-column mb-10 leading-relaxed">
                 We collect your subcontractors&apos; certificates, verify the coverage against
                 your contract, chase what&apos;s missing, and send you one email a week.
               </p>
