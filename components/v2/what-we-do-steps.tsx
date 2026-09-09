@@ -8,7 +8,6 @@ import CollectGraphic from "@/components/v2/how-it-works/collect-graphic";
 import ChaseGraphic from "@/components/v2/how-it-works/chase-graphic";
 import VerifyGraphic from "@/components/v2/how-it-works/verify-graphic";
 import MonitorGraphic from "@/components/v2/how-it-works/monitor-graphic";
-import StepRail from "@/components/v2/how-it-works/step-rail";
 
 type StepDef = {
   step: number;
@@ -61,18 +60,22 @@ const STEPS: StepDef[] = [
 
 const EASE = [0.25, 0.1, 0.25, 1] as const;
 
-/** The "STEP n" pill. Shared with the page hero so step 1 matches steps 2 to 5. */
-export function StepPill({ step, isActive }: { step: number; isActive: boolean }) {
+/** Step ids, numbers, and titles for anything that navigates the steps. */
+export const STEP_META = STEPS.map(({ id, step, title }) => ({ id, step, title }));
+
+/** Text never dims below 60%: an off-focus step should still be readable. */
+const TEXT_DIM = 0.6;
+
+/** "Step 3 of 5" in the mono label style, in the accent while the step is current. */
+function StepCount({ step, isActive }: { step: number; isActive: boolean }) {
   return (
-    <motion.div
-      className="inline-flex items-center justify-center rounded-full border border-border bg-secondary/60 px-5 py-1.5 backdrop-blur-md"
-      animate={{ opacity: isActive ? 1 : 0.4 }}
+    <motion.p
+      className={`font-mono text-[11px] uppercase tracking-[0.16em] ${isActive ? "text-primary" : "text-muted-foreground"}`}
+      animate={{ opacity: isActive ? 1 : TEXT_DIM }}
       transition={{ duration: 0.4, ease: EASE }}
     >
-      <span className="font-mono text-xs md:text-sm font-medium tracking-[0.3em] text-primary whitespace-nowrap">
-        STEP {step}
-      </span>
-    </motion.div>
+      Step {step} of {STEPS.length}
+    </motion.p>
   );
 }
 
@@ -80,7 +83,7 @@ function StepTitle({ children, isActive }: { children: React.ReactNode; isActive
   return (
     <motion.h3
       className="heading-2 text-foreground"
-      animate={{ opacity: isActive ? 1 : 0.35 }}
+      animate={{ opacity: isActive ? 1 : TEXT_DIM }}
       transition={{ duration: 0.5, ease: EASE }}
     >
       {children}
@@ -91,8 +94,8 @@ function StepTitle({ children, isActive }: { children: React.ReactNode; isActive
 function StepBody({ children, isActive }: { children: React.ReactNode; isActive: boolean }) {
   return (
     <motion.p
-      className="text-muted-foreground text-base md:text-lg leading-relaxed"
-      animate={{ opacity: isActive ? 1 : 0.35 }}
+      className="text-muted-foreground text-base md:text-lg leading-relaxed measure-column"
+      animate={{ opacity: isActive ? 1 : TEXT_DIM }}
       transition={{ duration: 0.5, ease: EASE }}
     >
       {children}
@@ -116,9 +119,9 @@ function StepGraphic({ id, isActive }: { id: string; isActive: boolean }) {
 }
 
 /**
- * One stage per step: the same two-column layout every time, tall enough
- * to hold the viewport, so scrolling moves you from one focused step to
- * the next. Text on the left, an interactive graphic on the right.
+ * One stage per step on the site's five/seven split, tall enough to hold
+ * the viewport, so scrolling moves you from one focused step to the next.
+ * Text on the rail, an interactive graphic in the other seven columns.
  */
 function StepItem({ step }: { step: StepDef }) {
   const { ref, isActive } = useStepActivity(`step-${step.id}`);
@@ -129,13 +132,13 @@ function StepItem({ step }: { step: StepDef }) {
       id={`step-${step.id}`}
       className="relative w-full min-h-[calc(100svh-6.75rem)] flex items-center py-16 snap-start scroll-mt-28"
     >
-      <div className="w-full grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-        <div className="flex flex-col gap-6 max-w-[520px]">
-          <StepPill step={step.step} isActive={isActive} />
+      <div className="w-full grid lg:grid-cols-12 gap-x-8 gap-y-10 items-center">
+        <div className="lg:col-span-5 flex flex-col gap-5">
+          <StepCount step={step.step} isActive={isActive} />
           <StepTitle isActive={isActive}>{step.title}</StepTitle>
           <StepBody isActive={isActive}>{step.body}</StepBody>
         </div>
-        <div className="flex justify-center lg:justify-end">
+        <div className="lg:col-span-7 flex lg:justify-end">
           <FigureFrame n={step.step} label={step.figure} isActive={isActive}>
             <StepGraphic id={step.id} isActive={isActive} />
           </FigureFrame>
@@ -147,17 +150,12 @@ function StepItem({ step }: { step: StepDef }) {
 
 export default function WhatWeDoSteps() {
   return (
-    <section id="what-we-do" className="w-full bg-card border-y border-border scroll-mt-28">
+    <section id="what-we-do" className="w-full section-rule scroll-mt-28">
       <div className="container-site">
-        <div className="lg:grid lg:grid-cols-[200px_1fr] lg:gap-12">
-          <StepRail steps={STEPS} />
-          <div className="flex flex-col">
-            <p className="eyebrow-accent pt-16 -mb-8">What we do</p>
-            {STEPS.map((step) => (
-              <StepItem key={step.step} step={step} />
-            ))}
-          </div>
-        </div>
+        <p className="eyebrow-accent pt-16 -mb-8">What we do</p>
+        {STEPS.map((step) => (
+          <StepItem key={step.step} step={step} />
+        ))}
       </div>
     </section>
   );

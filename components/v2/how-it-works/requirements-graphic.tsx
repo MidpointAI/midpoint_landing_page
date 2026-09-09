@@ -90,7 +90,7 @@ export default function RequirementsGraphic({ isActive }: { isActive: boolean })
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -6 }}
                   transition={SPRING}
-                  className="text-[13px] leading-snug text-foreground/80"
+                  className="text-sm leading-snug text-foreground/80"
                 >
                   {c}
                 </motion.li>

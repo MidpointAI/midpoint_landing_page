@@ -9,10 +9,11 @@ import { StepActivityProvider } from "@/components/v2/step-activity";
 import { Button } from "@/components/ui/button";
 import EscalationDemo from "@/components/v2/how-it-works/escalation-demo";
 import { SubNav } from "@/components/v2/sub-nav";
+import StepTicks from "@/components/v2/how-it-works/step-ticks";
 
 const SECTIONS = [
   { label: "What you do", id: "what-you-do" },
-  { label: "What we do", id: "what-we-do" },
+  { label: "What we do", id: "what-we-do", detail: <StepTicks /> },
   { label: "What you get", id: "what-you-get" },
   { label: "Your decisions", id: "escalation" },
   { label: "Claims", id: "claims" },
