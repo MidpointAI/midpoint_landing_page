@@ -106,7 +106,7 @@ export default function PricingPage() {
       </section>
 
       {/* Included */}
-      <section className="container-site pb-16 md:pb-20">
+      <section className="section-rule container-site pt-16 md:pt-20 pb-16 md:pb-20">
         <div className="rounded-xl border border-border bg-card p-7 md:p-9 grid md:grid-cols-[1fr_1.4fr] gap-8 md:gap-12">
           <div>
             <p className="eyebrow mb-3">Included in both</p>
@@ -124,7 +124,7 @@ export default function PricingPage() {
       </section>
 
       {/* Why the price is what it is */}
-      <section className="container-site pb-16 md:pb-20">
+      <section className="section-rule container-site pt-16 md:pt-20 pb-16 md:pb-20">
         <div className="measure-intro mb-10">
           <p className="eyebrow mb-4">Why it&apos;s priced this way</p>
           <h2 className="heading-2 text-foreground">You&apos;re paying for the nuance, and for not having to manage it.</h2>
@@ -140,7 +140,8 @@ export default function PricingPage() {
       </section>
 
       {/* Fine print + CTA */}
-      <section className="container-prose pb-20 md:pb-28">
+      <section className="section-rule">
+        <div className="container-prose pt-16 md:pt-20 pb-20 md:pb-28">
         <dl className="divide-y divide-border border-y border-border">
           {[
             ["Active sub", "Any subcontractor with a signed agreement on a project that's currently open. The same sub on two projects counts once for per-sub pricing, and is verified separately against each project's requirements."],
@@ -160,6 +161,7 @@ export default function PricingPage() {
             <Link href="/contact">Contact us</Link>
           </Button>
           <p className="mt-4 text-sm text-muted-foreground">We reply within one business day.</p>
+        </div>
         </div>
       </section>
     </main>

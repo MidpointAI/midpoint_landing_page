@@ -113,7 +113,7 @@ export default function HowItWorksPage() {
         </section>
 
         {/* What you do */}
-        <section id="what-you-do" className="w-full min-h-[calc(100svh-5rem)] flex items-center section-y border-t border-border snap-start scroll-mt-20">
+        <section id="what-you-do" className="w-full min-h-[calc(100svh-5rem)] flex items-center section-y section-rule snap-start scroll-mt-20">
           <div className="container-site w-full">
             <div className="max-w-2xl mb-12">
               <p className="eyebrow mb-4">What you do</p>
@@ -164,7 +164,7 @@ export default function HowItWorksPage() {
         </section>
 
         {/* When a sub won't respond */}
-        <section id="escalation" className="w-full min-h-[calc(100svh-5rem)] flex items-center section-y border-t border-border snap-start scroll-mt-20">
+        <section id="escalation" className="w-full min-h-[calc(100svh-5rem)] flex items-center section-y section-rule snap-start scroll-mt-20">
           <div className="container-site w-full grid md:grid-cols-[1fr_1.2fr] gap-10 md:gap-16 items-center">
             <div>
               <p className="eyebrow mb-4">When a sub won&apos;t respond</p>
@@ -178,7 +178,7 @@ export default function HowItWorksPage() {
         </section>
 
         {/* When a claim comes */}
-        <section id="claims" className="w-full min-h-[calc(100svh-5rem)] flex items-center section-y border-t border-border snap-start scroll-mt-20">
+        <section id="claims" className="w-full min-h-[calc(100svh-5rem)] flex items-center section-y section-rule snap-start scroll-mt-20">
           <div className="container-site w-full grid md:grid-cols-[1fr_1.2fr] gap-10 md:gap-16">
             <div>
               <p className="eyebrow mb-4">When a claim comes</p>
@@ -195,7 +195,7 @@ export default function HowItWorksPage() {
         </section>
 
         {/* FAQ */}
-        <section id="faq" className="w-full section-y border-t border-border snap-start scroll-mt-20">
+        <section id="faq" className="w-full section-y section-rule snap-start scroll-mt-20">
           <div className="container-prose">
             <p className="eyebrow mb-4">Questions builders ask</p>
             <h2 className="heading-2 text-foreground mb-10">Before you hand it off</h2>
@@ -214,7 +214,7 @@ export default function HowItWorksPage() {
         </section>
 
         {/* Closing CTA */}
-        <section className="w-full section-y border-t border-border">
+        <section className="w-full section-y section-rule">
           <div className="container-prose text-center">
             <h2 className="heading-2 text-foreground mb-4">Ready to stop thinking about insurance?</h2>
             <p className="text-muted-foreground text-lg leading-relaxed mb-8">

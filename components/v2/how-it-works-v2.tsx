@@ -66,7 +66,7 @@ export default function HowItWorksV2() {
   const row: Sub = { ...BASE, status: step.row.status, score: step.row.score };
 
   return (
-    <section id="how-it-works" className="w-full bg-background section-y overflow-hidden scroll-mt-24">
+    <section id="how-it-works" className="w-full bg-background section-y section-rule overflow-hidden scroll-mt-24">
       <div className="container-site">
         <SectionIntro
           className="mb-14"

@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 
 export default function FinalCta() {
   return (
-    <section className="w-full bg-background">
-      <div className="container-site section-y border-t border-border">
+    <section className="w-full bg-background section-rule">
+      <div className="container-site section-y">
         <h2 className="heading-2 text-foreground mb-4">Ready to stop collecting COIs?</h2>
         <p className="text-muted-foreground text-lg mb-8 measure-intro">
           Tell us about your projects and trade partners, and we&apos;ll walk you

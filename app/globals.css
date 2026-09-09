@@ -136,6 +136,43 @@ html::-webkit-scrollbar {
   @apply py-20 md:py-28;
 }
 
+/* Page rails: two hairlines at the site container's edges, running the full
+   height of the page, so every section reads as a cell in one structure.
+   Shown only once the viewport is wider than the container, where they have
+   somewhere to be. Mounted once in SiteChrome. */
+.page-rails {
+  position: fixed;
+  inset-block: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(100%, var(--container-7xl));
+  border-inline: 1px solid color-mix(in oklch, var(--border) 70%, transparent);
+  pointer-events: none;
+  z-index: 10;
+  display: none;
+}
+@media (min-width: 84rem) {
+  .page-rails {
+    display: block;
+  }
+}
+
+/* A hairline across the top of a section, spanning rail to rail rather than
+   the whole viewport. Replaces whitespace-only section boundaries. */
+.section-rule {
+  position: relative;
+}
+.section-rule::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(100%, var(--container-7xl));
+  height: 1px;
+  background: var(--border);
+}
+
 /* Two text measures, and only two: body copy inside a column, and a
    section intro that sits alone above a grid. */
 @utility measure-column {

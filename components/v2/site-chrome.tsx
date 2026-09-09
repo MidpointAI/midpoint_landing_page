@@ -8,6 +8,7 @@ import FooterV2 from "@/components/v2/footer-v2";
 export default function SiteChrome({ children }: { children: React.ReactNode }) {
   return (
     <>
+      <div className="page-rails" aria-hidden="true" />
       <NavbarV2 />
       {children}
       <FooterV2 />

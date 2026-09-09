@@ -6,8 +6,8 @@ import { stats } from "./customer-stories-data";
 /** Three verified numbers, right under the hero, so proof lands in the first scroll. */
 export default function StatsStrip() {
   return (
-    <section aria-label="Results" className="w-full border-y border-border bg-background">
-      <div className="container-site grid sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-border">
+    <section aria-label="Results" className="w-full bg-background">
+      <div className="container-site border-y border-border grid sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-border">
         {stats.map((stat, i) => (
           <motion.div
             key={stat.label}

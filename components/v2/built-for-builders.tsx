@@ -10,7 +10,7 @@ import { SplitSection } from "./split-section";
  */
 export default function BuiltForBuilders() {
   return (
-    <section className="w-full bg-background section-y relative overflow-hidden">
+    <section className="w-full bg-background section-y section-rule overflow-hidden">
       <div className="container-site">
         <SplitSection
           mediaFirst

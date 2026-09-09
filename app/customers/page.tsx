@@ -146,8 +146,8 @@ export default function CustomersPage() {
         </DividedGrid>
       </section>
 
-      {/* Producer hand-off + CTA */}
-      <section className="container-site pb-20 md:pb-28">
+      {/* Producer hand-off */}
+      <section className="container-site pb-16 md:pb-20">
         <div className="rounded-xl border border-border bg-secondary/30 px-6 py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <p className="text-sm text-muted-foreground">
             Sending this to a client? The one-pager covers the same ground on one sheet.
@@ -156,7 +156,11 @@ export default function CustomersPage() {
             Open the one-pager <ArrowRightIcon />
           </OnePagerTrigger>
         </div>
-        <div className="mt-16 pt-16 border-t border-border">
+      </section>
+
+      {/* CTA */}
+      <section className="section-rule">
+        <div className="container-site section-y">
           <h2 className="heading-2 text-foreground mb-3">Want your name here?</h2>
           <p className="text-muted-foreground mb-6 measure-intro">
             Tell us how many trade partners you run and what you build. We&apos;ll show you what the first month looks like.
