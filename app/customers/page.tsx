@@ -21,18 +21,46 @@ function quoteFor(story: CustomerStory) {
   return testimonials.find((t) => t.name === story.testimonialName);
 }
 
-/** Company, place, and size on one line above every story. */
-function StoryMeta({ story, className = "" }: { story: CustomerStory; className?: string }) {
+/** The client's logo, large, with place and size underneath. Leads every story. */
+function StoryMeta({
+  story,
+  size = "md",
+  className = "",
+}: {
+  story: CustomerStory;
+  size?: "md" | "lg";
+  className?: string;
+}) {
+  const heights = size === "lg" ? (["h-12", "h-24"] as const) : (["h-9", "h-20"] as const);
   return (
-    <div className={`flex flex-wrap items-center gap-x-3 gap-y-2 ${className}`}>
+    <div className={className}>
       {story.logo ? (
-        <CompanyLogo logo={story.logo} name={story.company} className={logoHeightClass(story.logo, "h-7", "h-12")} />
+        <CompanyLogo logo={story.logo} name={story.company} className={`${logoHeightClass(story.logo, ...heights)} text-foreground`} />
       ) : (
-        <span className="text-sm font-medium text-foreground">{story.company}</span>
+        <p className="heading-4 text-foreground">{story.company}</p>
       )}
-      <span className="text-sm text-muted-foreground">
-        {story.location} · {story.scale}
-      </span>
+      <p className="mt-3 text-sm text-muted-foreground">
+        <span className="font-medium text-foreground/80">{story.company}</span> · {story.location} · {story.scale}
+      </p>
+    </div>
+  );
+}
+
+/** Every client with a logo on file, in one row under the header. */
+function ClientLogoRow() {
+  const withLogo = stories.filter((s) => s.logo);
+  if (withLogo.length === 0) return null;
+  return (
+    <div className="container-site pb-12 md:pb-16">
+      <ul className="flex flex-wrap items-center gap-x-12 gap-y-8 md:gap-x-16" aria-label="Clients">
+        {withLogo.map((s) => (
+          <li key={s.id}>
+            <a href={`#${s.outcome}`} className="block opacity-80 transition-opacity hover:opacity-100" aria-label={`${s.company} story`}>
+              <CompanyLogo logo={s.logo!} name={s.company} className={logoHeightClass(s.logo!, "h-8", "h-16")} />
+            </a>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
@@ -66,6 +94,8 @@ export default function CustomersPage() {
         description="Arizona builders who handed trade partner compliance to Midpoint. What they were dealing with, what we took over, and what changed."
       />
 
+      <ClientLogoRow />
+
       <StatsStrip />
 
       {/* Hero story */}
@@ -73,7 +103,7 @@ export default function CustomersPage() {
         <p className="eyebrow mb-4">{OUTCOME_LABEL[hero.outcome]}</p>
         <article className="rounded-xl border border-primary/30 bg-card p-7 md:p-10 grid lg:grid-cols-[1.4fr_1fr] gap-10 lg:gap-14">
           <div>
-            <StoryMeta story={hero} className="mb-6" />
+            <StoryMeta story={hero} size="lg" className="mb-8" />
             <h2 className="heading-2 text-foreground mb-8">{hero.headline}</h2>
             <Narrative story={hero} />
           </div>
@@ -99,7 +129,7 @@ export default function CustomersPage() {
                 className="rounded-xl border border-border bg-card p-7 md:p-8 flex flex-col scroll-mt-24"
               >
                 <p className="eyebrow mb-4">{OUTCOME_LABEL[story.outcome]}</p>
-                <StoryMeta story={story} className="mb-5" />
+                <StoryMeta story={story} className="mb-6" />
                 <h2 className="heading-3 text-foreground mb-6">{story.headline}</h2>
                 <Narrative story={story} compact />
                 <div className="mt-8 flex items-baseline gap-3">

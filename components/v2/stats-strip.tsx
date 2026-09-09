@@ -15,13 +15,11 @@ export default function StatsStrip() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-40px" }}
             transition={{ duration: 0.45, ease: [0.25, 0.1, 0.25, 1], delay: i * 0.06 }}
-            className="py-6 sm:py-7 sm:px-8 first:pl-0 last:pr-0 flex items-baseline gap-4"
+            className="py-6 sm:py-7 sm:px-8 first:pl-0 last:pr-0"
           >
-            <p className="text-3xl md:text-4xl font-semibold tracking-tight text-primary tabular-nums shrink-0">{stat.value}</p>
-            <div className="min-w-0">
-              <p className="text-sm text-foreground/90 leading-snug">{stat.label}</p>
-              <p className="mt-1 eyebrow text-muted-foreground/70">{stat.source}</p>
-            </div>
+            <p className="text-3xl md:text-4xl font-semibold tracking-tight text-primary tabular-nums">{stat.value}</p>
+            <p className="mt-2 text-sm text-foreground/90 leading-snug max-w-xs">{stat.label}</p>
+            <p className="mt-1.5 eyebrow text-muted-foreground/70">{stat.source}</p>
           </motion.div>
         ))}
       </div>
