@@ -30,7 +30,7 @@ export default function CustomerStories() {
   };
 
   return (
-    <section id="testimonials" className="w-full bg-background section-y section-rule scroll-mt-24">
+    <section id="testimonials" className="w-full bg-background py-24 md:py-32 section-rule scroll-mt-24">
       <div className="container-site">
         {/* Heading */}
         <motion.div {...reveal()}>

@@ -28,7 +28,7 @@ export default function WhyDeeper() {
   };
 
   return (
-    <section ref={sectionRef} className="w-full bg-background section-y overflow-hidden">
+    <section ref={sectionRef} className="w-full bg-background py-16 md:py-24 overflow-hidden">
       <div className="container-site">
         <SplitSection
           mediaFirst
@@ -83,7 +83,7 @@ export default function WhyDeeper() {
               {quoteLines.map((line, index) => (
                 <motion.span
                   key={`${line}-${replayKey}`}
-                  className="bg-primary text-primary-foreground px-2 py-1 font-mono text-sm md:text-lg font-bold tracking-[0.18em]"
+                  className="bg-primary text-primary-foreground px-2 py-1 font-mono text-sm md:text-lg font-semibold tracking-[0.18em]"
                   initial={{ opacity: 0, y: 8 }}
                   animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }}
                   transition={{

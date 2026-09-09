@@ -44,7 +44,7 @@ export default function HeroV2() {
           className="w-full lg:items-center"
           text={
             <div>
-              <p className="eyebrow-accent mb-8">Insurance verification, off your plate</p>
+              <p className="eyebrow-accent mb-8">Insurance verification</p>
               {/* Display size, but sized for five columns: four lines at 60px, not six at 96px. */}
               <h1 className="text-5xl md:text-6xl font-semibold leading-[1.02] tracking-tight text-foreground mb-8">
                 Trade Partner <span className="text-primary">Compliance</span> Without the Headache
