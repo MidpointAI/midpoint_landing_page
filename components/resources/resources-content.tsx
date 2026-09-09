@@ -183,10 +183,10 @@ function WhatIsMidpointPage() {
         What is Midpoint?
       </h2>
       <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-8 max-w-2xl">
-        Midpoint is an AI-powered platform that helps residential home builders
-        and general contractors manage subcontractor insurance compliance. We
-        eliminate the paperwork headache by automatically reviewing certificates
-        and endorsements to uncover missing coverage, outdated limits, and
+        Midpoint is a compliance service that helps residential home builders
+        and general contractors manage subcontractor insurance. Our compliance
+        team takes the paperwork off your desk, reviewing every certificate
+        and endorsement to uncover missing coverage, outdated limits, and
         hidden exposures.
       </p>
 

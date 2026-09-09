@@ -209,7 +209,7 @@ export default function OnePager({ embedded = false }: { embedded?: boolean }) {
             <p className="mb-0">Tracking subcontractor insurance and ensuring it meets contract requirements is tedious, and one missing form or outdated policy can put your business at risk.</p>
             <p className="mb-0">&nbsp;</p>
             <p>
-              <span>MidPoint&apos;s AI-powered service automates the process, scanning, comparing, and reconciling insurance documents across all parties, projects, and work </span>
+              <span>Midpoint&apos;s compliance team takes over the process, collecting, comparing, and reconciling insurance documents across all parties, projects, and work, </span>
               <span className="font-bold">flagging issues before they cost you.</span>
             </p>
           </div>

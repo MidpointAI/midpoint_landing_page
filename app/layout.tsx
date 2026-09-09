@@ -20,9 +20,9 @@ const dmMono = DM_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Midpoint - AI-Powered Insurance Compliance for Builders",
+  title: "Midpoint - Subcontractor Insurance Compliance for Builders",
   description:
-    "Eliminate subcontractor paperwork with AI that reviews certificates and endorsements to uncover missing coverage, outdated limits, and hidden exposures.",
+    "Our compliance team collects, verifies, and monitors every subcontractor's certificates and endorsements, and flags missing coverage, outdated limits, and hidden exposures before they cost you.",
   keywords: [
     "insurance compliance",
     "COI verification",
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     "certificate of insurance",
     "construction insurance",
     "risk management",
-    "AI insurance",
+    "subcontractor compliance",
   ],
   authors: [{ name: "Midpoint" }],
   creator: "Midpoint",
@@ -44,15 +44,15 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://midpointverified.com",
     siteName: "Midpoint",
-    title: "Midpoint - AI-Powered Insurance Compliance for Builders",
+    title: "Midpoint - Subcontractor Insurance Compliance for Builders",
     description:
-      "Eliminate subcontractor paperwork with AI that reviews certificates and endorsements to uncover missing coverage, outdated limits, and hidden exposures.",
+      "Our compliance team collects, verifies, and monitors every subcontractor's certificates and endorsements, and flags missing coverage, outdated limits, and hidden exposures before they cost you.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Midpoint - AI-Powered Insurance Compliance for Builders",
+    title: "Midpoint - Subcontractor Insurance Compliance for Builders",
     description:
-      "Eliminate subcontractor paperwork with AI that reviews certificates and endorsements.",
+      "Our compliance team collects, verifies, and monitors every subcontractor's certificates and endorsements.",
   },
   robots: {
     index: true,

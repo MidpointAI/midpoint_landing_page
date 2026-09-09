@@ -1,5 +1,5 @@
 
-# Midpoint - AI-Powered Insurance Compliance
+# Midpoint - Subcontractor Insurance Compliance
 # https://midpointverified.com
 
 User-agent: *
