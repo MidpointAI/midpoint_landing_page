@@ -95,7 +95,7 @@ export function SubNav({ title, items }: { title: string; items: SubNavItem[] })
                   href={`#${item.id}`}
                   onClick={(e) => follow(e, item.id)}
                   aria-current={on ? "location" : undefined}
-                  className={`flex items-center border-b-2 text-sm transition-colors ${
+                  className={`flex items-center border-b-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset rounded-sm ${
                     on ? "border-primary text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"
                   }`}
                 >

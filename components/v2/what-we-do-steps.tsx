@@ -119,9 +119,10 @@ function StepGraphic({ id, isActive }: { id: string; isActive: boolean }) {
 }
 
 /**
- * One stage per step on the site's five/seven split, tall enough to hold
- * the viewport, so scrolling moves you from one focused step to the next.
- * Text on the rail, an interactive graphic in the other seven columns.
+ * One stage per step on the site's five/seven split: text on the rail, an
+ * interactive graphic in the other seven columns. Stages take their own
+ * height, with the same padding and a hairline between them, so the gap
+ * from one step to the next is always the same.
  */
 function StepItem({ step }: { step: StepDef }) {
   const { ref, isActive } = useStepActivity(`step-${step.id}`);
@@ -130,7 +131,7 @@ function StepItem({ step }: { step: StepDef }) {
     <div
       ref={ref}
       id={`step-${step.id}`}
-      className="relative w-full min-h-[calc(100svh-6.75rem)] flex items-center py-16 snap-start scroll-mt-28"
+      className="relative w-full py-16 md:py-20 border-t border-border first:border-t-0 scroll-mt-28"
     >
       <div className="w-full grid lg:grid-cols-12 gap-x-8 gap-y-10 items-center">
         <div className="lg:col-span-5 flex flex-col gap-5">
@@ -152,10 +153,12 @@ export default function WhatWeDoSteps() {
   return (
     <section id="what-we-do" className="w-full section-rule scroll-mt-28">
       <div className="container-site">
-        <p className="eyebrow-accent pt-16 -mb-8">What we do</p>
-        {STEPS.map((step) => (
-          <StepItem key={step.step} step={step} />
-        ))}
+        <p className="eyebrow-accent pt-16 md:pt-20">What we do</p>
+        <div className="mt-6">
+          {STEPS.map((step) => (
+            <StepItem key={step.step} step={step} />
+          ))}
+        </div>
       </div>
     </section>
   );
