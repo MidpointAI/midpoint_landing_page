@@ -6,10 +6,30 @@ import { Button } from "@/components/ui/button";
 import { SplitSection } from "./split-section";
 import WeeklyEmail from "./weekly-email";
 
+const HERO_BG_URL =
+  "https://cdn.magicpatterns.com/uploads/aYGrNQuUPNdajTBmWkC5Wu/Hero.svg";
+
 export default function HeroV2() {
   return (
     <section className="relative w-full bg-background overflow-hidden">
-      {/* A faint dot grid, the only texture on the page */}
+      {/* The framing photo, washed back so the text and the email sit on top of it */}
+      <div
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${HERO_BG_URL})` }}
+        aria-hidden="true"
+      />
+      <div className="absolute inset-0 bg-background/75" aria-hidden="true" />
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(ellipse at center, transparent 40%, color-mix(in oklch, var(--background) 60%, transparent) 80%, color-mix(in oklch, var(--background) 95%, transparent) 100%)",
+        }}
+        aria-hidden="true"
+      />
+      <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-background to-transparent pointer-events-none" aria-hidden="true" />
+
+      {/* A faint dot grid over the photo */}
       <div
         className="absolute inset-0 opacity-[0.05] pointer-events-none"
         style={{
