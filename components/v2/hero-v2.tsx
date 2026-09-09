@@ -37,31 +37,31 @@ export default function HeroV2() {
 
       <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-background to-transparent pointer-events-none" />
 
-      <main className="relative z-10 flex flex-col px-6 text-center items-center justify-center flex-1">
-        <p className="eyebrow mb-8">
-          Insurance verification, <span className="italic">off your plate</span>
-        </p>
+      <main className="relative z-10 flex flex-col justify-center flex-1">
+        <div className="container-site">
+        <p className="eyebrow mb-8">Insurance verification, off your plate</p>
         <h1 className="heading-display mb-8">
           <span className="text-foreground block">
             Trade Partner <span className="text-primary">Compliance</span>
           </span>
           <span className="text-foreground block">Without the Headache</span>
         </h1>
-        <p className="text-muted-foreground text-lg md:text-xl max-w-[612px] mx-auto mb-12 leading-relaxed">
+        <p className="text-muted-foreground text-lg md:text-xl measure-intro mb-12 leading-relaxed">
           We collect your subcontractors&apos; certificates, verify the coverage against
           your contract, chase what&apos;s missing, and report back every week.
         </p>
-        <div className="flex flex-col sm:flex-row items-center gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
           <Button asChild>
             <Link href="/contact">Contact us</Link>
           </Button>
-          <Button asChild variant="ghost">
+          <Button asChild variant="ghost" className="self-start sm:self-auto">
             <Link href="/how-it-works">
               See how it works <ArrowRightIcon />
             </Link>
           </Button>
         </div>
         <p className="mt-4 text-sm text-muted-foreground">We reply within one business day.</p>
+        </div>
       </main>
 
       <div className="relative z-10 flex flex-col items-center pb-10 -mt-[120px]">

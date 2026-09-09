@@ -136,6 +136,15 @@ html::-webkit-scrollbar {
   @apply py-20 md:py-28;
 }
 
+/* Two text measures, and only two: body copy inside a column, and a
+   section intro that sits alone above a grid. */
+@utility measure-column {
+  max-width: 28rem;
+}
+@utility measure-intro {
+  max-width: 40rem;
+}
+
 /* =============================================
    TYPE SCALE
    DM Sans for everything. One display size for heroes, four heading
@@ -148,7 +157,7 @@ html::-webkit-scrollbar {
   @apply text-4xl md:text-5xl font-bold tracking-tight;
 }
 @utility heading-2 {
-  @apply text-3xl md:text-4xl font-bold tracking-tight;
+  @apply text-3xl md:text-4xl font-semibold tracking-tight;
 }
 @utility heading-3 {
   @apply text-xl md:text-2xl font-semibold tracking-tight;
@@ -255,13 +264,14 @@ p, li, h1, h2, h3, h4, h5, h6 {
   --color-chart-3: var(--chart-3);
   --color-chart-2: var(--chart-2);
   --color-chart-1: var(--chart-1);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
+  /* Radius scale on whole pixels: 8 / 8 / 12 / 16 / 20 / 24 / 32. */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.5rem;
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
+  --radius-3xl: 1.5rem;
+  --radius-4xl: 2rem;
 }
 
 html,

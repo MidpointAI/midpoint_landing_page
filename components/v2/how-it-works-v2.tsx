@@ -5,6 +5,7 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRightIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { SectionIntro } from "./section-intro";
 import { Roster, SUBS, type Sub, type SubStatus } from "@/components/v2/report";
 
 const SPRING = { type: "spring", bounce: 0, duration: 0.4 } as const;
@@ -67,17 +68,18 @@ export default function HowItWorksV2() {
   return (
     <section id="how-it-works" className="w-full bg-background section-y overflow-hidden scroll-mt-24">
       <div className="container-site">
-        <div className="text-center mb-14 max-w-3xl mx-auto">
-          <p className="eyebrow mb-4">Beyond COI checks</p>
-          <h2 className="heading-2 text-foreground mb-5">
-            We don&apos;t just store documents.
-            <br />
-            We <span className="text-primary">verify</span> them.
-          </h2>
-          <p className="text-muted-foreground text-base md:text-lg leading-relaxed">
-            Most builders assume their construction software, accounting platform, or bookkeeper is handling trade partner compliance. They&apos;re storing documents. Midpoint reads the policy language itself and reports back what it means for each sub on each project.
-          </p>
-        </div>
+        <SectionIntro
+          className="mb-14"
+          eyebrow="Beyond COI checks"
+          title={
+            <>
+              We don&apos;t just store documents.
+              <br />
+              We <span className="text-primary">verify</span> them.
+            </>
+          }
+          description="Most builders assume their construction software, accounting platform, or bookkeeper is handling trade partner compliance. They're storing documents. Midpoint reads the policy language itself and reports back what it means for each sub on each project."
+        />
 
         {/* Mobile: step chips */}
         <div className="flex md:hidden overflow-x-auto gap-2 mb-8 pb-2 -mx-2 px-2" role="tablist" aria-label="Steps">

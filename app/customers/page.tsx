@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import StatsStrip from "@/components/v2/stats-strip";
 import { CompanyLogo, logoHeightClass, TestimonialCard } from "@/components/v2/testimonial-card";
 import { OnePagerTrigger } from "@/components/one-pager-trigger";
+import { DividedGrid, DIVIDED_CELL } from "@/components/v2/divided-grid";
 import {
   customerStories,
   OUTCOME_LABEL,
@@ -52,10 +53,10 @@ function ClientLogoRow() {
   if (withLogo.length === 0) return null;
   return (
     <div className="container-site pb-12 md:pb-16">
-      <ul className="flex flex-wrap items-center gap-x-12 gap-y-8 md:gap-x-16" aria-label="Clients">
+      <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-y-8 items-center" aria-label="Clients">
         {withLogo.map((s) => (
           <li key={s.id}>
-            <a href={`#${s.outcome}`} className="block opacity-80 transition-opacity hover:opacity-100" aria-label={`${s.company} story`}>
+            <a href={`#${s.outcome}`} className="inline-block opacity-80 transition-opacity hover:opacity-100" aria-label={`${s.company} story`}>
               <CompanyLogo logo={s.logo!} name={s.company} className={logoHeightClass(s.logo!, "h-8", "h-16")} />
             </a>
           </li>
@@ -119,14 +120,14 @@ export default function CustomersPage() {
 
       {/* Supporting stories */}
       <section className="container-site pt-10 pb-16 md:pb-20">
-        <div className="grid md:grid-cols-2 gap-4">
+        <DividedGrid cols="md:grid-cols-2">
           {supporting.map((story) => {
             const quote = quoteFor(story);
             return (
               <article
                 key={story.id}
                 id={story.outcome}
-                className="rounded-xl border border-border bg-card p-7 md:p-8 flex flex-col scroll-mt-24"
+                className={`${DIVIDED_CELL} flex flex-col scroll-mt-24`}
               >
                 <p className="eyebrow mb-4">{OUTCOME_LABEL[story.outcome]}</p>
                 <StoryMeta story={story} className="mb-6" />
@@ -142,11 +143,11 @@ export default function CustomersPage() {
               </article>
             );
           })}
-        </div>
+        </DividedGrid>
       </section>
 
       {/* Producer hand-off + CTA */}
-      <section className="container-prose pb-20 md:pb-28">
+      <section className="container-site pb-20 md:pb-28">
         <div className="rounded-xl border border-border bg-secondary/30 px-6 py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <p className="text-sm text-muted-foreground">
             Sending this to a client? The one-pager covers the same ground on one sheet.
@@ -155,9 +156,9 @@ export default function CustomersPage() {
             Open the one-pager <ArrowRightIcon />
           </OnePagerTrigger>
         </div>
-        <div className="mt-16 text-center">
+        <div className="mt-16 pt-16 border-t border-border">
           <h2 className="heading-2 text-foreground mb-3">Want your name here?</h2>
-          <p className="text-muted-foreground mb-6">
+          <p className="text-muted-foreground mb-6 measure-intro">
             Tell us how many trade partners you run and what you build. We&apos;ll show you what the first month looks like.
           </p>
           <Button size="lg" asChild>

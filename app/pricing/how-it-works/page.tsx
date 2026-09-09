@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRightIcon, CheckIcon } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
+import { DividedGrid, DIVIDED_CELL } from "@/components/v2/divided-grid";
 
 export const metadata: Metadata = {
   title: "Pricing | Midpoint",
@@ -124,18 +125,18 @@ export default function PricingPage() {
 
       {/* Why the price is what it is */}
       <section className="container-site pb-16 md:pb-20">
-        <div className="max-w-2xl mb-10">
+        <div className="measure-intro mb-10">
           <p className="eyebrow mb-4">Why it&apos;s priced this way</p>
           <h2 className="heading-2 text-foreground">You&apos;re paying for the nuance, and for not having to manage it.</h2>
         </div>
-        <div className="grid md:grid-cols-2 gap-4">
+        <DividedGrid cols="md:grid-cols-2">
           {why.map((w) => (
-            <div key={w.title} className="rounded-xl border border-border bg-card p-7">
+            <div key={w.title} className={DIVIDED_CELL}>
               <h3 className="heading-4 text-base text-foreground mb-3">{w.title}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">{w.body}</p>
             </div>
           ))}
-        </div>
+        </DividedGrid>
       </section>
 
       {/* Fine print + CTA */}

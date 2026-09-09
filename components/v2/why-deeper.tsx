@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRightIcon } from "lucide-react";
 import { motion, useInView } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { SplitSection } from "./split-section";
 
 const quoteLines = [
   "“ISSUED AS A MATTER OF",
@@ -35,14 +36,11 @@ export default function WhyDeeper() {
   return (
     <section ref={sectionRef} className="w-full bg-background section-y overflow-hidden">
       <div className="container-site">
-        <motion.p className="eyebrow text-center mb-16" {...reveal(0)}>
-          Why go deeper than certificates?
-        </motion.p>
-
-        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
-          <div className="w-full lg:w-1/2 flex justify-center">
+        <SplitSection
+          mediaFirst
+          media={
             <motion.div
-              className="relative w-full max-w-[560px] rounded-md overflow-hidden shadow-xl cursor-pointer"
+              className="relative w-full max-w-[560px] rounded-lg overflow-hidden shadow-xl cursor-pointer"
               onMouseEnter={handleHover}
               initial={{ opacity: 0, scale: 0.92 }}
               animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.92 }}
@@ -67,10 +65,13 @@ export default function WhyDeeper() {
                 }}
               />
             </motion.div>
-          </div>
-
-          <div className="w-full lg:w-1/2 flex flex-col gap-10">
-            <div className="flex flex-col gap-6">
+          }
+          text={
+          <div className="flex flex-col gap-10">
+            <div>
+              <motion.p className="eyebrow mb-4" {...reveal(0)}>
+                Why go deeper than certificates?
+              </motion.p>
               <h2 className="heading-2 text-foreground">
                 <span className="text-reveal-line">
                   <motion.span
@@ -93,10 +94,10 @@ export default function WhyDeeper() {
                   </motion.span>
                 </span>
               </h2>
-              <motion.p className="text-muted-foreground text-base md:text-lg leading-relaxed max-w-[480px]" {...reveal(0.4)}>
+              <motion.p className="mt-4 text-muted-foreground text-base md:text-lg leading-relaxed measure-column" {...reveal(0.4)}>
                 When subs submit their certificates, we read the forms and policy language behind them, not just the front page. Our insurance experts expose the risks a certificate check alone would never catch.
               </motion.p>
-              <motion.div {...reveal(0.55)}>
+              <motion.div className="mt-6" {...reveal(0.55)}>
                 <Button asChild variant="link">
                   <Link href="/how-it-works">
                     See how it works <ArrowRightIcon />
@@ -123,7 +124,8 @@ export default function WhyDeeper() {
               ))}
             </div>
           </div>
-        </div>
+          }
+        />
       </div>
     </section>
   );

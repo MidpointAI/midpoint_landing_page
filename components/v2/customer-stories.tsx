@@ -7,6 +7,7 @@ import { ArrowRightIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { testimonials } from "./customer-stories-data";
 import { TestimonialCard } from "./testimonial-card";
+import { SectionIntro } from "./section-intro";
 
 const EASE = [0.25, 0.1, 0.25, 1] as const;
 
@@ -48,27 +49,25 @@ export default function CustomerStories() {
           whileInView="show"
           viewport={{ once: true, margin: "-80px" }}
           custom={0}
-          className="max-w-2xl"
         >
-          <p className="eyebrow mb-4">Customer stories</p>
-          <h2 className="heading-2 text-foreground mb-4">
-            Builders who stopped chasing certificates
-          </h2>
-          <p className="text-muted-foreground text-base md:text-lg leading-relaxed">
-            Real results from builders who handed trade partner compliance to Midpoint.
-          </p>
-          <Button variant="link" className="mt-3 px-0 h-auto" asChild>
-            <Link href="/customers">
-              See all customer stories <ArrowRightIcon />
-            </Link>
-          </Button>
+          <SectionIntro
+            eyebrow="Customer stories"
+            title="Builders who stopped chasing certificates"
+            description="Real results from builders who handed trade partner compliance to Midpoint."
+          >
+            <Button variant="link" asChild>
+              <Link href="/customers">
+                See all customer stories <ArrowRightIcon />
+              </Link>
+            </Button>
+          </SectionIntro>
         </motion.div>
 
         {/* Testimonials */}
         <div
           ref={trackRef}
           onScroll={onScroll}
-          className="mt-10 flex md:grid md:grid-cols-3 gap-4 overflow-x-auto md:overflow-visible snap-x snap-mandatory md:snap-none scrollbar-hide -mx-6 px-6 md:mx-0 md:px-0"
+          className="mt-12 flex md:grid md:grid-cols-3 gap-4 md:gap-px overflow-x-auto md:overflow-hidden snap-x snap-mandatory md:snap-none scrollbar-hide -mx-6 px-6 md:mx-0 md:px-0 md:bg-border md:rounded-xl md:border md:border-border"
         >
           {testimonials.map((item, i) => (
             <motion.div
@@ -80,7 +79,7 @@ export default function CustomerStories() {
               custom={i}
               className="flex shrink-0 w-[86%] md:w-auto snap-center"
             >
-              <TestimonialCard item={item} className="w-full rounded-xl border border-border bg-card p-7 md:p-8" />
+              <TestimonialCard item={item} className="w-full bg-card p-7 md:p-8 rounded-xl border border-border md:rounded-none md:border-0" />
             </motion.div>
           ))}
         </div>
