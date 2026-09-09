@@ -20,8 +20,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/pricing/how-it-works" },
 };
 
-// $150 per sub per year and the $6,000 minimum confirmed by Andy, Sep 2026.
-const PER_SUB = "$150";
+// $100 per sub per year (Andy, Sep 9 2026; was $150) and the $6,000 minimum.
+const PER_SUB = "$100";
 const MINIMUM = "$6,000";
 const THRESHOLD = 100;
 
