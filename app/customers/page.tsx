@@ -6,6 +6,7 @@ import StatsStrip from "@/components/v2/stats-strip";
 import { CompanyLogo, logoHeightClass, TestimonialCard } from "@/components/v2/testimonial-card";
 import { OnePagerTrigger } from "@/components/one-pager-trigger";
 import { DividedGrid, DIVIDED_CELL } from "@/components/v2/divided-grid";
+import { SubNav } from "@/components/v2/sub-nav";
 import {
   customerStories,
   OUTCOME_LABEL,
@@ -84,12 +85,24 @@ function Narrative({ story, compact = false }: { story: CustomerStory; compact?:
   );
 }
 
+const SECTIONS = [
+  { label: "Overview", id: "overview" },
+  { label: "Results", id: "results" },
+  { label: "Premium", id: "premium" },
+  { label: "Subs respond", id: "subs-respond" },
+  { label: "Audits and claims", id: "audit-and-claims" },
+];
+
 export default function CustomersPage() {
   const heroQuote = quoteFor(hero);
 
   return (
     <main className="min-h-screen bg-background text-foreground">
+      <SubNav title="Customers" items={SECTIONS} />
+
       <PageHeader
+        className="scroll-mt-28"
+        id="overview"
         eyebrow="Customers"
         title="Builders who stopped chasing certificates"
         description="Arizona builders who handed trade partner compliance to Midpoint. What they were dealing with, what we took over, and what changed."
@@ -97,10 +110,12 @@ export default function CustomersPage() {
 
       <ClientLogoRow />
 
-      <StatsStrip />
+      <div id="results" className="scroll-mt-28">
+        <StatsStrip />
+      </div>
 
       {/* Hero story */}
-      <section id={hero.outcome} className="container-site pt-16 md:pt-20 pb-6 scroll-mt-24">
+      <section id={hero.outcome} className="container-site pt-16 md:pt-20 pb-6 scroll-mt-28">
         <p className="eyebrow mb-4">{OUTCOME_LABEL[hero.outcome]}</p>
         <article className="rounded-xl border border-primary/30 bg-card p-7 md:p-10 grid lg:grid-cols-[1.4fr_1fr] gap-10 lg:gap-14">
           <div>
@@ -127,7 +142,7 @@ export default function CustomersPage() {
               <article
                 key={story.id}
                 id={story.outcome}
-                className={`${DIVIDED_CELL} flex flex-col scroll-mt-24`}
+                className={`${DIVIDED_CELL} flex flex-col scroll-mt-28`}
               >
                 <p className="eyebrow mb-4">{OUTCOME_LABEL[story.outcome]}</p>
                 <StoryMeta story={story} className="mb-6" />

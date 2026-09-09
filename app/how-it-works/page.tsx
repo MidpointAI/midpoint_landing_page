@@ -8,6 +8,16 @@ import WhatWeDoSteps from "@/components/v2/what-we-do-steps";
 import { StepActivityProvider } from "@/components/v2/step-activity";
 import { Button } from "@/components/ui/button";
 import EscalationDemo from "@/components/v2/how-it-works/escalation-demo";
+import { SubNav } from "@/components/v2/sub-nav";
+
+const SECTIONS = [
+  { label: "What you do", id: "what-you-do" },
+  { label: "What we do", id: "what-we-do" },
+  { label: "What you get", id: "what-you-get" },
+  { label: "Your decisions", id: "escalation" },
+  { label: "Claims", id: "claims" },
+  { label: "FAQ", id: "faq" },
+];
 
 // TODO: confirm the intake address. Meeting notes reference service@midpointverify.com;
 // the site uses the midpointverified.com domain everywhere else.
@@ -87,8 +97,10 @@ export default function HowItWorksPage() {
     <MotionConfig reducedMotion="user">
     <StepActivityProvider>
       <main className="min-h-screen bg-background text-foreground">
+        <SubNav title="How It Works" items={SECTIONS} />
+
         {/* Hero */}
-        <section className="w-full min-h-[calc(100svh-4rem)] flex items-center snap-start">
+        <section className="w-full min-h-[calc(100svh-6.75rem)] flex items-center snap-start">
           <div className="container-site flex flex-col items-center text-center gap-6">
             <p className="eyebrow">How it works</p>
             <h1 className="heading-1 md:text-6xl text-foreground max-w-3xl">
@@ -113,7 +125,7 @@ export default function HowItWorksPage() {
         </section>
 
         {/* What you do */}
-        <section id="what-you-do" className="w-full min-h-[calc(100svh-4rem)] flex items-center section-y section-rule snap-start scroll-mt-20">
+        <section id="what-you-do" className="w-full min-h-[calc(100svh-6.75rem)] flex items-center section-y section-rule snap-start scroll-mt-28">
           <div className="container-site w-full">
             <div className="max-w-2xl mb-12">
               <p className="eyebrow mb-4">What you do</p>
@@ -135,7 +147,7 @@ export default function HowItWorksPage() {
         <WhatWeDoSteps />
 
         {/* What you get back */}
-        <section id="what-you-get" className="w-full min-h-[calc(100svh-4rem)] flex items-center section-y snap-start scroll-mt-20">
+        <section id="what-you-get" className="w-full min-h-[calc(100svh-6.75rem)] flex items-center section-y snap-start scroll-mt-28">
           <div className="container-site w-full">
             <div className="max-w-2xl mb-12">
               <p className="eyebrow mb-4">What you get back</p>
@@ -164,7 +176,7 @@ export default function HowItWorksPage() {
         </section>
 
         {/* When a sub won't respond */}
-        <section id="escalation" className="w-full min-h-[calc(100svh-4rem)] flex items-center section-y section-rule snap-start scroll-mt-20">
+        <section id="escalation" className="w-full min-h-[calc(100svh-6.75rem)] flex items-center section-y section-rule snap-start scroll-mt-28">
           <div className="container-site w-full grid md:grid-cols-[1fr_1.2fr] gap-10 md:gap-16 items-center">
             <div>
               <p className="eyebrow mb-4">When a sub won&apos;t respond</p>
@@ -178,7 +190,7 @@ export default function HowItWorksPage() {
         </section>
 
         {/* When a claim comes */}
-        <section id="claims" className="w-full min-h-[calc(100svh-4rem)] flex items-center section-y section-rule snap-start scroll-mt-20">
+        <section id="claims" className="w-full min-h-[calc(100svh-6.75rem)] flex items-center section-y section-rule snap-start scroll-mt-28">
           <div className="container-site w-full grid md:grid-cols-[1fr_1.2fr] gap-10 md:gap-16">
             <div>
               <p className="eyebrow mb-4">When a claim comes</p>
@@ -195,7 +207,7 @@ export default function HowItWorksPage() {
         </section>
 
         {/* FAQ */}
-        <section id="faq" className="w-full section-y section-rule snap-start scroll-mt-20">
+        <section id="faq" className="w-full section-y section-rule snap-start scroll-mt-28">
           <div className="container-prose">
             <p className="eyebrow mb-4">Questions builders ask</p>
             <h2 className="heading-2 text-foreground mb-10">Before you hand it off</h2>

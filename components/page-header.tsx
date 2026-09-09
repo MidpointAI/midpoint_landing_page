@@ -7,11 +7,12 @@ interface PageHeaderProps {
   title: React.ReactNode;
   description?: React.ReactNode;
   className?: string;
+  id?: string;
 }
 
-export function PageHeader({ eyebrow, title, description, className = "" }: PageHeaderProps) {
+export function PageHeader({ eyebrow, title, description, className = "", id }: PageHeaderProps) {
   return (
-    <header className={`container-site pt-14 md:pt-20 pb-10 md:pb-14 ${className}`}>
+    <header id={id} className={`container-site pt-14 md:pt-20 pb-10 md:pb-14 ${className}`}>
       {eyebrow ? <p className="eyebrow mb-4">{eyebrow}</p> : null}
       <h1 className="heading-1 text-foreground">{title}</h1>
       {description ? (

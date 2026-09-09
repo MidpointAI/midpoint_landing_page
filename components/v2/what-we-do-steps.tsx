@@ -127,7 +127,7 @@ function StepItem({ step }: { step: StepDef }) {
     <div
       ref={ref}
       id={`step-${step.id}`}
-      className="relative w-full min-h-[calc(100svh-4rem)] flex items-center py-16 snap-start scroll-mt-20"
+      className="relative w-full min-h-[calc(100svh-6.75rem)] flex items-center py-16 snap-start scroll-mt-28"
     >
       <div className="w-full grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
         <div className="flex flex-col gap-6 max-w-[520px]">
@@ -147,7 +147,7 @@ function StepItem({ step }: { step: StepDef }) {
 
 export default function WhatWeDoSteps() {
   return (
-    <section id="what-we-do" className="w-full bg-card border-y border-border scroll-mt-20">
+    <section id="what-we-do" className="w-full bg-card border-y border-border scroll-mt-28">
       <div className="container-site">
         <div className="lg:grid lg:grid-cols-[200px_1fr] lg:gap-12">
           <StepRail steps={STEPS} />

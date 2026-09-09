@@ -4,6 +4,15 @@ import { ArrowRightIcon, CheckIcon } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { DividedGrid, DIVIDED_CELL } from "@/components/v2/divided-grid";
+import { SubNav } from "@/components/v2/sub-nav";
+
+const SECTIONS = [
+  { label: "Overview", id: "overview" },
+  { label: "Two ways to price", id: "plans" },
+  { label: "What's included", id: "included" },
+  { label: "Why this pricing", id: "why" },
+  { label: "Fine print", id: "fine-print" },
+];
 
 export const metadata: Metadata = {
   title: "Pricing | Midpoint",
@@ -53,14 +62,18 @@ const why = [
 export default function PricingPage() {
   return (
     <main className="min-h-screen bg-background text-foreground">
+      <SubNav title="Pricing" items={SECTIONS} />
+
       <PageHeader
+        id="overview"
+        className="scroll-mt-28"
         eyebrow="Pricing"
         title="Two ways to price. Both include everything."
         description={`Builders with fewer than ${THRESHOLD} active subcontractors pay a flat rate per sub. Larger general contractors and commercial outfits pay a rate per project. Either way, the whole service is included.`}
       />
 
       {/* The two paths */}
-      <section className="container-site pb-16 md:pb-20">
+      <section id="plans" className="container-site pb-16 md:pb-20 scroll-mt-28">
         <div className="grid lg:grid-cols-2 gap-4">
           <div className="rounded-xl border border-border bg-card p-7 md:p-9 flex flex-col">
             <p className="eyebrow mb-3">Per subcontractor</p>
@@ -106,7 +119,7 @@ export default function PricingPage() {
       </section>
 
       {/* Included */}
-      <section className="section-rule container-site pt-16 md:pt-20 pb-16 md:pb-20">
+      <section id="included" className="section-rule container-site pt-16 md:pt-20 pb-16 md:pb-20 scroll-mt-28">
         <div className="rounded-xl border border-border bg-card p-7 md:p-9 grid md:grid-cols-[1fr_1.4fr] gap-8 md:gap-12">
           <div>
             <p className="eyebrow mb-3">Included in both</p>
@@ -124,7 +137,7 @@ export default function PricingPage() {
       </section>
 
       {/* Why the price is what it is */}
-      <section className="section-rule container-site pt-16 md:pt-20 pb-16 md:pb-20">
+      <section id="why" className="section-rule container-site pt-16 md:pt-20 pb-16 md:pb-20 scroll-mt-28">
         <div className="measure-intro mb-10">
           <p className="eyebrow mb-4">Why it&apos;s priced this way</p>
           <h2 className="heading-2 text-foreground">You&apos;re paying for the nuance, and for not having to manage it.</h2>
@@ -140,7 +153,7 @@ export default function PricingPage() {
       </section>
 
       {/* Fine print + CTA */}
-      <section className="section-rule">
+      <section id="fine-print" className="section-rule scroll-mt-28">
         <div className="container-prose pt-16 md:pt-20 pb-20 md:pb-28">
         <dl className="divide-y divide-border border-y border-border">
           {[
