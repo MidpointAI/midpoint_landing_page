@@ -5,8 +5,9 @@ import { AnimatePresence, motion } from "framer-motion";
 import { RotateCcwIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Roster, SUBS, type Sub } from "@/components/v2/report";
+import { FigureFrame } from "@/components/v2/figure-frame";
+import { SPRING } from "@/components/v2/motion";
 
-const SPRING = { type: "spring", bounce: 0, duration: 0.4 } as const;
 
 type Decision = "hold" | "restrict" | "exception" | "replace";
 
@@ -44,7 +45,7 @@ export default function EscalationDemo() {
     decision === "hold" ? "Payment held" : decision === "restrict" ? "Access restricted" : decision === "exception" ? "Exception accepted" : "Your decision";
 
   return (
-    <div className="rounded-xl border border-border bg-card p-5 md:p-6 flex flex-col gap-4">
+    <FigureFrame n={6} label="Your decision" className="flex flex-col gap-4">
       <div className="flex items-baseline justify-between gap-4">
         <p className="eyebrow">From your weekly email</p>
         <button type="button" onClick={() => setShowHistory((v) => !v)} className="text-xs font-medium text-primary hover:underline">
@@ -116,6 +117,6 @@ export default function EscalationDemo() {
           </button>
         ) : null}
       </div>
-    </div>
+    </FigureFrame>
   );
 }

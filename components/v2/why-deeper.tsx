@@ -6,6 +6,7 @@ import { ArrowRightIcon } from "lucide-react";
 import { motion, useInView } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { SplitSection } from "./split-section";
+import { revealWhen, EASE as SITE_EASE } from "./motion";
 
 const quoteLines = [
   "“ISSUED AS A MATTER OF",
@@ -15,7 +16,6 @@ const quoteLines = [
 ];
 
 const HIGHLIGHT_DURATION = 1.5;
-const EASE = [0.16, 1, 0.3, 1] as const;
 
 export default function WhyDeeper() {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -27,12 +27,6 @@ export default function WhyDeeper() {
     if (hasPlayed.current) setReplayKey((k) => k + 1);
   };
 
-  const reveal = (delay: number) => ({
-    initial: { opacity: 0, y: 20 },
-    animate: isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 },
-    transition: { duration: 0.7, ease: EASE, delay },
-  });
-
   return (
     <section ref={sectionRef} className="w-full bg-background section-y overflow-hidden">
       <div className="container-site">
@@ -42,9 +36,7 @@ export default function WhyDeeper() {
             <motion.div
               className="relative w-full max-w-[560px] rounded-lg overflow-hidden shadow-xl cursor-pointer"
               onMouseEnter={handleHover}
-              initial={{ opacity: 0, scale: 0.92 }}
-              animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.92 }}
-              transition={{ duration: 0.9, ease: EASE }}
+              {...revealWhen(isInView)}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -68,54 +60,35 @@ export default function WhyDeeper() {
           }
           text={
           <div className="flex flex-col gap-10">
-            <div>
-              <motion.p className="eyebrow mb-4" {...reveal(0)}>
-                Why go deeper than certificates?
-              </motion.p>
+            <motion.div {...revealWhen(isInView, 0.05)}>
+              <p className="eyebrow mb-4">Why go deeper than certificates?</p>
               <h2 className="heading-2 text-foreground">
-                <span className="text-reveal-line">
-                  <motion.span
-                    className="block"
-                    initial={{ y: "110%" }}
-                    animate={isInView ? { y: "0%" } : { y: "110%" }}
-                    transition={{ duration: 0.9, ease: EASE, delay: 0.15 }}
-                  >
-                    Because certificates
-                  </motion.span>
-                </span>
-                <span className="text-reveal-line">
-                  <motion.span
-                    className="block"
-                    initial={{ y: "110%" }}
-                    animate={isInView ? { y: "0%" } : { y: "110%" }}
-                    transition={{ duration: 0.9, ease: EASE, delay: 0.25 }}
-                  >
-                    alone are not enough
-                  </motion.span>
-                </span>
+                Because certificates
+                <br />
+                alone are not enough
               </h2>
-              <motion.p className="mt-4 text-muted-foreground text-base md:text-lg leading-relaxed measure-column" {...reveal(0.4)}>
+              <p className="mt-4 text-muted-foreground text-base md:text-lg leading-relaxed measure-column">
                 When subs submit their certificates, we read the forms and policy language behind them, not just the front page. Our insurance experts expose the risks a certificate check alone would never catch.
-              </motion.p>
-              <motion.div className="mt-6" {...reveal(0.55)}>
+              </p>
+              <div className="mt-6">
                 <Button asChild variant="link">
                   <Link href="/how-it-works">
                     See how it works <ArrowRightIcon />
                   </Link>
                 </Button>
-              </motion.div>
-            </div>
+              </div>
+            </motion.div>
 
             <div className="flex flex-col gap-3 items-start">
               {quoteLines.map((line, index) => (
                 <motion.span
                   key={`${line}-${replayKey}`}
                   className="bg-primary text-primary-foreground px-2 py-1 font-mono text-sm md:text-lg font-bold tracking-[0.18em]"
-                  initial={{ opacity: 0, x: -24 }}
-                  animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -24 }}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }}
                   transition={{
-                    duration: 0.5,
-                    ease: EASE,
+                    duration: 0.4,
+                    ease: SITE_EASE,
                     delay: replayKey > 0 ? HIGHLIGHT_DURATION * 0.5 + index * 0.12 : 1.0 + index * 0.12,
                   }}
                 >

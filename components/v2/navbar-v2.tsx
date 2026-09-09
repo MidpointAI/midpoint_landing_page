@@ -179,12 +179,14 @@ export default function NavbarV2() {
   return (
     <header className="sticky top-0 z-40 w-full">
       {/* The blur sits on this bar, not on <header>: a backdrop filter would make the
-          header the containing block for the fixed mobile overlay below and clip it. */}
+          header the containing block for the fixed mobile overlay below and clip it.
+          The bar is raised above that overlay so the logo and the menu toggle stay
+          reachable while the menu is open. */}
       <div
-        className="border-b border-border bg-background/85 backdrop-blur-md"
-        style={{ backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)" }}
+        className="relative z-50 border-b border-border bg-background/90"
+        style={{ backdropFilter: "blur(4px)", WebkitBackdropFilter: "blur(4px)" }}
       >
-      <div className="container-site h-20 flex items-center justify-between">
+      <div className="container-site h-16 flex items-center justify-between">
         <div className="flex items-center z-50">
           <Link href="/" className="focus:outline-none flex items-center" onClick={() => setMobileMenuOpen(false)}>
             <BrandLogo className="h-8" />
@@ -315,7 +317,7 @@ export default function NavbarV2() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
-            className="fixed inset-0 z-40 bg-background pt-20 overflow-y-auto"
+            className="fixed inset-0 z-40 bg-background pt-16 overflow-y-auto"
           >
             <div className="px-6 py-8 space-y-6">
               <Link

@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useStepActivity } from "@/components/v2/step-activity";
-import GraphicFrame from "@/components/v2/how-it-works/graphic-frame";
+import { FigureFrame } from "@/components/v2/figure-frame";
 import RequirementsGraphic from "@/components/v2/how-it-works/requirements-graphic";
 import CollectGraphic from "@/components/v2/how-it-works/collect-graphic";
 import ChaseGraphic from "@/components/v2/how-it-works/chase-graphic";
@@ -14,6 +14,8 @@ type StepDef = {
   step: number;
   id: string;
   title: string;
+  /** Short name for the figure label. */
+  figure: string;
   body: string;
 };
 
@@ -23,30 +25,35 @@ const STEPS: StepDef[] = [
   {
     step: 1,
     id: "requirements",
+    figure: "Requirements",
     title: "Pull the requirements from your agreement.",
     body: "Every executed subcontract sets the insurance requirements for that sub on that project. Change the contract and the requirements change with it.",
   },
   {
     step: 2,
     id: "collect",
+    figure: "Outreach",
     title: "Contact the sub and their agent.",
     body: "We request certificates and endorsements directly from the subcontractor and the agent who wrote the policy, so your team stops chasing.",
   },
   {
     step: 3,
     id: "verify",
+    figure: "Verification",
     title: "Verify the coverage, not the certificate.",
     body: "Limits, additional insured, primary and non-contributory, waivers, and the endorsement forms behind them. A line in the description-of-operations box doesn't count. The form does.",
   },
   {
     step: 4,
     id: "chase",
+    figure: "Follow-up",
     title: "Chase gaps and renewals.",
     body: "Automated follow-ups to the sub and the agent, warnings ahead of every expiration, and escalation to you only when repeated outreach hasn't worked.",
   },
   {
     step: 5,
     id: "monitor",
+    figure: "Weekly report",
     title: "Report weekly. Monitor for years.",
     body: "Every week you get one short email listing each trade partner and where they stand: verified, expiring soon, missing a document, or waiting on a decision from you. Nothing to log into. And it doesn't stop when the project does: we keep tracking every sub's coverage for two years after completion, because claims arrive late.",
   },
@@ -120,7 +127,7 @@ function StepItem({ step }: { step: StepDef }) {
     <div
       ref={ref}
       id={`step-${step.id}`}
-      className="relative w-full min-h-[calc(100svh-5rem)] flex items-center py-16 snap-start scroll-mt-20"
+      className="relative w-full min-h-[calc(100svh-4rem)] flex items-center py-16 snap-start scroll-mt-20"
     >
       <div className="w-full grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
         <div className="flex flex-col gap-6 max-w-[520px]">
@@ -129,9 +136,9 @@ function StepItem({ step }: { step: StepDef }) {
           <StepBody isActive={isActive}>{step.body}</StepBody>
         </div>
         <div className="flex justify-center lg:justify-end">
-          <GraphicFrame isActive={isActive} label={`Step ${step.step} illustration`}>
+          <FigureFrame n={step.step} label={step.figure} isActive={isActive}>
             <StepGraphic id={step.id} isActive={isActive} />
-          </GraphicFrame>
+          </FigureFrame>
         </div>
       </div>
     </div>

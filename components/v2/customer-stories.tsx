@@ -8,17 +8,7 @@ import { Button } from "@/components/ui/button";
 import { testimonials } from "./customer-stories-data";
 import { TestimonialCard } from "./testimonial-card";
 import { SectionIntro } from "./section-intro";
-
-const EASE = [0.25, 0.1, 0.25, 1] as const;
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 16 },
-  show: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.45, ease: EASE, delay: i * 0.06 },
-  }),
-};
+import { reveal } from "./motion";
 
 export default function CustomerStories() {
   const trackRef = useRef<HTMLDivElement>(null);
@@ -43,13 +33,7 @@ export default function CustomerStories() {
     <section id="testimonials" className="w-full bg-background section-y section-rule scroll-mt-24">
       <div className="container-site">
         {/* Heading */}
-        <motion.div
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, margin: "-80px" }}
-          custom={0}
-        >
+        <motion.div {...reveal()}>
           <SectionIntro
             eyebrow="Customer stories"
             title="Builders who stopped chasing certificates"
@@ -72,11 +56,7 @@ export default function CustomerStories() {
           {testimonials.map((item, i) => (
             <motion.div
               key={item.name}
-              variants={fadeUp}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, margin: "-60px" }}
-              custom={i}
+              {...reveal(i * 0.05)}
               className="flex shrink-0 w-[86%] md:w-auto snap-center"
             >
               <TestimonialCard item={item} className="w-full bg-card p-7 md:p-8 rounded-xl border border-border md:rounded-none md:border-0" />

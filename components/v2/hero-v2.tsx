@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { ArrowRightIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -64,27 +63,6 @@ export default function HeroV2() {
         </div>
       </main>
 
-      <div className="relative z-10 flex flex-col items-center pb-10 -mt-[120px]">
-        <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-          className="flex flex-col items-center gap-2 cursor-pointer opacity-50 hover:opacity-80 transition-opacity"
-          onClick={() =>
-            window.scrollBy({ top: window.innerHeight * 0.8, behavior: "smooth" })
-          }
-        >
-          <span className="text-xs text-muted-foreground/70 tracking-widest uppercase">Scroll</span>
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="text-muted-foreground/70">
-            <path
-              d="M10 4v12m0 0l-4-4m4 4l4-4"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </motion.div>
-      </div>
     </div>
   );
 }

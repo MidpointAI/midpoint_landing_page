@@ -6,9 +6,10 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRightIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SectionIntro } from "./section-intro";
+import { SPRING } from "./motion";
+import { FigureFrame } from "./figure-frame";
 import { Roster, SUBS, type Sub, type SubStatus } from "@/components/v2/report";
 
-const SPRING = { type: "spring", bounce: 0, duration: 0.4 } as const;
 
 // Same five steps as /how-it-works, condensed. Each shows one sub in the
 // state the GC would see it at that point.
@@ -132,9 +133,9 @@ export default function HowItWorksV2() {
             <AnimatePresence mode="wait">
               <motion.div
                 key={step.id}
-                initial={{ opacity: 0, y: 12 }}
+                initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -12 }}
+                exit={{ opacity: 0, y: -8 }}
                 transition={SPRING}
                 className="py-2"
               >
@@ -152,8 +153,7 @@ export default function HowItWorksV2() {
           </div>
 
           {/* One sub, as the GC sees it at this step */}
-          <div className="rounded-xl border border-border bg-card p-4 md:p-5 self-center">
-            <p className="eyebrow mb-3">In your weekly email</p>
+          <FigureFrame n={2} label="In your weekly email" className="self-center">
             <div className="rounded-lg border border-border bg-background px-3">
               <AnimatePresence mode="wait" initial={false}>
                 <motion.div
@@ -172,7 +172,7 @@ export default function HowItWorksV2() {
                 </motion.div>
               </AnimatePresence>
             </div>
-          </div>
+          </FigureFrame>
         </div>
       </div>
     </section>

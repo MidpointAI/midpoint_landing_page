@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useInView, useReducedMotion } from "framer-motion";
 import { ProjectScorecard, Roster, SUBS, PROJECT, type Sub, type SubStatus } from "@/components/v2/report";
+import { FigureFrame } from "./figure-frame";
 
 /**
  * Six subs on one project, moving from Collecting through Reviewing to their
@@ -45,8 +46,13 @@ export default function RosterDemo() {
   const done = stages.every((s) => s === 2);
 
   return (
-    <div ref={ref} className="w-full max-w-[520px]">
-      <ProjectScorecard name={PROJECT.name} location={PROJECT.location} subs={subs}>
+    <div ref={ref} className="w-full">
+      <FigureFrame
+        n={1}
+        label="Project scorecard"
+        caption={<span aria-live="polite">{done ? "Reviewed by Midpoint. Hover a sub to see what was checked." : "Collecting and reviewing certificates…"}</span>}
+      >
+      <ProjectScorecard name={PROJECT.name} location={PROJECT.location} subs={subs} framed={false}>
         <Roster
           subs={subs}
           expandedId={expanded}
@@ -55,9 +61,7 @@ export default function RosterDemo() {
           onRowSelect={(id) => { const next = pinned === id ? null : id; setPinned(next); setExpanded(next); }}
         />
       </ProjectScorecard>
-      <p className="mt-3 text-xs text-muted-foreground" aria-live="polite">
-        {done ? "Reviewed by Midpoint. Hover a sub to see what was checked." : "Collecting and reviewing certificates…"}
-      </p>
+      </FigureFrame>
     </div>
   );
 }

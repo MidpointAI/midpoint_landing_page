@@ -12,11 +12,14 @@ export default function ProjectScorecard({
   location,
   subs,
   children,
+  framed = true,
 }: {
   name: string;
   location?: string;
   subs: Sub[];
   children?: React.ReactNode;
+  /** False when a FigureFrame already provides the card. */
+  framed?: boolean;
 }) {
   const score = projectScore(subs);
   const status: SubStatus = subs.some((s) => s.status === "noncompliant")
@@ -27,7 +30,7 @@ export default function ProjectScorecard({
   const compliant = subs.filter((s) => s.status === "compliant").length;
 
   return (
-    <div className="rounded-xl border border-border bg-card p-5 md:p-6">
+    <div className={framed ? "rounded-xl border border-border bg-card p-5 md:p-6" : ""}>
       <div className="flex items-center gap-4 pb-4 border-b border-border">
         <ComplianceRing value={score} status={status} size={56} />
         <div className="min-w-0 flex-1">

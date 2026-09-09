@@ -88,7 +88,7 @@ export default function HowItWorksPage() {
     <StepActivityProvider>
       <main className="min-h-screen bg-background text-foreground">
         {/* Hero */}
-        <section className="w-full min-h-[calc(100svh-5rem)] flex items-center snap-start">
+        <section className="w-full min-h-[calc(100svh-4rem)] flex items-center snap-start">
           <div className="container-site flex flex-col items-center text-center gap-6">
             <p className="eyebrow">How it works</p>
             <h1 className="heading-1 md:text-6xl text-foreground max-w-3xl">
@@ -113,7 +113,7 @@ export default function HowItWorksPage() {
         </section>
 
         {/* What you do */}
-        <section id="what-you-do" className="w-full min-h-[calc(100svh-5rem)] flex items-center section-y section-rule snap-start scroll-mt-20">
+        <section id="what-you-do" className="w-full min-h-[calc(100svh-4rem)] flex items-center section-y section-rule snap-start scroll-mt-20">
           <div className="container-site w-full">
             <div className="max-w-2xl mb-12">
               <p className="eyebrow mb-4">What you do</p>
@@ -135,7 +135,7 @@ export default function HowItWorksPage() {
         <WhatWeDoSteps />
 
         {/* What you get back */}
-        <section id="what-you-get" className="w-full min-h-[calc(100svh-5rem)] flex items-center section-y snap-start scroll-mt-20">
+        <section id="what-you-get" className="w-full min-h-[calc(100svh-4rem)] flex items-center section-y snap-start scroll-mt-20">
           <div className="container-site w-full">
             <div className="max-w-2xl mb-12">
               <p className="eyebrow mb-4">What you get back</p>
@@ -164,7 +164,7 @@ export default function HowItWorksPage() {
         </section>
 
         {/* When a sub won't respond */}
-        <section id="escalation" className="w-full min-h-[calc(100svh-5rem)] flex items-center section-y section-rule snap-start scroll-mt-20">
+        <section id="escalation" className="w-full min-h-[calc(100svh-4rem)] flex items-center section-y section-rule snap-start scroll-mt-20">
           <div className="container-site w-full grid md:grid-cols-[1fr_1.2fr] gap-10 md:gap-16 items-center">
             <div>
               <p className="eyebrow mb-4">When a sub won&apos;t respond</p>
@@ -178,7 +178,7 @@ export default function HowItWorksPage() {
         </section>
 
         {/* When a claim comes */}
-        <section id="claims" className="w-full min-h-[calc(100svh-5rem)] flex items-center section-y section-rule snap-start scroll-mt-20">
+        <section id="claims" className="w-full min-h-[calc(100svh-4rem)] flex items-center section-y section-rule snap-start scroll-mt-20">
           <div className="container-site w-full grid md:grid-cols-[1fr_1.2fr] gap-10 md:gap-16">
             <div>
               <p className="eyebrow mb-4">When a claim comes</p>
