@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowRightIcon, CheckIcon } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
-import { DividedGrid, DIVIDED_CELL } from "@/components/v2/divided-grid";
+import { DividedGrid, RULED_CELL } from "@/components/v2/divided-grid";
 import { SubNav } from "@/components/v2/sub-nav";
 
 const SECTIONS = [
@@ -142,9 +142,9 @@ export default function PricingPage() {
           <p className="eyebrow-accent mb-4">Why it&apos;s priced this way</p>
           <h2 className="heading-2 text-foreground">You&apos;re paying for the nuance, and for not having to manage it.</h2>
         </div>
-        <DividedGrid cols="md:grid-cols-2">
+        <DividedGrid cols="md:grid-cols-2" frame="rules">
           {why.map((w) => (
-            <div key={w.title} className={DIVIDED_CELL}>
+            <div key={w.title} className={RULED_CELL}>
               <h3 className="heading-4 text-base text-foreground mb-3">{w.title}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">{w.body}</p>
             </div>

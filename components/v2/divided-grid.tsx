@@ -9,14 +9,20 @@ interface DividedGridProps {
   cols: string;
   children: React.ReactNode;
   className?: string;
+  /**
+   * `card`: one rounded outer border, cells on the card colour.
+   * `rules`: no box at all, just a rule above and below and lines between
+   * cells, for sections that already sit between the page rails.
+   */
+  frame?: "card" | "rules";
 }
 
 export const DIVIDED_CELL = "bg-card p-7 md:p-8";
+/** Cell styling for `frame="rules"`: page colour, padding kept off the rail edges. */
+export const RULED_CELL = "bg-background py-7 md:py-8 md:px-8 md:odd:pl-0 md:even:pr-0";
 
-export function DividedGrid({ cols, children, className = "" }: DividedGridProps) {
-  return (
-    <div className={`grid ${cols} gap-px bg-border rounded-xl border border-border overflow-hidden ${className}`}>
-      {children}
-    </div>
-  );
+export function DividedGrid({ cols, children, className = "", frame = "card" }: DividedGridProps) {
+  const frameClass =
+    frame === "card" ? "rounded-xl border border-border overflow-hidden" : "border-y border-border";
+  return <div className={`grid ${cols} gap-px bg-border ${frameClass} ${className}`}>{children}</div>;
 }
