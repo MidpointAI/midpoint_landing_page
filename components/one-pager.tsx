@@ -165,14 +165,18 @@ function ShieldCheckIcon() {
   );
 }
 
-export default function OnePager({ embedded = false }: { embedded?: boolean }) {
-  const page = (
+/** The sheet is laid out at a fixed size (Figma); callers scale it to fit. */
+export const ONE_PAGER_WIDTH = 612;
+export const ONE_PAGER_HEIGHT = 916;
+
+export default function OnePager() {
+  return (
     <div
-      className={`relative bg-white ${embedded ? "" : "shadow-2xl"}`}
+      className="relative bg-white"
       style={{
-        width: "612px",
-        height: "916px",
-        minWidth: "612px"
+        width: `${ONE_PAGER_WIDTH}px`,
+        height: `${ONE_PAGER_HEIGHT}px`,
+        minWidth: `${ONE_PAGER_WIDTH}px`
       }}
     >
         {/* Header Section - Gradient Background */}
@@ -390,17 +394,6 @@ export default function OnePager({ embedded = false }: { embedded?: boolean }) {
             </div>
           </div>
         </div>
-    </div>
-  );
-
-  if (embedded) {
-    return page;
-  }
-
-  return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-background-secondary py-8">
-      {/* Fixed 612px width container - matches Figma exactly */}
-      {page}
     </div>
   );
 }

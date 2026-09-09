@@ -269,8 +269,8 @@ export interface DownloadItem {
   darkHref?: string;
   /** Filename to save as; when set the link downloads instead of navigating. */
   download?: string;
-  /** Open in a new tab (used for the in-browser one-pager). */
-  external?: boolean;
+  /** Open the in-browser one-pager as an overlay instead of navigating. */
+  overlay?: boolean;
 }
 
 export function resolveDownloadHref(item: DownloadItem, theme?: string) {
@@ -290,10 +290,10 @@ export const downloads: DownloadItem[] = [
   {
     title: "Understanding Midpoint",
     description:
-      "A quick explanation of how Midpoint works and can save builders time and money. Learn about our automated COI analysis and compliance verification.",
+      "A quick explanation of how Midpoint works and can save builders time and money. See what our compliance team takes over and why it matters.",
     cta: "View one-pager",
     href: "/one-pager",
-    external: true,
+    overlay: true,
   },
 ];
 

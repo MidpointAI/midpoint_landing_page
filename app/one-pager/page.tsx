@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import OnePager from "@/components/one-pager";
+import OnePagerRoute from "./one-pager-route";
 
 export const metadata: Metadata = {
   title: "What is Midpoint? | One-Pager Overview",
@@ -17,5 +17,5 @@ export const metadata: Metadata = {
 };
 
 export default function OnePagerPage() {
-  return <OnePager />;
+  return <OnePagerRoute />;
 }

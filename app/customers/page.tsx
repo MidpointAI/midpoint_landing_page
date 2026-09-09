@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import StatsStrip from "@/components/v2/stats-strip";
 import { CompanyLogo, logoHeightClass, TestimonialCard } from "@/components/v2/testimonial-card";
+import { OnePagerTrigger } from "@/components/one-pager-trigger";
 import {
   customerStories,
   OUTCOME_LABEL,
@@ -120,11 +121,9 @@ export default function CustomersPage() {
           <p className="text-sm text-muted-foreground">
             Sending this to a client? The one-pager covers the same ground on one sheet.
           </p>
-          <Button variant="link" className="px-0 h-auto justify-start" asChild>
-            <Link href="/one-pager">
-              Open the one-pager <ArrowRightIcon />
-            </Link>
-          </Button>
+          <OnePagerTrigger variant="link" className="justify-start">
+            Open the one-pager <ArrowRightIcon />
+          </OnePagerTrigger>
         </div>
         <div className="mt-16 text-center">
           <h2 className="heading-2 text-foreground mb-3">Want your name here?</h2>

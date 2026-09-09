@@ -20,9 +20,8 @@ import {
   CheckCircle2,
   Share2,
   LinkIcon,
-  ExternalLink,
 } from "lucide-react";
-import { OnePagerModal } from "./one-pager-modal";
+import { OnePagerTrigger } from "@/components/one-pager-trigger";
 import {
   type DocPage,
   type GlossaryTerm,
@@ -134,16 +133,17 @@ function OverviewPage({ onNavigate }: { onNavigate: (p: DocPage) => void }) {
                 {item.description}
               </p>
             </div>
-            <Button asChild variant="link" size="sm" className="flex-shrink-0">
-              <a
-                href={resolveDownloadHref(item, resolvedTheme)}
-                download={item.download}
-                target={item.external ? "_blank" : undefined}
-                rel={item.external ? "noopener noreferrer" : undefined}
-              >
+            {item.overlay ? (
+              <OnePagerTrigger variant="link" size="sm" className="flex-shrink-0">
                 {item.cta}
-              </a>
-            </Button>
+              </OnePagerTrigger>
+            ) : (
+              <Button asChild variant="link" size="sm" className="flex-shrink-0">
+                <a href={resolveDownloadHref(item, resolvedTheme)} download={item.download}>
+                  {item.cta}
+                </a>
+              </Button>
+            )}
           </div>
         ))}
       </div>
@@ -173,8 +173,6 @@ function OverviewPage({ onNavigate }: { onNavigate: (p: DocPage) => void }) {
    What is Midpoint? Page
    ───────────────────────────────────────────── */
 function WhatIsMidpointPage() {
-  const [modalOpen, setModalOpen] = useState(false);
-
   return (
     <article>
       <Breadcrumb items={["Resources", "What is Midpoint?"]} />
@@ -229,13 +227,10 @@ function WhatIsMidpointPage() {
         View our one-pager to learn more about how Midpoint works:
       </p>
 
-      <Button size="lg" onClick={() => setModalOpen(true)}>
+      <OnePagerTrigger size="lg">
         <FileText />
-        Open One Pager
-      </Button>
-
-      {/* Modal */}
-      <OnePagerModal isOpen={modalOpen} onClose={() => setModalOpen(false)} />
+        Open the one-pager
+      </OnePagerTrigger>
     </article>
   );
 }
@@ -772,17 +767,19 @@ function DownloadsPage() {
                 <p className="text-sm md:text-base text-muted-foreground leading-relaxed mb-5">
                   {item.description}
                 </p>
-                <Button asChild size="lg">
-                  <a
-                    href={resolveDownloadHref(item, resolvedTheme)}
-                    download={item.download}
-                    target={item.external ? "_blank" : undefined}
-                    rel={item.external ? "noopener noreferrer" : undefined}
-                  >
-                    {item.external ? <ExternalLink /> : <Download />}
+                {item.overlay ? (
+                  <OnePagerTrigger size="lg">
+                    <FileText />
                     {item.cta}
-                  </a>
-                </Button>
+                  </OnePagerTrigger>
+                ) : (
+                  <Button asChild size="lg">
+                    <a href={resolveDownloadHref(item, resolvedTheme)} download={item.download}>
+                      <Download />
+                      {item.cta}
+                    </a>
+                  </Button>
+                )}
               </div>
             </div>
           </div>
