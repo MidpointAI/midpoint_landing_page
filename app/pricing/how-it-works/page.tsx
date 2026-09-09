@@ -72,16 +72,16 @@ export default function PricingPage() {
         description={`Builders with fewer than ${THRESHOLD} active subcontractors pay a flat rate per sub. Larger general contractors and commercial outfits pay a rate per project. Either way, the whole service is included.`}
       />
 
-      {/* The two paths */}
+      {/* The two paths: side by side between the rails, a hairline between them */}
       <section id="plans" className="container-site pb-16 md:pb-20 scroll-mt-28">
-        <div className="grid lg:grid-cols-2 gap-4">
-          <div className="rounded-xl border border-border bg-card p-7 md:p-9 flex flex-col">
-            <p className="eyebrow mb-3">Per subcontractor</p>
+        <DividedGrid cols="md:grid-cols-2" frame="rules">
+          <div className={`${RULED_CELL} flex flex-col`}>
+            <p className="eyebrow-accent mb-3">Per subcontractor</p>
             <p className="font-mono text-4xl md:text-5xl text-foreground tabular-nums">
               {PER_SUB}
               <span className="block sm:inline text-base text-muted-foreground sm:ml-2">per sub, per year</span>
             </p>
-            <p className="mt-4 text-muted-foreground leading-relaxed">
+            <p className="mt-4 text-muted-foreground leading-relaxed measure-column">
               For builders with fewer than {THRESHOLD} active subcontractors. One rate for every sub with a signed agreement on a current project, confirmed on the first call. Billed annually, {MINIMUM} minimum.
             </p>
             <div className="mt-auto pt-6">
@@ -93,15 +93,15 @@ export default function PricingPage() {
             </div>
           </div>
 
-          <div className="rounded-xl border border-primary/30 bg-card p-7 md:p-9 flex flex-col">
-            <p className="eyebrow mb-3">Per project</p>
+          <div className={`${RULED_CELL} flex flex-col`}>
+            <p className="eyebrow-accent mb-3">Per project</p>
             <p className="font-mono text-4xl md:text-5xl text-foreground">Quoted per project</p>
-            <p className="mt-4 text-muted-foreground leading-relaxed">
+            <p className="mt-4 text-muted-foreground leading-relaxed measure-column">
               For general contractors with {THRESHOLD}+ subs and commercial outfits. Each project gets its own rate you can build into the bid. The rate maps to four things:
             </p>
-            <dl className="mt-5 space-y-2.5">
+            <dl className="mt-5 divide-y divide-border border-y border-border">
               {projectFactors.map((f) => (
-                <div key={f.k} className="flex gap-3 text-sm">
+                <div key={f.k} className="flex gap-3 py-2 text-sm">
                   <dt className="w-40 shrink-0 font-medium text-foreground">{f.k}</dt>
                   <dd className="text-muted-foreground">{f.v}</dd>
                 </div>
@@ -115,7 +115,7 @@ export default function PricingPage() {
               </Button>
             </div>
           </div>
-        </div>
+        </DividedGrid>
       </section>
 
       {/* Included: no card, the rails and the row rules are the structure */}
