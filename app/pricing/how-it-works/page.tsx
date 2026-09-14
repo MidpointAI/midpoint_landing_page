@@ -1,205 +1,190 @@
-"use client";
-
+import type { Metadata } from "next";
 import Link from "next/link";
-import { Copy, Check } from "lucide-react";
-import { toast } from "sonner";
-import { useState } from "react";
+import { ArrowRightIcon, CheckIcon } from "lucide-react";
+import { PageHeader } from "@/components/page-header";
+import { Button } from "@/components/ui/button";
+import { DividedGrid, RULED_CELL } from "@/components/v2/divided-grid";
+import { SubNav } from "@/components/v2/sub-nav";
 
-// Pricing scenario data
-const pricingScenarios = [
-  { subs: 20, projects: 3, loadFactor: "1.15x", price: "$6,000", isFloor: true },
-  { subs: 30, projects: 5, loadFactor: "1.25x", price: "$6,000", isFloor: true },
-  { subs: 50, projects: 8, loadFactor: "1.40x", price: "$7,000", isFloor: false },
-  { subs: 75, projects: 12, loadFactor: "1.60x", price: "$12,000", isFloor: false },
-  { subs: 100, projects: 15, loadFactor: "1.75x", price: "$17,500", isFloor: false },
-  { subs: 150, projects: 20, loadFactor: "2.00x", price: "$30,000", isFloor: false },
+const SECTIONS = [
+  { label: "Overview", id: "overview" },
+  { label: "Two ways to price", id: "plans" },
+  { label: "What's included", id: "included" },
+  { label: "Why this pricing", id: "why" },
+  { label: "Fine print", id: "fine-print" },
 ];
 
-const FORMULA = "MAX($6,000, $100 × Subs × Load Factor)";
+export const metadata: Metadata = {
+  title: "Pricing | Midpoint",
+  description: "A flat rate per subcontractor for builders under 100 subs, and a per-project rate for larger general contractors and commercial outfits. Everything included.",
+  alternates: { canonical: "/pricing/how-it-works" },
+};
 
-function CopyableFormula() {
-  const [copied, setCopied] = useState(false);
+// $100 per sub per year (Andy, Sep 9 2026; was $150) and the $6,000 minimum.
+const PER_SUB = "$100";
+const MINIMUM = "$6,000";
+const THRESHOLD = 100;
 
-  const handleCopy = async () => {
-    await navigator.clipboard.writeText(FORMULA);
-    setCopied(true);
-    toast.success("Copied to clipboard");
-    setTimeout(() => setCopied(false), 2000);
-  };
+const included = [
+  "Every active sub, on every project, held to that project's requirements",
+  "Certificates and endorsements requested from the sub and their agent, then verified against your contract",
+  "Follow-up on every gap and every expiration until it's resolved",
+  "Monitoring for two years after each project closes",
+  "One weekly status email, and a portal if you ever want it",
+];
 
+const projectFactors = [
+  { k: "Subcontractor spend", v: "How much subcontracted work the project carries." },
+  { k: "Number of subs", v: "How many trade partners we'll be collecting from and verifying." },
+  { k: "Project value", v: "The size of the job the coverage is protecting." },
+  { k: "Our risk", v: "What we take on by verifying, and standing behind, compliance on that project." },
+];
+
+const why = [
+  {
+    title: "Requirements are set per project, not per company",
+    body: "The same subcontractor can be on two of your projects with two different requirement sets. We hold each one to the right contract, so a simpler job and a stricter job are each verified on their own terms.",
+  },
+  {
+    title: "We do the work, not your office",
+    body: "Requests, chasing, verification, expirations. Your team sends nothing and reads one email a week. That's the service you're paying for.",
+  },
+  {
+    title: "It doesn't end when the project does",
+    body: "Claims arrive late. We keep collecting and verifying coverage for two years after a project closes, so your risk transfer holds when it's tested.",
+  },
+  {
+    title: "We work with your agent on next year",
+    body: "Verified compliance is worth something to carriers. We coordinate with your agent and the carrier you choose so your own program reflects it at renewal.",
+  },
+];
+
+export default function PricingPage() {
   return (
-    <button
-      onClick={handleCopy}
-      className="group flex items-center gap-4 bg-card/50 border border-border/50 px-6 py-4 rounded-lg hover:border-primary/50 hover:bg-card/80 transition-all duration-200 cursor-pointer"
-    >
-      <span className="flex items-center justify-center w-8 h-8 rounded-md bg-muted/50 group-hover:bg-primary/10 transition-colors duration-200">
-        {copied ? (
-          <Check className="w-4 h-4 text-primary" />
-        ) : (
-          <Copy className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors duration-200" />
-        )}
-      </span>
-      <code className="text-lg lg:text-xl font-mono font-semibold text-foreground group-hover:text-primary transition-colors duration-200">
-        {FORMULA}
-      </code>
-    </button>
-  );
-}
+    <main className="min-h-screen bg-background text-foreground">
+      <SubNav title="Pricing" items={SECTIONS} />
 
-export default function HowPricingWorksPage() {
-  return (
-    <>
-      <main className="pt-[72px] min-h-screen bg-background">
-        <div className="max-w-3xl mx-auto px-6">
-          {/* Hero */}
-          <section className="py-16 lg:py-20 text-center border-b border-border">
-            <h1 className="text-3xl lg:text-4xl font-bold text-foreground tracking-tight mb-4">
-              How Pricing Works
-            </h1>
-            <p className="text-muted-foreground text-lg max-w-xl mx-auto">
-              Simple, transparent pricing that scales with your business.
+      <PageHeader
+        id="overview"
+        className="scroll-mt-28"
+        eyebrow="Pricing"
+        title="Two ways to price. Both include everything."
+        description={`Builders with fewer than ${THRESHOLD} active subcontractors pay a flat rate per sub. Larger general contractors and commercial outfits pay a rate per project. Either way, the whole service is included.`}
+      />
+
+      {/* The two paths: side by side between the rails, a hairline between them */}
+      <section id="plans" className="container-site pb-16 md:pb-20 scroll-mt-28">
+        <DividedGrid cols="md:grid-cols-2" frame="rules">
+          <div className={`${RULED_CELL} flex flex-col`}>
+            <p className="eyebrow-accent mb-3">Per subcontractor</p>
+            <p className="font-mono text-4xl md:text-5xl text-foreground tabular-nums">
+              {PER_SUB}
+              <span className="block sm:inline text-base text-muted-foreground sm:ml-2">per sub, per year</span>
             </p>
-          </section>
-
-          {/* The Formula */}
-          <section className="py-12 border-b border-border">
-            <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-8">
-              The Formula
-            </h2>
-            <div className="flex justify-center">
-              <CopyableFormula />
-            </div>
-            <p className="text-center text-muted-foreground text-sm mt-6 max-w-md mx-auto">
-              Your annual price is the greater of the $6,000 minimum or the calculated fee.
+            <p className="mt-4 text-muted-foreground leading-relaxed measure-column">
+              For builders with fewer than {THRESHOLD} active subcontractors. One rate for every sub with a signed agreement on a current project, confirmed on the first call. Billed annually, {MINIMUM} minimum.
             </p>
-          </section>
-
-          {/* Model Assumptions */}
-          <section className="py-12 border-b border-border">
-            <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-8">
-              Model Assumptions
-            </h2>
-            <div className="space-y-0">
-              <div className="flex items-center justify-between py-4 border-b border-border/50">
-                <span className="text-foreground">Base Rate</span>
-                <span className="font-mono text-foreground font-medium">$100<span className="text-muted-foreground font-normal">/sub/year</span></span>
-              </div>
-              <div className="flex items-center justify-between py-4 border-b border-border/50">
-                <span className="text-foreground">Project Complexity Weight</span>
-                <span className="font-mono text-foreground font-medium">0.05<span className="text-muted-foreground font-normal"> per project</span></span>
-              </div>
-              <div className="flex items-center justify-between py-4">
-                <span className="text-foreground">Minimum Annual Fee</span>
-                <span className="font-mono text-foreground font-medium">$6,000<span className="text-muted-foreground font-normal"> floor</span></span>
-              </div>
+            <div className="mt-auto pt-6">
+              <Button asChild>
+                <Link href="/contact">
+                  Get your rate <ArrowRightIcon />
+                </Link>
+              </Button>
             </div>
-          </section>
+          </div>
 
-          {/* How It's Calculated */}
-          <section className="py-12 border-b border-border">
-            <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-8">
-              How It&apos;s Calculated
-            </h2>
-            <div className="grid md:grid-cols-2 gap-8">
-              <div>
-                <p className="text-xs text-muted-foreground uppercase tracking-wider mb-3">
-                  Load Factor
-                </p>
-                <code className="text-sm font-mono text-primary">
-                  1 + (Active Projects × 0.05)
-                </code>
-                <p className="text-sm text-muted-foreground mt-3">
-                  More projects increase your load factor, reflecting higher compliance overhead.
-                </p>
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground uppercase tracking-wider mb-3">
-                  Calculated Fee
-                </p>
-                <code className="text-sm font-mono text-primary">
-                  $100 × Subs × Load Factor
-                </code>
-                <p className="text-sm text-muted-foreground mt-3">
-                  If below $6,000, the minimum floor applies.
-                </p>
-              </div>
-            </div>
-          </section>
-
-          {/* Example Scenarios */}
-          <section className="py-12 border-b border-border">
-            <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-8">
-              Example Scenarios
-            </h2>
-
-            {/* Table Header */}
-            <div className="grid grid-cols-4 gap-4 py-3 border-b border-border text-xs text-muted-foreground uppercase tracking-wider">
-              <div>Subs</div>
-              <div>Projects</div>
-              <div>Load Factor</div>
-              <div className="text-right">Annual Price</div>
-            </div>
-
-            {/* Table Rows */}
-            {pricingScenarios.map((scenario, index) => (
-              <div
-                key={index}
-                className="grid grid-cols-4 gap-4 py-4 border-b border-border/50 last:border-b-0"
-              >
-                <div className="font-mono text-foreground">{scenario.subs}</div>
-                <div className="font-mono text-muted-foreground">{scenario.projects}</div>
-                <div className="font-mono text-muted-foreground">{scenario.loadFactor}</div>
-                <div className={`font-mono font-medium text-right ${scenario.isFloor ? "text-amber-500 dark:text-amber-400" : "text-emerald-600 dark:text-emerald-400"}`}>
-                  {scenario.price}
+          <div className={`${RULED_CELL} flex flex-col`}>
+            <p className="eyebrow-accent mb-3">Per project</p>
+            <p className="font-mono text-4xl md:text-5xl text-foreground">Quoted per project</p>
+            <p className="mt-4 text-muted-foreground leading-relaxed measure-column">
+              For general contractors with {THRESHOLD}+ subs and commercial outfits. Each project gets its own rate you can build into the bid. The rate maps to four things:
+            </p>
+            <dl className="mt-5 divide-y divide-border border-y border-border">
+              {projectFactors.map((f) => (
+                <div key={f.k} className="flex gap-3 py-2 text-sm">
+                  <dt className="w-40 shrink-0 font-medium text-foreground">{f.k}</dt>
+                  <dd className="text-muted-foreground">{f.v}</dd>
                 </div>
+              ))}
+            </dl>
+            <div className="mt-auto pt-6">
+              <Button asChild>
+                <Link href="/contact">
+                  Request a proposal <ArrowRightIcon />
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </DividedGrid>
+      </section>
+
+      {/* Included: no card, the rails and the row rules are the structure */}
+      <section id="included" className="section-rule container-site pt-16 md:pt-20 pb-16 md:pb-20 scroll-mt-28">
+        <div className="grid lg:grid-cols-12 gap-x-8 gap-y-10 items-start">
+          <div className="lg:col-span-5">
+            <p className="eyebrow-accent mb-4">Included in both</p>
+            <h2 className="heading-2 text-foreground measure-column">No modules. No add-ons. Nothing to log into.</h2>
+          </div>
+          <ul className="lg:col-span-7 divide-y divide-border border-y border-border">
+            {included.map((item) => (
+              <li key={item} className="flex gap-4 py-4 text-base text-foreground/90">
+                <CheckIcon className="mt-1 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* Why the price is what it is */}
+      <section id="why" className="section-rule container-site pt-16 md:pt-20 pb-16 md:pb-20 scroll-mt-28">
+        <div className="measure-intro mb-10">
+          <p className="eyebrow-accent mb-4">Why it&apos;s priced this way</p>
+          <h2 className="heading-2 text-foreground">You&apos;re paying for the nuance, and for not having to manage it.</h2>
+        </div>
+        <DividedGrid cols="md:grid-cols-2" frame="rules">
+          {why.map((w) => (
+            <div key={w.title} className={RULED_CELL}>
+              <h3 className="heading-4 text-base text-foreground mb-3">{w.title}</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">{w.body}</p>
+            </div>
+          ))}
+        </DividedGrid>
+      </section>
+
+      {/* Fine print: heading on the rail, terms as ruled rows */}
+      <section id="fine-print" className="section-rule container-site pt-16 md:pt-20 pb-16 md:pb-20 scroll-mt-28">
+        <div className="grid lg:grid-cols-12 gap-x-8 gap-y-10 items-start">
+          <div className="lg:col-span-5">
+            <p className="eyebrow-accent mb-4">Fine print</p>
+            <h2 className="heading-2 text-foreground measure-column">Three things to know before you sign.</h2>
+          </div>
+          <dl className="lg:col-span-7 divide-y divide-border border-y border-border">
+            {[
+              ["Active sub", "Any subcontractor with a signed agreement on a project that's currently open. The same sub on two projects counts once for per-sub pricing, and is verified separately against each project's requirements."],
+              ["Renewal", "Your first year is locked at signing. At renewal we recount active subs, or re-scope your projects, and the price moves with your business."],
+              ["Changing paths", `Grow past ${THRESHOLD} subs, or take on a large commercial job, and we'll move you to per-project pricing at renewal.`],
+            ].map(([k, v]) => (
+              <div key={k} className="grid sm:grid-cols-[160px_1fr] gap-2 sm:gap-8 py-5">
+                <dt className="text-sm font-medium text-foreground">{k}</dt>
+                <dd className="text-sm text-muted-foreground leading-relaxed">{v}</dd>
               </div>
             ))}
-
-            {/* Legend */}
-            <div className="flex items-center gap-6 mt-6 text-xs text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-amber-500 dark:bg-amber-400" />
-                <span>$6,000 floor applied</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-600 dark:bg-emerald-400" />
-                <span>Formula-driven</span>
-              </div>
-            </div>
-          </section>
-
-          {/* Renewal Policy */}
-          <section className="py-12">
-            <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-4">
-              Renewal Policy
-            </h2>
-            <p className="text-foreground">
-              Year 1 price is locked at signing. At renewal (Year 2+), we re-calculate your quote with your updated subcontractor count and active projects.
-            </p>
-          </section>
-
-          {/* CTA */}
-          <section className="py-12 border-t border-border text-center">
-            <p className="text-muted-foreground mb-6">
-              Ready to get started?
-            </p>
-            <div className="flex items-center justify-center gap-4">
-              <Link
-                href="/"
-                className="px-6 py-3 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:opacity-90 transition-opacity"
-              >
-                Get Your Quote
-              </Link>
-              <a
-                href="mailto:hello@midpoint.com"
-                className="px-6 py-3 border border-border text-foreground text-sm font-medium rounded-lg hover:border-foreground/50 transition-colors"
-              >
-                Contact Us
-              </a>
-            </div>
-          </section>
+          </dl>
         </div>
-      </main>
-    </>
+      </section>
+
+      {/* CTA */}
+      <section className="section-rule">
+        <div className="container-site section-y">
+          <h2 className="heading-2 text-foreground mb-3">Want a number for your roster or your next project?</h2>
+          <p className="text-muted-foreground mb-6 measure-intro">Tell us how many subs and what you build. You&apos;ll have it on the first call.</p>
+          <Button size="lg" asChild>
+            <Link href="/contact">Contact us</Link>
+          </Button>
+          <p className="mt-4 text-sm text-muted-foreground">We reply within one business day.</p>
+        </div>
+      </section>
+    </main>
   );
 }

@@ -132,3 +132,8 @@ export function useStepActivity(id: string) {
     isActive: ctx?.activeId === id,
   };
 }
+
+/** Read the currently active step id (for rails, progress indicators). */
+export function useActiveStepId() {
+  return useContext(StepActivityContext)?.activeId ?? null;
+}

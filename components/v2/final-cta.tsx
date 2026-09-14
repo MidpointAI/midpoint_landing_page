@@ -1,26 +1,25 @@
 "use client";
 
+import Link from "next/link";
 import { ArrowRightIcon } from "lucide-react";
-import { Button } from "./ui/button";
-import { useQuoteModal } from "@/components/v2/site-chrome";
+import { Button } from "@/components/ui/button";
 
 export default function FinalCta() {
-  const { openQuote } = useQuoteModal();
-
   return (
-    <section className="w-full px-4 md:px-6 py-20 text-center bg-zinc-950">
-      <h2
-        className="text-4xl font-bold text-white mb-4 tracking-tight"
-        style={{ fontFamily: "var(--font-display), sans-serif" }}
-      >
-        Ready to stop collecting COIs?
-      </h2>
-      <p className="text-zinc-400 text-lg mb-8 max-w-xl mx-auto">
-        Get a custom quote in under 60 seconds. No sales call required.
-      </p>
-      <Button size="lg" onClick={openQuote} className="gap-2 text-base px-10">
-        Get a Quote Now <ArrowRightIcon className="h-4 w-4" />
-      </Button>
+    <section className="w-full bg-background section-rule">
+      <div className="container-site section-y">
+        <h2 className="heading-2 text-foreground mb-4">Ready to stop collecting COIs?</h2>
+        <p className="text-muted-foreground text-lg mb-8 measure-intro">
+          Tell us about your projects and trade partners, and we&apos;ll walk you
+          through how Midpoint takes compliance off your plate.
+        </p>
+        <Button size="lg" asChild>
+          <Link href="/contact">
+            Contact us <ArrowRightIcon className="h-4 w-4" />
+          </Link>
+        </Button>
+        <p className="mt-4 text-sm text-muted-foreground">We reply within one business day.</p>
+      </div>
     </section>
   );
 }

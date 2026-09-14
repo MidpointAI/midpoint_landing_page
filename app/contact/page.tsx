@@ -11,9 +11,8 @@ import {
   MapPin,
 } from "lucide-react"
 import { SlideToVerify } from "@/components/contact/slide-to-verify"
-import { Boxes } from "@/components/ui/background-boxes"
-import Footer from "@/components/v2/footer-v2"
 import { Button } from "@/components/ui/button"
+import { PageHeader } from "@/components/page-header"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
@@ -73,6 +72,7 @@ export default function ContactPage() {
     company: "",
     subject: "",
     message: "",
+    source: "",
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle")
@@ -136,7 +136,7 @@ export default function ContactPage() {
       })
 
       setStatus("success")
-      setFormData({ name: "", email: "", company: "", subject: "", message: "" })
+      setFormData({ name: "", email: "", company: "", subject: "", message: "", source: "" })
       setIsHumanVerified(false)
     } catch (error) {
       setStatus("error")
@@ -155,29 +155,7 @@ export default function ContactPage() {
   if (status === "success") {
     return (
       <div className="flex min-h-screen flex-col">
-        <main className="flex flex-1 items-center justify-center px-4 md:px-6 relative overflow-hidden">
-          {/* Interactive Grid Background */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1.4, ease: "easeOut" }}
-            className="absolute inset-0"
-          >
-            <Boxes />
-            <div className="absolute inset-0 w-full h-full bg-background z-[1] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_50%,transparent_40%,black_80%)] pointer-events-none" />
-          </motion.div>
-
-          {/* Gradient overlays */}
-          <div className="absolute inset-0 z-[4] bg-gradient-to-b from-background/30 via-transparent to-background/60 pointer-events-none" />
-
-          {/* Background shadow behind text */}
-          <div
-            className="absolute inset-0 z-[5] pointer-events-none"
-            style={{
-              background: "radial-gradient(ellipse 35% 25% at 50% 50%, var(--background) 0%, var(--background) 50%, transparent 100%)",
-            }}
-          />
-
+        <main className="flex flex-1 items-center justify-center px-6 py-24">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -192,7 +170,7 @@ export default function ContactPage() {
             >
               <Check className="h-8 w-8" />
             </motion.div>
-            <h2 className="text-2xl font-semibold tracking-tight">
+            <h2 className="heading-3">
               Message sent
             </h2>
             <p className="mt-3 text-muted-foreground">
@@ -207,7 +185,6 @@ export default function ContactPage() {
             </Button>
           </motion.div>
         </main>
-        <Footer />
       </div>
     )
   }
@@ -215,16 +192,22 @@ export default function ContactPage() {
   return (
     <>
       <main className="min-h-screen bg-background text-foreground">
+        <PageHeader
+          eyebrow="Contact"
+          title="Get in touch"
+          description="Request a demo, ask a coverage question, or start an onboarding conversation. We respond within 24 hours."
+        />
+
         {/* Two-column content */}
-        <div className="mx-auto max-w-6xl px-4 md:px-6">
-          <div className="grid gap-16 py-16 md:grid-cols-[1fr_1.5fr] md:gap-24 md:py-24">
+        <div className="container-site">
+          <div className="grid gap-16 pb-20 md:pb-28 md:grid-cols-[1fr_1.5fr] md:gap-24">
             {/* Left: Contact details + What to expect */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
             >
-              <h2 className="text-sm font-medium text-foreground">Contact details</h2>
+              <h2 className="eyebrow">Contact details</h2>
 
               <div className="mt-6 space-y-6">
                 {contactDetails.map(({ label, value, icon: Icon, ...rest }) => {
@@ -257,7 +240,7 @@ export default function ContactPage() {
 
               <div className="my-8 h-px bg-border" />
 
-              <h2 className="text-sm font-medium text-foreground">What to expect</h2>
+              <h2 className="eyebrow">What to expect</h2>
               <ul className="mt-4 space-y-3">
                 <li className="flex items-start gap-3 text-sm text-muted-foreground">
                   <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-muted-foreground/50" />
@@ -351,6 +334,17 @@ export default function ContactPage() {
                   />
                 </Field>
 
+                <Field id="source" label="How did you hear about us?" optional>
+                  <Input
+                    id="source"
+                    name="source"
+                    value={formData.source}
+                    onChange={handleChange}
+                    placeholder="Your insurance agent, a referral, a search..."
+                    className="h-11"
+                  />
+                </Field>
+
                 <div className="rounded-xl border border-border bg-secondary/30 p-3">
                   <SlideToVerify
                     onVerified={() => setIsHumanVerified(true)}
@@ -380,8 +374,9 @@ export default function ContactPage() {
 
                 <Button
                   type="submit"
+                  size="lg"
                   disabled={!isFormValid || status === "sending"}
-                  className="h-11 w-full sm:w-auto"
+                  className="w-full sm:w-auto"
                 >
                   {status === "sending" ? (
                     <>
@@ -395,7 +390,7 @@ export default function ContactPage() {
                   ) : (
                     <>
                       Send message
-                      <ArrowRight className="ml-2 h-4 w-4" />
+                      <ArrowRight />
                     </>
                   )}
                 </Button>
@@ -404,7 +399,6 @@ export default function ContactPage() {
           </div>
         </div>
       </main>
-      <Footer />
     </>
   )
 }

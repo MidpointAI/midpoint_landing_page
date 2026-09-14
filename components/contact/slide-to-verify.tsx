@@ -57,7 +57,7 @@ export const SlideToVerify: React.FC<SlideToVerifyProps> = ({
 
   return (
     <div className={className}>
-      <label className="block text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground mb-2">
+      <label className="eyebrow block mb-2">
         Human Verification
       </label>
       {/* Outer border wrapper */}

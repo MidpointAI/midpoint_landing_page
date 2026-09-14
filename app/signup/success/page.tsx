@@ -11,6 +11,7 @@ import {
   ArrowLeft,
   ArrowRight,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface SessionData {
   status: string;
@@ -43,7 +44,10 @@ function SuccessContent() {
       confettiTriggered.current = true;
 
       const end = Date.now() + 3 * 1000;
-      const colors = ["#c8e66e", "#a3d134", "#22251e", "#86efac", "#4ade80"];
+      const styles = getComputedStyle(document.documentElement);
+      const primary = styles.getPropertyValue("--primary").trim();
+      const foreground = styles.getPropertyValue("--foreground").trim();
+      const colors = [primary, primary, primary, foreground];
 
       const frame = () => {
         if (Date.now() > end) return;
@@ -103,7 +107,7 @@ function SuccessContent() {
 
   if (loading) {
     return (
-      <div className="pt-[72px] min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
           <p className="text-muted-foreground text-sm">Loading payment details...</p>
@@ -114,14 +118,14 @@ function SuccessContent() {
 
   if (error || !sessionData) {
     return (
-      <div className="pt-[72px] min-h-screen bg-background flex items-center justify-center px-6">
+      <div className="min-h-screen bg-background flex items-center justify-center px-6">
         <div className="max-w-md w-full">
           <div className="flex items-center gap-5">
-            <div className="flex-shrink-0 flex items-center justify-center w-12 h-12 rounded-full bg-red-500/10">
-              <AlertCircle className="w-6 h-6 text-red-500" />
+            <div className="flex-shrink-0 flex items-center justify-center w-12 h-12 rounded-full bg-destructive/10">
+              <AlertCircle className="w-6 h-6 text-destructive" />
             </div>
             <div className="flex-1">
-              <h1 className="text-xl font-semibold text-foreground mb-1">
+              <h1 className="heading-3 text-foreground mb-1">
                 Something went wrong
               </h1>
               <p className="text-muted-foreground text-sm">
@@ -130,13 +134,12 @@ function SuccessContent() {
             </div>
           </div>
           <div className="mt-6 pl-[68px]">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Return Home
-            </Link>
+            <Button asChild>
+              <Link href="/">
+                <ArrowLeft />
+                Return home
+              </Link>
+            </Button>
           </div>
         </div>
       </div>
@@ -147,8 +150,8 @@ function SuccessContent() {
   const isPaymentSuccessful = payment_status === "paid";
 
   return (
-    <main className="pt-[72px] min-h-screen bg-background">
-        <div className="max-w-3xl mx-auto px-6">
+    <main className="min-h-screen bg-background">
+        <div className="container-prose">
           {/* Hero Section - Properly Centered */}
           <section className="py-12 lg:py-14 border-b border-border">
             <div className="flex items-center gap-5">
@@ -156,10 +159,10 @@ function SuccessContent() {
                 <Check className="w-7 h-7 text-primary" strokeWidth={3} />
               </div>
               <div className="flex-1">
-                <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-widest mb-1">
+                <p className="eyebrow mb-1">
                   Payment Confirmed
                 </p>
-                <h1 className="text-2xl lg:text-[28px] font-bold text-foreground tracking-tight">
+                <h1 className="heading-2 text-foreground">
                   Welcome to Midpoint!
                 </h1>
               </div>
@@ -168,7 +171,7 @@ function SuccessContent() {
 
           {/* Order Details - Compact Two-Column Layout */}
           <section className="py-8 border-b border-border">
-            <h2 className="text-[11px] font-medium text-muted-foreground uppercase tracking-widest mb-5">
+            <h2 className="eyebrow mb-5">
               Order Details
             </h2>
 
@@ -197,8 +200,8 @@ function SuccessContent() {
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">Status</span>
-                  <span className="inline-flex items-center gap-1.5 text-sm font-medium text-green-500">
-                    <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                  <span className="inline-flex items-center gap-1.5 text-sm font-medium text-primary">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary" />
                     {isPaymentSuccessful ? "Paid" : "Processing"}
                   </span>
                 </div>
@@ -240,7 +243,7 @@ function SuccessContent() {
 
           {/* Next Steps */}
           <section className="py-8">
-            <h2 className="text-[11px] font-medium text-muted-foreground uppercase tracking-widest mb-3">
+            <h2 className="eyebrow mb-3">
               Next Steps
             </h2>
             <p className="text-foreground text-sm leading-relaxed mb-5">
@@ -249,19 +252,15 @@ function SuccessContent() {
               Our team will reach out within 24 hours to help you get started.
             </p>
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-              <Link
-                href="/midpointverified"
-                className="px-6 py-2.5 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
-              >
-                Set up your account
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-              <Link
-                href="mailto:hello@midpoint.com"
-                className="px-6 py-2.5 border border-border text-foreground text-sm font-medium rounded-lg hover:border-foreground/40 transition-colors text-center"
-              >
-                Contact Support
-              </Link>
+              <Button asChild>
+                <Link href="/">
+                  Return home
+                  <ArrowRight />
+                </Link>
+              </Button>
+              <Button asChild variant="outline">
+                <a href="mailto:service@midpointverified.com">Contact support</a>
+              </Button>
             </div>
           </section>
         </div>
@@ -273,7 +272,7 @@ export default function SuccessPage() {
   return (
     <Suspense
       fallback={
-        <div className="pt-[72px] min-h-screen bg-background flex items-center justify-center">
+        <div className="min-h-screen bg-background flex items-center justify-center">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
         </div>
       }

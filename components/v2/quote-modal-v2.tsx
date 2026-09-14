@@ -2,6 +2,7 @@
 
 import { useEffect, useState, Fragment, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTheme } from "next-themes";
 import {
   XIcon,
   ArrowRightIcon,
@@ -9,69 +10,94 @@ import {
   CheckIcon,
   Loader2,
 } from "lucide-react";
-import { loadStripe } from "@stripe/stripe-js";
+import Link from "next/link";
 import {
   CheckoutProvider,
   PaymentElement,
   useCheckout,
 } from "@stripe/react-stripe-js/checkout";
+import { getStripe } from "@/lib/stripe-client";
 
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
-);
+// Stripe Elements can't read CSS variables, so these are hex approximations
+// of the theme tokens in app/globals.css (light / dark).
+const STRIPE_PALETTES = {
+  light: {
+    background: "#faf9f6",
+    surface: "#fefefc",
+    foreground: "#131410",
+    mutedForeground: "#52534d",
+    primary: "#4c7100",
+    primaryForeground: "#f9f8f5",
+    border: "#dadbd6",
+    destructive: "#db1d1d",
+  },
+  dark: {
+    background: "#0e100c",
+    surface: "#161914",
+    foreground: "#f4f3f0",
+    mutedForeground: "#a5a5a1",
+    primary: "#c9ff64",
+    primaryForeground: "#030403",
+    border: "#252723",
+    destructive: "#f9262a",
+  },
+} as const;
 
-const stripeAppearance = {
-  theme: "flat" as const,
-  variables: {
-    colorPrimary: "#18181b",
-    colorBackground: "#f4fce3",
-    colorText: "#18181b",
-    colorTextSecondary: "rgba(24, 24, 27, 0.6)",
-    colorTextPlaceholder: "rgba(24, 24, 27, 0.35)",
-    colorDanger: "#dc2626",
-    fontFamily: "'DM Sans', ui-sans-serif, system-ui, sans-serif",
-    fontSizeBase: "14px",
-    fontWeightNormal: "400",
-    fontWeightMedium: "500",
-    fontWeightBold: "600",
-    borderRadius: "10px",
-    spacingUnit: "4px",
-    spacingGridRow: "16px",
-    spacingGridColumn: "16px",
-  },
-  rules: {
-    ".Label": {
-      color: "rgba(24, 24, 27, 0.7)",
-      fontWeight: "500",
-      fontSize: "13px",
-      marginBottom: "6px",
+function buildStripeAppearance(theme: "light" | "dark") {
+  const c = STRIPE_PALETTES[theme];
+  return {
+    theme: (theme === "dark" ? "night" : "flat") as "night" | "flat",
+    variables: {
+      colorPrimary: c.primary,
+      colorBackground: c.background,
+      colorText: c.foreground,
+      colorTextSecondary: c.mutedForeground,
+      colorTextPlaceholder: c.mutedForeground,
+      colorDanger: c.destructive,
+      fontFamily: "'DM Sans', ui-sans-serif, system-ui, sans-serif",
+      fontSizeBase: "14px",
+      fontWeightNormal: "400",
+      fontWeightMedium: "500",
+      fontWeightBold: "600",
+      borderRadius: "10px",
+      spacingUnit: "4px",
+      spacingGridRow: "16px",
+      spacingGridColumn: "16px",
     },
-    ".Input": {
-      backgroundColor: "rgba(255, 255, 255, 0.6)",
-      border: "1px solid rgba(24, 24, 27, 0.12)",
-      boxShadow: "none",
-      padding: "12px 14px",
+    rules: {
+      ".Label": {
+        color: c.mutedForeground,
+        fontWeight: "500",
+        fontSize: "13px",
+        marginBottom: "6px",
+      },
+      ".Input": {
+        backgroundColor: c.surface,
+        border: `1px solid ${c.border}`,
+        boxShadow: "none",
+        padding: "12px 14px",
+      },
+      ".Input:focus": {
+        border: `1px solid ${c.primary}`,
+        boxShadow: `0 0 0 3px ${c.primary}33`,
+      },
+      ".Tab": {
+        backgroundColor: c.surface,
+        border: `1px solid ${c.border}`,
+        boxShadow: "none",
+        color: c.mutedForeground,
+        fontWeight: "500",
+      },
+      ".Tab--selected": {
+        backgroundColor: c.primary,
+        border: `1px solid ${c.primary}`,
+        color: c.primaryForeground,
+      },
+      ".TabIcon--selected": { fill: c.primaryForeground },
+      ".TabLabel--selected": { color: c.primaryForeground },
     },
-    ".Input:focus": {
-      border: "1px solid rgba(24, 24, 27, 0.4)",
-      boxShadow: "0 0 0 3px rgba(24, 24, 27, 0.06)",
-    },
-    ".Tab": {
-      backgroundColor: "rgba(255, 255, 255, 0.6)",
-      border: "1px solid rgba(24, 24, 27, 0.12)",
-      boxShadow: "none",
-      color: "rgba(24, 24, 27, 0.7)",
-      fontWeight: "500",
-    },
-    ".Tab--selected": {
-      backgroundColor: "#18181b",
-      border: "1px solid #18181b",
-      color: "#ffffff",
-    },
-    ".TabIcon--selected": { fill: "#ffffff" },
-    ".TabLabel--selected": { color: "#ffffff" },
-  },
-};
+  };
+}
 
 type ProjectValueRange = "under750k" | "750k-2m" | "2m-5m" | "5mplus";
 
@@ -160,8 +186,8 @@ function PaymentForm({ price, subsCount, projectsCount, onBack }: PaymentFormPro
     return (
       <div className="flex items-center justify-center py-20">
         <div className="flex flex-col items-center gap-3">
-          <Loader2 className="w-8 h-8 animate-spin text-zinc-500" />
-          <p className="text-sm text-zinc-500">Loading payment form...</p>
+          <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+          <p className="text-sm text-muted-foreground">Loading payment form...</p>
         </div>
       </div>
     );
@@ -170,38 +196,38 @@ function PaymentForm({ price, subsCount, projectsCount, onBack }: PaymentFormPro
   return (
     <form onSubmit={handleSubmit} className="max-w-2xl mx-auto space-y-8">
       <div className="text-center space-y-2">
-        <p className="text-xs font-bold tracking-widest text-zinc-400 uppercase">
+        <p className="text-xs font-bold tracking-widest text-muted-foreground/70 uppercase">
           Secure Checkout
         </p>
-        <h2 className="text-3xl font-bold text-zinc-900 tracking-tight">
+        <h2 className="text-3xl font-bold text-foreground tracking-tight">
           Complete Your Purchase
         </h2>
       </div>
 
-      <div className="bg-white/60 border border-zinc-200 rounded-2xl p-6 flex items-center justify-between shadow-sm">
+      <div className="bg-background/60 border border-border rounded-2xl p-6 flex items-center justify-between shadow-sm">
         <div className="flex gap-6">
           <div>
-            <p className="text-xs text-zinc-400 uppercase tracking-wider font-semibold">
+            <p className="text-xs text-muted-foreground/70 uppercase tracking-wider font-semibold">
               Subs
             </p>
-            <p className="text-lg font-medium text-zinc-900 tabular-nums">
+            <p className="text-lg font-medium text-foreground tabular-nums">
               {subsCount}
             </p>
           </div>
           <div>
-            <p className="text-xs text-zinc-400 uppercase tracking-wider font-semibold">
+            <p className="text-xs text-muted-foreground/70 uppercase tracking-wider font-semibold">
               Projects
             </p>
-            <p className="text-lg font-medium text-zinc-900 tabular-nums">
+            <p className="text-lg font-medium text-foreground tabular-nums">
               {projectsCount}
             </p>
           </div>
         </div>
         <div className="text-right">
-          <p className="text-xs text-zinc-400 uppercase tracking-wider font-semibold">
+          <p className="text-xs text-muted-foreground/70 uppercase tracking-wider font-semibold">
             Total
           </p>
-          <p className="text-2xl font-bold text-zinc-900 tabular-nums">
+          <p className="text-2xl font-bold text-foreground tabular-nums">
             ${price.toLocaleString()}.00
           </p>
         </div>
@@ -212,12 +238,12 @@ function PaymentForm({ price, subsCount, projectsCount, onBack }: PaymentFormPro
       </div>
 
       {errorMessage && (
-        <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
+        <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/30 text-destructive text-sm">
           {errorMessage}
         </div>
       )}
 
-      <p className="text-center text-xs text-zinc-500 flex items-center justify-center gap-1.5">
+      <p className="text-center text-xs text-muted-foreground flex items-center justify-center gap-1.5">
         <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
           <path d="M7 11V7a5 5 0 0 1 10 0v4" />
@@ -229,7 +255,7 @@ function PaymentForm({ price, subsCount, projectsCount, onBack }: PaymentFormPro
         <button
           type="button"
           onClick={onBack}
-          className="flex-1 px-6 py-3 rounded-xl border border-zinc-300 bg-transparent text-zinc-700 text-sm font-medium hover:bg-zinc-100 transition-colors flex items-center justify-center gap-2"
+          className="flex-1 px-6 py-3 rounded-xl border border-border bg-transparent text-foreground/80 text-sm font-medium hover:bg-muted transition-colors flex items-center justify-center gap-2"
         >
           <ArrowLeftIcon className="w-4 h-4" />
           Back
@@ -237,7 +263,7 @@ function PaymentForm({ price, subsCount, projectsCount, onBack }: PaymentFormPro
         <button
           type="submit"
           disabled={isProcessing}
-          className="flex-[2] px-6 py-3 rounded-xl bg-zinc-900 text-white text-sm font-medium hover:bg-zinc-800 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-[2] px-6 py-3 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isProcessing ? (
             <>
@@ -257,7 +283,14 @@ function PaymentForm({ price, subsCount, projectsCount, onBack }: PaymentFormPro
 }
 
 export default function QuoteModalV2({ onClose }: QuoteModalV2Props) {
+  const { resolvedTheme } = useTheme();
+  const stripeAppearance = useMemo(
+    () => buildStripeAppearance(resolvedTheme === "light" ? "light" : "dark"),
+    [resolvedTheme]
+  );
   const [step, setStep] = useState(1);
+  // Stripe.js is only requested when the payment step renders; null means no key configured.
+  const stripePromise = useMemo(() => (step === 5 ? getStripe() : null), [step]);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [isCreatingSession, setIsCreatingSession] = useState(false);
   const [sessionError, setSessionError] = useState<string | null>(null);
@@ -393,18 +426,18 @@ export default function QuoteModalV2({ onClose }: QuoteModalV2Props) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
       <div
-        className="absolute inset-0 bg-zinc-950/70 backdrop-blur-sm"
+        className="absolute inset-0 bg-background/75 backdrop-blur-sm"
         onClick={handleBackdropClick}
       />
 
-      <div className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-[#f4fce3] rounded-2xl shadow-2xl flex flex-col">
+      <div className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-card rounded-2xl shadow-2xl flex flex-col">
         {/* Header / Step Wizard */}
-        <div className="sticky top-0 z-10 px-6 py-4 border-b border-zinc-200/50 bg-[#f4fce3]/95 backdrop-blur-md">
+        <div className="sticky top-0 z-10 px-6 py-4 border-b border-border/50 bg-card/95 backdrop-blur-md">
           <div className="flex items-center justify-between mb-4">
             <div className="flex-1" />
             <button
               onClick={onClose}
-              className="h-8 w-8 rounded-full flex items-center justify-center text-zinc-500 hover:bg-zinc-900/10 transition-colors"
+              className="h-8 w-8 rounded-full flex items-center justify-center text-muted-foreground hover:bg-foreground/10 transition-colors"
             >
               <XIcon className="h-4 w-4" />
             </button>
@@ -419,7 +452,7 @@ export default function QuoteModalV2({ onClose }: QuoteModalV2Props) {
                   {i > 0 && (
                     <div
                       className={`h-px w-8 mx-1 transition-colors ${
-                        isCompleted ? "bg-zinc-900" : "bg-zinc-300"
+                        isCompleted ? "bg-primary" : "bg-border"
                       }`}
                     />
                   )}
@@ -427,8 +460,8 @@ export default function QuoteModalV2({ onClose }: QuoteModalV2Props) {
                     <div
                       className={`h-6 w-6 rounded-full flex items-center justify-center text-xs font-semibold transition-colors ${
                         isCompleted || isActive
-                          ? "bg-zinc-900 text-white"
-                          : "bg-zinc-200 text-zinc-500"
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted text-muted-foreground"
                       }`}
                     >
                       {isCompleted ? <CheckIcon className="h-3 w-3" /> : stepNum}
@@ -436,10 +469,10 @@ export default function QuoteModalV2({ onClose }: QuoteModalV2Props) {
                     <span
                       className={`text-xs font-medium hidden sm:inline transition-colors ${
                         isActive
-                          ? "text-zinc-900"
+                          ? "text-foreground"
                           : isCompleted
-                          ? "text-zinc-600"
-                          : "text-zinc-400"
+                          ? "text-muted-foreground"
+                          : "text-muted-foreground/70"
                       }`}
                     >
                       {label}
@@ -464,13 +497,13 @@ export default function QuoteModalV2({ onClose }: QuoteModalV2Props) {
                 className="grid grid-cols-1 md:grid-cols-12 gap-10"
               >
                 <div className="md:col-span-4 space-y-4">
-                  <p className="text-xs font-bold tracking-widest text-zinc-400 uppercase">
+                  <p className="text-xs font-bold tracking-widest text-muted-foreground/70 uppercase">
                     Sign Up &rarr;
                   </p>
-                  <h2 className="text-3xl font-bold text-zinc-900 tracking-tight">
+                  <h2 className="text-3xl font-bold text-foreground tracking-tight">
                     Business Info
                   </h2>
-                  <p className="text-zinc-500">Tell us about your company.</p>
+                  <p className="text-muted-foreground">Tell us about your company.</p>
                 </div>
                 <div className="md:col-span-8 space-y-5">
                   <FieldLabel required>Company Name</FieldLabel>
@@ -527,9 +560,9 @@ export default function QuoteModalV2({ onClose }: QuoteModalV2Props) {
                       type="checkbox"
                       checked={form.terms}
                       onChange={(e) => updateForm("terms", e.target.checked)}
-                      className="rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900"
+                      className="rounded border-border accent-primary focus:ring-ring"
                     />
-                    <span className="text-sm text-zinc-600">
+                    <span className="text-sm text-muted-foreground">
                       I agree to the{" "}
                       <span className="underline cursor-pointer">Terms of Service</span>
                     </span>
@@ -549,13 +582,13 @@ export default function QuoteModalV2({ onClose }: QuoteModalV2Props) {
               >
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
                   <div className="md:col-span-4 space-y-4">
-                    <p className="text-xs font-bold tracking-widest text-zinc-400 uppercase">
+                    <p className="text-xs font-bold tracking-widest text-muted-foreground/70 uppercase">
                       Operations &rarr;
                     </p>
-                    <h2 className="text-3xl font-bold text-zinc-900 tracking-tight">
+                    <h2 className="text-3xl font-bold text-foreground tracking-tight">
                       Current active subs
                     </h2>
-                    <p className="text-zinc-500">
+                    <p className="text-muted-foreground">
                       Estimate of active subs you&apos;re currently working with.
                     </p>
                   </div>
@@ -571,14 +604,14 @@ export default function QuoteModalV2({ onClose }: QuoteModalV2Props) {
                   </div>
                 </div>
 
-                <div className="border-t border-zinc-200/60" />
+                <div className="border-t border-border/60" />
 
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
                   <div className="md:col-span-4 space-y-4">
-                    <h2 className="text-2xl font-bold text-zinc-900 tracking-tight">
+                    <h2 className="text-2xl font-bold text-foreground tracking-tight">
                       Active Projects
                     </h2>
-                    <p className="text-zinc-500">
+                    <p className="text-muted-foreground">
                       How many projects are you currently managing?
                     </p>
                   </div>
@@ -594,14 +627,14 @@ export default function QuoteModalV2({ onClose }: QuoteModalV2Props) {
                   </div>
                 </div>
 
-                <div className="border-t border-zinc-200/60" />
+                <div className="border-t border-border/60" />
 
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
                   <div className="md:col-span-4 space-y-4">
-                    <h2 className="text-2xl font-bold text-zinc-900 tracking-tight">
+                    <h2 className="text-2xl font-bold text-foreground tracking-tight">
                       Average Project Size
                     </h2>
-                    <p className="text-zinc-500">
+                    <p className="text-muted-foreground">
                       Select the range that best represents your typical project value.
                     </p>
                   </div>
@@ -616,18 +649,18 @@ export default function QuoteModalV2({ onClose }: QuoteModalV2Props) {
                             onClick={() => updateForm("projectValueRange", option.id)}
                             className={`rounded-xl border-2 p-4 text-left transition-all duration-150 ${
                               isSelected
-                                ? "border-zinc-900 bg-zinc-900/5"
-                                : "border-zinc-200 bg-white/50 hover:border-zinc-300"
+                                ? "border-primary bg-primary/10"
+                                : "border-border bg-background/50 hover:border-border-hover"
                             }`}
                           >
                             <p
                               className={`text-sm font-semibold ${
-                                isSelected ? "text-zinc-900" : "text-zinc-700"
+                                isSelected ? "text-foreground" : "text-foreground/80"
                               }`}
                             >
                               {option.label}
                             </p>
-                            <p className="text-xs text-zinc-500 mt-0.5">per project avg</p>
+                            <p className="text-xs text-muted-foreground mt-0.5">per project avg</p>
                           </button>
                         );
                       })}
@@ -649,13 +682,13 @@ export default function QuoteModalV2({ onClose }: QuoteModalV2Props) {
                 <motion.div
                   animate={{ rotate: 360 }}
                   transition={{ repeat: Infinity, duration: 1.2, ease: "linear" }}
-                  className="h-12 w-12 rounded-full border-2 border-zinc-200 border-t-zinc-900"
+                  className="h-12 w-12 rounded-full border-2 border-border border-t-primary"
                 />
                 <div className="text-center space-y-3">
-                  <h2 className="text-2xl font-bold text-zinc-900 tracking-tight">
+                  <h2 className="text-2xl font-bold text-foreground tracking-tight">
                     Calculating your quote
                   </h2>
-                  <p className="text-zinc-500 max-w-sm mx-auto">
+                  <p className="text-muted-foreground max-w-sm mx-auto">
                     Analyzing your portfolio size, project volume, and compliance
                     requirements...
                   </p>
@@ -666,27 +699,27 @@ export default function QuoteModalV2({ onClose }: QuoteModalV2Props) {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
                   >
-                    <p className="text-2xl font-bold text-zinc-900">{subsCount}</p>
-                    <p className="text-xs text-zinc-500">Active Subs</p>
+                    <p className="text-2xl font-bold text-foreground">{subsCount}</p>
+                    <p className="text-xs text-muted-foreground">Active Subs</p>
                   </motion.div>
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.6 }}
                   >
-                    <p className="text-2xl font-bold text-zinc-900">{projectsCount}</p>
-                    <p className="text-xs text-zinc-500">Projects</p>
+                    <p className="text-2xl font-bold text-foreground">{projectsCount}</p>
+                    <p className="text-xs text-muted-foreground">Projects</p>
                   </motion.div>
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.9 }}
                   >
-                    <p className="text-2xl font-bold text-zinc-900">
+                    <p className="text-2xl font-bold text-foreground">
                       {PROJECT_VALUE_OPTIONS.find((o) => o.id === form.projectValueRange)
                         ?.label ?? "—"}
                     </p>
-                    <p className="text-xs text-zinc-500">Avg Size</p>
+                    <p className="text-xs text-muted-foreground">Avg Size</p>
                   </motion.div>
                 </div>
               </motion.div>
@@ -702,13 +735,13 @@ export default function QuoteModalV2({ onClose }: QuoteModalV2Props) {
                 className="grid grid-cols-1 md:grid-cols-12 gap-10"
               >
                 <div className="md:col-span-4 space-y-4">
-                  <p className="text-xs font-bold tracking-widest text-zinc-400 uppercase">
+                  <p className="text-xs font-bold tracking-widest text-muted-foreground/70 uppercase">
                     Your Quote &rarr;
                   </p>
-                  <h2 className="text-3xl font-bold text-zinc-900 tracking-tight">
+                  <h2 className="text-3xl font-bold text-foreground tracking-tight">
                     Annual Cost
                   </h2>
-                  <p className="text-zinc-500">
+                  <p className="text-muted-foreground">
                     Based on your business profile and compliance needs.
                   </p>
                 </div>
@@ -717,19 +750,19 @@ export default function QuoteModalV2({ onClose }: QuoteModalV2Props) {
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.15 }}
-                    className="bg-white/60 border border-zinc-200 rounded-2xl p-8 text-center space-y-4 shadow-sm"
+                    className="bg-background/60 border border-border rounded-2xl p-8 text-center space-y-4 shadow-sm"
                   >
-                    <p className="text-zinc-500 font-medium">Your annual service cost</p>
-                    <p className="text-5xl font-bold text-zinc-900 tracking-tight">
+                    <p className="text-muted-foreground font-medium">Your annual service cost</p>
+                    <p className="text-5xl font-bold text-foreground tracking-tight">
                       ${price.toLocaleString()}
-                      <span className="text-lg font-medium text-zinc-400">.00</span>
+                      <span className="text-lg font-medium text-muted-foreground/70">.00</span>
                     </p>
-                    <p className="text-sm text-zinc-500">
+                    <p className="text-sm text-muted-foreground">
                       Billed annually · Cancel anytime
                     </p>
                   </motion.div>
                   {sessionError && (
-                    <div className="mt-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
+                    <div className="mt-4 p-3 rounded-lg bg-destructive/10 border border-destructive/30 text-destructive text-sm">
                       {sessionError}
                     </div>
                   )}
@@ -738,7 +771,40 @@ export default function QuoteModalV2({ onClose }: QuoteModalV2Props) {
             )}
 
             {/* STEP 5: Payment (real Stripe) */}
-            {step === 5 && clientSecret && (
+            {step === 5 && clientSecret && !stripePromise && (
+              <motion.div
+                key="step5-unavailable"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="max-w-md mx-auto text-center py-16 space-y-4"
+              >
+                <h2 className="text-2xl font-bold text-foreground tracking-tight">
+                  Online payment is unavailable right now
+                </h2>
+                <p className="text-muted-foreground">
+                  Your quote is ready. Reach out and we&apos;ll finish setup with you directly.
+                </p>
+                <div className="flex items-center justify-center gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={handleBack}
+                    className="px-4 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-foreground/5 text-sm font-medium flex items-center gap-2 transition-colors"
+                  >
+                    <ArrowLeftIcon className="h-4 w-4" />
+                    Back
+                  </button>
+                  <Link
+                    href="/contact"
+                    onClick={onClose}
+                    className="px-6 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors"
+                  >
+                    Contact us
+                  </Link>
+                </div>
+              </motion.div>
+            )}
+            {step === 5 && clientSecret && stripePromise && (
               <motion.div
                 key="step5"
                 initial={{ opacity: 0, x: 20 }}
@@ -766,12 +832,12 @@ export default function QuoteModalV2({ onClose }: QuoteModalV2Props) {
 
         {/* Footer (hidden on calculating + payment) */}
         {step !== 3 && step !== 5 && (
-          <div className="sticky bottom-0 z-10 flex items-center justify-between px-6 py-4 border-t border-zinc-200/50 bg-[#f4fce3]/95 backdrop-blur-md rounded-b-2xl">
+          <div className="sticky bottom-0 z-10 flex items-center justify-between px-6 py-4 border-t border-border/50 bg-card/95 backdrop-blur-md rounded-b-2xl">
             <div>
               {step > 1 && (
                 <button
                   onClick={handleBack}
-                  className="px-4 py-2 rounded-lg text-zinc-600 hover:text-zinc-900 hover:bg-zinc-900/5 text-sm font-medium flex items-center gap-2 transition-colors"
+                  className="px-4 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-foreground/5 text-sm font-medium flex items-center gap-2 transition-colors"
                 >
                   <ArrowLeftIcon className="h-4 w-4" />
                   Back
@@ -781,7 +847,7 @@ export default function QuoteModalV2({ onClose }: QuoteModalV2Props) {
             <button
               onClick={handleNext}
               disabled={isCreatingSession}
-              className="px-8 py-2.5 rounded-lg bg-zinc-900 text-white text-sm font-medium hover:bg-zinc-800 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-8 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isCreatingSession ? (
                 <>
@@ -810,9 +876,9 @@ function FieldLabel({
   required?: boolean;
 }) {
   return (
-    <label className="block text-sm font-medium text-zinc-700 mb-1.5">
+    <label className="block text-sm font-medium text-foreground/80 mb-1.5">
       {children}
-      {required && <span className="text-red-500 ml-0.5">*</span>}
+      {required && <span className="text-destructive ml-0.5">*</span>}
     </label>
   );
 }
@@ -836,7 +902,7 @@ function FieldInput({
       value={value}
       placeholder={placeholder}
       onChange={(e) => onChange(e.target.value)}
-      className={`w-full bg-white/50 border border-zinc-200 rounded-md text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-400 transition-colors ${
+      className={`w-full bg-background/50 border border-border rounded-md text-foreground placeholder:text-muted-foreground/70 focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring transition-colors ${
         large ? "px-4 py-4 text-lg" : "px-3 py-2 text-sm"
       }`}
     />
