@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Link from "next/link";
 import WhatWeDoSteps from "@/components/v2/what-we-do-steps";
 import FooterV2 from "@/components/v2/footer-v2";
 import NoOrphans from "@/components/v2/no-orphans";
@@ -95,16 +96,27 @@ function Step1Hero() {
             transition={{ duration: 0.5, ease: EASE }}
           >
             <NoOrphans>
-              After a subcontractor signs, you CC us on the agreement. From that
-              moment on, we collect every certificate, chase every renewal, verify
-              every endorsement, flag every gap, and stand behind your risk transfer
-              when a claim shows up. You read one weekly report. We handle the rest.
+              After a subcontractor signs, you CC us on the executed agreement.
+              We turn that signed subcontract into the compliance benchmark — then
+              verify every COI and endorsement against that contract. From there
+              we collect certificates, chase renewals, flag gaps, and stand behind
+              your risk transfer when a claim shows up. You read one weekly report.
+              We handle the rest.
             </NoOrphans>
           </motion.p>
-        </div>
 
-        {/* "See if your file holds up" CTA (opens the quote modal) hidden
-            until we're ready to go live with quoting. */}
+          <motion.div
+            animate={{ opacity: isActive ? 1 : 0.35 }}
+            transition={{ duration: 0.5, ease: EASE }}
+          >
+            <Link
+              href="/contact"
+              className="inline-flex items-center justify-center rounded-full bg-zinc-950 dark:bg-lime-400 px-7 py-3 text-sm font-medium text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-lime-300 transition-colors"
+            >
+              Talk to us
+            </Link>
+          </motion.div>
+        </div>
       </div>
     </section>
   );
@@ -181,8 +193,23 @@ function HowItWorksContent() {
         </div>
       </section>
 
-      {/* Final "Ready to stop collecting COIs?" / "Get a Quote Now" CTA
-          hidden until we're ready to go live with quoting. */}
+      <section className="w-full py-24 px-4 md:px-6 bg-zinc-950 text-center">
+        <h2
+          className="text-3xl md:text-4xl font-bold text-white tracking-tight mb-4"
+          style={{ fontFamily: "var(--font-display), sans-serif" }}
+        >
+          Ready to take compliance off your plate?
+        </h2>
+        <p className="text-zinc-400 text-lg mb-8 max-w-xl mx-auto">
+          A dedicated team plus software — from signed agreement through ongoing monitoring.
+        </p>
+        <Link
+          href="/contact"
+          className="inline-flex items-center justify-center rounded-full bg-lime-400 px-8 py-3 text-base font-medium text-zinc-950 hover:bg-lime-300 transition-colors"
+        >
+          Talk to us
+        </Link>
+      </section>
 
       <FooterV2 />
     </main>

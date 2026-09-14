@@ -114,7 +114,7 @@ function OverviewPage({ onNavigate }: { onNavigate: (p: DocPage) => void }) {
 
       {/* Downloads section */}
       <SectionLabel label="Downloads" />
-      <div className="flex flex-col gap-4 mb-16 lg:mb-20">
+      <div className="flex flex-col gap-4 mb-4">
         {downloads.map((item) => (
           <div
             key={item.title}
@@ -131,12 +131,28 @@ function OverviewPage({ onNavigate }: { onNavigate: (p: DocPage) => void }) {
                 {item.description}
               </p>
             </div>
-            <button className="text-xs md:text-sm font-medium text-primary hover:underline cursor-pointer flex-shrink-0">
-              Download PDF
-            </button>
+            {item.href ? (
+              <Link
+                href={item.href}
+                className="text-xs md:text-sm font-medium text-primary hover:underline flex-shrink-0"
+              >
+                {item.cta}
+              </Link>
+            ) : (
+              <button className="text-xs md:text-sm font-medium text-primary hover:underline cursor-pointer flex-shrink-0">
+                {item.cta}
+              </button>
+            )}
           </div>
         ))}
       </div>
+      <p className="text-sm text-muted-foreground mb-16 lg:mb-20 mt-4">
+        For agents and partners: walkthrough materials are available on request.{" "}
+        <Link href="/contact" className="text-primary hover:underline">
+          Talk to us
+        </Link>
+        .
+      </p>
 
       {/* FAQ preview */}
       <SectionLabel label="Frequently Asked" />
@@ -176,11 +192,11 @@ function WhatIsMidpointPage() {
         What is Midpoint?
       </h1>
       <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-8 max-w-2xl">
-        Midpoint is an AI-powered platform that helps residential home builders
-        and general contractors manage subcontractor insurance compliance. We
-        eliminate the paperwork headache by automatically reviewing certificates
-        and endorsements to uncover missing coverage, outdated limits, and
-        hidden exposures.
+        Midpoint is a managed insurance compliance service for general
+        contractors. A dedicated team plus software handles the work from signed
+        agreement through requirements, collection, verification, and ongoing
+        monitoring — uncovering missing coverage, outdated limits, and hidden
+        exposures.
       </p>
 
       {/* Feature items */}
@@ -190,8 +206,8 @@ function WhatIsMidpointPage() {
             <Check className="w-4 h-4 text-primary" />
           </div>
           <p className="text-base md:text-lg text-foreground/90">
-            <span className="font-medium">Automated COI Analysis</span> — Upload
-            certificates and get instant compliance verification
+            <span className="font-medium">Contract-based verification</span> —
+            every COI and endorsement is checked against your signed subcontract
           </p>
         </div>
         <div className="flex items-start gap-4">
@@ -777,14 +793,38 @@ function DownloadsPage() {
                 <p className="text-sm md:text-base text-muted-foreground leading-relaxed mb-5">
                   {item.description}
                 </p>
-                <button className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg text-sm md:text-base font-medium hover:opacity-90 transition-opacity cursor-pointer">
-                  <Download className="w-4 h-4" />
-                  {item.cta}
-                </button>
+                {item.href ? (
+                  <Link
+                    href={item.href}
+                    className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg text-sm md:text-base font-medium hover:opacity-90 transition-opacity"
+                  >
+                    <FileText className="w-4 h-4" />
+                    {item.cta}
+                  </Link>
+                ) : (
+                  <button className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg text-sm md:text-base font-medium hover:opacity-90 transition-opacity cursor-pointer">
+                    <Download className="w-4 h-4" />
+                    {item.cta}
+                  </button>
+                )}
               </div>
             </div>
           </div>
         ))}
+      </div>
+
+      <div className="mt-10 rounded-xl border border-border/30 p-6 md:p-8">
+        <h3 className="text-lg font-semibold text-foreground mb-2">
+          For agents and partners
+        </h3>
+        <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
+          Walkthrough materials are available on request — no self-serve agent
+          portal.{" "}
+          <Link href="/contact" className="text-primary hover:underline">
+            Contact us
+          </Link>{" "}
+          for a walkthrough.
+        </p>
       </div>
     </article>
   );

@@ -209,7 +209,7 @@ export default function OnePager({ embedded = false }: { embedded?: boolean }) {
             <p className="mb-0">Tracking subcontractor insurance and ensuring it meets contract requirements is tedious, and one missing form or outdated policy can put your business at risk.</p>
             <p className="mb-0">&nbsp;</p>
             <p>
-              <span>MidPoint&apos;s AI-powered service automates the process, scanning, comparing, and reconciling insurance documents across all parties, projects, and work </span>
+              <span>Midpoint is a managed compliance service — a dedicated team plus software that turns your signed agreement into the benchmark, then collects, verifies, and monitors coverage, </span>
               <span className="font-bold">flagging issues before they cost you.</span>
             </p>
           </div>
@@ -249,11 +249,11 @@ export default function OnePager({ embedded = false }: { embedded?: boolean }) {
               }}
             >
               <ul className="mb-0 list-disc ml-4">
-                <li className="mb-2">Instantly reviews your master subcontract agreements and establishes insurance requirements, a critical step in proper risk transfer.</li>
-                <li className="mb-2">Matches and verifies COI&apos;s against your projects requirements.</li>
-                <li className="mb-2">Automates subcontractor outreach to reduce manual back and forth</li>
+                <li className="mb-2">Reviews your signed subcontract and establishes insurance requirements — the benchmark for proper risk transfer.</li>
+                <li className="mb-2">Matches and verifies COIs and endorsements against that contract.</li>
+                <li className="mb-2">Chases missing documents and escalates gaps with humans in the loop</li>
                 <li className="mb-2">Alerts you to missing or outdated coverages</li>
-                <li className="mb-2">Requests updated documents directly from subcontractors before they expire</li>
+                <li className="mb-2">Requests updated documents from subcontractors before they expire</li>
                 <li>Surfaces policy exclusions and GL rating details you need to know to avoid costly gaps.</li>
               </ul>
             </div>
@@ -373,14 +373,14 @@ export default function OnePager({ embedded = false }: { embedded?: boolean }) {
                 lineHeight: 1.1
               }}
             >
-              <span className="text-white">[First,Last Name]</span>
+              <span className="text-white">Tyler Woodruff</span>
               <div className="flex gap-[4px] items-center">
                 <span className="text-[#c9ff64]">OFFICE:</span>
-                <span className="text-[#f5f5f5]">[Phone Number]</span>
+                <span className="text-[#f5f5f5]">623.289.3169</span>
               </div>
               <div className="flex gap-[4px] items-center">
                 <span className="text-[#c9ff64]">EMAIL:</span>
-                <span className="text-[#f5f5f5] underline">[&gt; Type Email Address Here &lt;]</span>
+                <span className="text-[#f5f5f5] underline">service@midpointverified.com</span>
               </div>
             </div>
 

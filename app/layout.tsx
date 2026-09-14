@@ -29,9 +29,9 @@ const figtree = Figtree({
 });
 
 export const metadata: Metadata = {
-  title: "Midpoint - AI-Powered Insurance Compliance for Builders",
+  title: "Midpoint — Insurance Compliance for GCs, Managed End to End",
   description:
-    "Eliminate subcontractor paperwork with AI that reviews certificates and endorsements to uncover missing coverage, outdated limits, and hidden exposures.",
+    "A dedicated team plus software managing insurance compliance for general contractors — from signed agreement through requirements, collection, verification, and ongoing monitoring.",
   keywords: [
     "insurance compliance",
     "COI verification",
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     "certificate of insurance",
     "construction insurance",
     "risk management",
-    "AI insurance",
+    "general contractor compliance",
   ],
   authors: [{ name: "Midpoint" }],
   creator: "Midpoint",
@@ -53,23 +53,23 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://midpointverified.com",
     siteName: "Midpoint",
-    title: "Midpoint - AI-Powered Insurance Compliance for Builders",
+    title: "Midpoint — Insurance Compliance for GCs, Managed End to End",
     description:
-      "Eliminate subcontractor paperwork with AI that reviews certificates and endorsements to uncover missing coverage, outdated limits, and hidden exposures.",
+      "A dedicated team plus software managing insurance compliance for general contractors — signed agreement to requirements, collection, verification, and monitoring.",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Midpoint - AI-Powered Insurance Compliance",
+        alt: "Midpoint — Insurance compliance for GCs, managed end to end",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Midpoint - AI-Powered Insurance Compliance for Builders",
+    title: "Midpoint — Insurance Compliance for GCs, Managed End to End",
     description:
-      "Eliminate subcontractor paperwork with AI that reviews certificates and endorsements.",
+      "A dedicated team plus software managing insurance compliance from signed agreement through ongoing monitoring.",
     images: ["/og-image.png"],
   },
   robots: {

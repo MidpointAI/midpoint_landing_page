@@ -11,6 +11,7 @@ import {
   XIcon,
   type LucideIcon,
 } from "lucide-react";
+import { APP_LOGIN_URL } from "@/lib/site";
 
 interface MenuItem {
   label: string;
@@ -116,8 +117,8 @@ export default function NavbarV2({}: NavbarV2Props) {
           </Link>
         </div>
 
-        {/* Mobile header — just the menu toggle (Get-a-Quote moves into the
-            open menu, so the header stays minimal until the user taps in). */}
+        {/* Mobile header — menu toggle only. Talk to us / Log in live in the
+            open menu so the header stays minimal. */}
         <div className="flex md:hidden items-center">
           <button
             onClick={() => setMobileMenuOpen((v) => !v)}
@@ -209,13 +210,18 @@ export default function NavbarV2({}: NavbarV2Props) {
             </AnimatePresence>
           </div>
 
-          <Link
-            href="/contact"
+          <a
+            href={APP_LOGIN_URL}
             className="px-3 py-1.5 text-sm font-medium text-zinc-500 dark:text-zinc-400 rounded-full hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
           >
-            Contact
+            Log in
+          </a>
+          <Link
+            href="/contact"
+            className="ml-1 inline-flex items-center rounded-full bg-lime-400 px-4 py-1.5 text-sm font-medium text-zinc-950 hover:bg-lime-300 transition-colors"
+          >
+            Talk to us
           </Link>
-          {/* "Get a quote" CTA hidden site-wide until we're ready to go live */}
         </div>
       </div>
     </header>
@@ -297,16 +303,22 @@ export default function NavbarV2({}: NavbarV2Props) {
                 </AnimatePresence>
               </div>
 
-              <div className="border-t border-zinc-200/60 dark:border-white/[0.06] pt-6">
-                <Link
-                  href="/contact"
+              <div className="border-t border-zinc-200/60 dark:border-white/[0.06] pt-6 space-y-4">
+                <a
+                  href={APP_LOGIN_URL}
                   onClick={() => setMobileMenuOpen(false)}
                   className="block w-full text-left text-2xl font-semibold tracking-tight py-3 text-zinc-900 dark:text-white"
                 >
-                  Contact
+                  Log in
+                </a>
+                <Link
+                  href="/contact"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="inline-flex items-center justify-center w-full rounded-full bg-lime-400 px-5 py-3 text-base font-medium text-zinc-950 hover:bg-lime-300 transition-colors"
+                >
+                  Talk to us
                 </Link>
               </div>
-              {/* Get a quote CTA hidden until we're ready to go live */}
             </div>
           </motion.div>
         )}

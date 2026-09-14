@@ -234,7 +234,7 @@ export const faqItems = [
   {
     question: "How does Midpoint work?",
     answer:
-      "Our team working with advanced tools analyze complex insurance policies. We scan documents instantly, identifying hidden risks and optimization opportunities. The result is a comprehensive risk management strategy tailored to protect you.",
+      "A dedicated team plus software manages the work: we turn your signed subcontract into the compliance benchmark, then collect, verify, and monitor every COI and endorsement against that contract.",
   },
   {
     question: "Can I save money?",
@@ -249,7 +249,7 @@ export const faqItems = [
   {
     question: "Who can use Midpoint?",
     answer:
-      "Midpoint is designed specifically for residential home builders, general contractors, and subcontractors. Whether you're a small business or a large construction firm, our platform adapts to your unique insurance needs.",
+      "Midpoint is designed specifically for residential home builders, general contractors, and subcontractors. Whether you're a small business or a large construction firm, the service adapts to your insurance requirements.",
   },
   {
     question: "How quickly can I start?",
@@ -259,7 +259,12 @@ export const faqItems = [
 ];
 
 // Downloads data
-export const downloads = [
+export const downloads: {
+  title: string;
+  description: string;
+  cta: string;
+  href?: string;
+}[] = [
   {
     title: "Risk Transfer Checklist",
     description:
@@ -269,8 +274,9 @@ export const downloads = [
   {
     title: "Understanding Midpoint",
     description:
-      "A quick explanation of how Midpoint works and can save builders time and money. Learn about our automated COI analysis and compliance verification.",
-    cta: "Download PDF",
+      "A quick explanation of how Midpoint works and can save builders time and money. See how the team verifies COIs and endorsements against your signed contract.",
+    cta: "View one-pager",
+    href: "/one-pager",
   },
 ];
 
