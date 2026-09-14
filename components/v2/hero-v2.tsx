@@ -5,6 +5,7 @@ import { ArrowRightIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SplitSection } from "./split-section";
 import WeeklyEmail from "./weekly-email";
+import { APP_LOGIN_URL } from "@/lib/site";
 
 const HERO_BG_URL =
   "https://cdn.magicpatterns.com/uploads/aYGrNQuUPNdajTBmWkC5Wu/Hero.svg";
@@ -47,15 +48,19 @@ export default function HeroV2() {
               <p className="eyebrow-accent mb-8">Insurance verification</p>
               {/* Display size, but sized for five columns: four lines at 60px, not six at 96px. */}
               <h1 className="text-5xl md:text-6xl font-semibold leading-[1.02] tracking-tight text-foreground mb-8">
-                Trade Partner <span className="text-primary">Compliance</span> Without the Headache
+                Insurance Compliance for GCs, <span className="text-primary">Managed</span> End to End
               </h1>
               <p className="text-muted-foreground text-base md:text-lg measure-column mb-10 leading-relaxed">
-                We collect your subcontractors&apos; certificates, verify the coverage against
-                your contract, chase what&apos;s missing, and send you one email a week.
+                A dedicated team plus software: we collect your subcontractors&apos; certificates,
+                verify the coverage against your contract, chase what&apos;s missing, and send you
+                one email a week.
               </p>
               <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                 <Button asChild>
                   <Link href="/contact">Contact us</Link>
+                </Button>
+                <Button asChild variant="outline">
+                  <a href={APP_LOGIN_URL}>Log in</a>
                 </Button>
                 <Button asChild variant="ghost" className="self-start sm:self-auto">
                   <Link href="/how-it-works">

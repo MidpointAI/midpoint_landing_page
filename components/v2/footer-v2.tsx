@@ -3,10 +3,12 @@
 import Link from "next/link";
 import BrandLogo from "@/components/v2/brand-logo";
 import { ThemeSwitcher } from "@/components/theme-switcher";
+import { APP_LOGIN_URL } from "@/lib/site";
 
 interface FooterLink {
   label: string;
   href: string;
+  external?: boolean;
 }
 
 interface FooterColumn {
@@ -40,6 +42,7 @@ const footerColumns: FooterColumn[] = [
     links: [
       { label: "Contact", href: "/contact" },
       { label: "Email us", href: `mailto:${SUPPORT_EMAIL}` },
+      { label: "Log in", href: APP_LOGIN_URL, external: true },
     ],
   },
 ];
@@ -66,7 +69,7 @@ export default function FooterV2() {
                 <ul className="space-y-3">
                   {column.links.map((link) => (
                     <li key={link.label}>
-                      {link.href.startsWith("mailto:") ? (
+                      {link.href.startsWith("mailto:") || link.external ? (
                         <a
                           href={link.href}
                           className="text-sm text-muted-foreground hover:text-foreground transition-colors"

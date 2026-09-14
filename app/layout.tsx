@@ -20,9 +20,9 @@ const dmMono = DM_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Midpoint - Subcontractor Insurance Compliance for Builders",
+  title: "Midpoint — Insurance Compliance for GCs, Managed End to End",
   description:
-    "Our compliance team collects, verifies, and monitors every subcontractor's certificates and endorsements, and flags missing coverage, outdated limits, and hidden exposures before they cost you.",
+    "A dedicated team plus software managing insurance compliance for general contractors — from signed agreement through requirements, collection, verification, and ongoing monitoring.",
   keywords: [
     "insurance compliance",
     "COI verification",
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     "certificate of insurance",
     "construction insurance",
     "risk management",
-    "subcontractor compliance",
+    "general contractor compliance",
   ],
   authors: [{ name: "Midpoint" }],
   creator: "Midpoint",
@@ -44,15 +44,15 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://midpointverified.com",
     siteName: "Midpoint",
-    title: "Midpoint - Subcontractor Insurance Compliance for Builders",
+    title: "Midpoint — Insurance Compliance for GCs, Managed End to End",
     description:
-      "Our compliance team collects, verifies, and monitors every subcontractor's certificates and endorsements, and flags missing coverage, outdated limits, and hidden exposures before they cost you.",
+      "A dedicated team plus software managing insurance compliance for general contractors — signed agreement to requirements, collection, verification, and monitoring.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Midpoint - Subcontractor Insurance Compliance for Builders",
+    title: "Midpoint — Insurance Compliance for GCs, Managed End to End",
     description:
-      "Our compliance team collects, verifies, and monitors every subcontractor's certificates and endorsements.",
+      "A dedicated team plus software managing insurance compliance from signed agreement through ongoing monitoring.",
   },
   robots: {
     index: true,

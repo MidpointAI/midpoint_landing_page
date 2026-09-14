@@ -13,6 +13,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { APP_LOGIN_URL } from "@/lib/site";
 
 interface MenuItem {
   label: string;
@@ -263,7 +264,15 @@ export default function NavbarV2() {
             Pricing
           </Link>
 
-          <Button asChild size="sm" className="ml-3">
+          <a
+            href={APP_LOGIN_URL}
+            onMouseEnter={closeMenu}
+            className="px-3 py-1.5 text-sm font-medium rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+          >
+            Log in
+          </a>
+
+          <Button asChild size="sm" className="ml-1">
             <Link href="/contact" onMouseEnter={closeMenu}>
               Contact us
             </Link>
@@ -395,6 +404,16 @@ export default function NavbarV2() {
                 >
                   Pricing
                 </Link>
+              </div>
+
+              <div className="border-t border-border pt-6">
+                <a
+                  href={APP_LOGIN_URL}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block w-full text-left text-2xl font-semibold tracking-tight py-3 text-foreground"
+                >
+                  Log in
+                </a>
               </div>
 
               <div className="border-t border-border pt-6">

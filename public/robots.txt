@@ -1,5 +1,5 @@
 
-# Midpoint - Subcontractor Insurance Compliance
+# Midpoint — Insurance Compliance for GCs, Managed End to End
 # https://midpointverified.com
 
 User-agent: *

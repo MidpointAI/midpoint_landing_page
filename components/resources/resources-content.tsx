@@ -116,7 +116,7 @@ function OverviewPage({ onNavigate }: { onNavigate: (p: DocPage) => void }) {
 
       {/* Downloads section */}
       <SectionLabel label="Downloads" />
-      <div className="flex flex-col gap-4 mb-16 lg:mb-20">
+      <div className="flex flex-col gap-4 mb-4">
         {downloads.map((item) => (
           <div
             key={item.title}
@@ -147,6 +147,13 @@ function OverviewPage({ onNavigate }: { onNavigate: (p: DocPage) => void }) {
           </div>
         ))}
       </div>
+      <p className="text-sm text-muted-foreground mb-16 lg:mb-20 mt-4">
+        For agents and partners: walkthrough materials are available on request.{" "}
+        <Link href="/contact" className="text-primary hover:underline">
+          Talk to us
+        </Link>
+        .
+      </p>
 
       {/* FAQ preview */}
       <SectionLabel label="Frequently Asked" />
@@ -181,11 +188,11 @@ function WhatIsMidpointPage() {
         What is Midpoint?
       </h2>
       <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-8 max-w-2xl">
-        Midpoint is a compliance service that helps residential home builders
-        and general contractors manage subcontractor insurance. Our compliance
-        team takes the paperwork off your desk, reviewing every certificate
-        and endorsement to uncover missing coverage, outdated limits, and
-        hidden exposures.
+        Midpoint is a managed insurance compliance service for general
+        contractors. A dedicated team plus software handles the work from signed
+        agreement through requirements, collection, verification, and ongoing
+        monitoring — uncovering missing coverage, outdated limits, and hidden
+        exposures.
       </p>
 
       {/* Feature items */}
@@ -195,8 +202,8 @@ function WhatIsMidpointPage() {
             <Check className="w-4 h-4 text-primary" />
           </div>
           <p className="text-base md:text-lg text-foreground/90">
-            <span className="font-medium">Automated COI Analysis</span> — Upload
-            certificates and get instant compliance verification
+            <span className="font-medium">Contract-based verification</span> —
+            every COI and endorsement is checked against your signed subcontract
           </p>
         </div>
         <div className="flex items-start gap-4">
@@ -784,6 +791,20 @@ function DownloadsPage() {
             </div>
           </div>
         ))}
+      </div>
+
+      <div className="mt-10 rounded-xl border border-border/30 p-6 md:p-8">
+        <h3 className="text-lg font-semibold text-foreground mb-2">
+          For agents and partners
+        </h3>
+        <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
+          Walkthrough materials are available on request — no self-serve agent
+          portal.{" "}
+          <Link href="/contact" className="text-primary hover:underline">
+            Contact us
+          </Link>{" "}
+          for a walkthrough.
+        </p>
       </div>
     </article>
   );
