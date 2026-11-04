@@ -146,7 +146,7 @@ async function appendToGoogleSheet(data: ContactFormData) {
     const response = await sheets.spreadsheets.values.append({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
       range: 'Sheet1!A:G', // Adjust if your sheet has a different name
-      valueInputOption: 'USER_ENTERED',
+      valueInputOption: 'RAW', // RAW: user input is never parsed as a formula
       requestBody: {
         values: [[
           timestamp,
