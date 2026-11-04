@@ -34,8 +34,10 @@ function SuccessContent() {
   const sessionId = searchParams.get("session_id");
   const confettiTriggered = useRef(false);
 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(Boolean(sessionId));
+  const [error, setError] = useState<string | null>(
+    sessionId ? null : "No session ID provided"
+  );
   const [sessionData, setSessionData] = useState<SessionData | null>(null);
 
   // Trigger confetti on successful payment
@@ -77,11 +79,7 @@ function SuccessContent() {
   }, [sessionData]);
 
   useEffect(() => {
-    if (!sessionId) {
-      setError("No session ID provided");
-      setLoading(false);
-      return;
-    }
+    if (!sessionId) return;
 
     const fetchSession = async () => {
       try {
