@@ -167,7 +167,51 @@ async function appendToGoogleSheet(data: ContactFormData) {
   }
 }
 
+// Per-IP limit on contact submissions: each one writes a Sheets row and posts
+// to Slack. In memory, so it is per Cloud Run instance (max 10): enough to stop
+// one script flooding the sheet, not a distributed attack.
+const RATE_LIMIT = 5
+const RATE_WINDOW_MS = 10 * 60 * 1000
+const recentSubmissions = new Map<string, number[]>()
+
+// Cloud Run appends the connecting IP to X-Forwarded-For; via the Google load
+// balancer that IP is the LB's (35.191.0.0/16 or 130.211.0.0/22) and the client
+// is the entry before it. Anything further left is client-supplied.
+function isGoogleLbIp(ip: string): boolean {
+  const [a, b, c] = ip.split('.').map(Number)
+  return (a === 35 && b === 191) || (a === 130 && b === 211 && c >= 0 && c <= 3)
+}
+
+function clientIp(request: NextRequest): string {
+  const hops = (request.headers.get('x-forwarded-for') ?? '').split(',').map((s) => s.trim()).filter(Boolean)
+  for (let i = hops.length - 1; i >= 0; i--) {
+    if (!isGoogleLbIp(hops[i])) return hops[i]
+  }
+  return 'unknown'
+}
+
+function rateLimited(ip: string): boolean {
+  const now = Date.now()
+  const recent = (recentSubmissions.get(ip) ?? []).filter((t) => now - t < RATE_WINDOW_MS)
+  const limited = recent.length >= RATE_LIMIT
+  if (!limited) recent.push(now)
+  recentSubmissions.set(ip, recent)
+  if (recentSubmissions.size > 10_000) {
+    for (const [key, times] of recentSubmissions) {
+      if (times.every((t) => now - t >= RATE_WINDOW_MS)) recentSubmissions.delete(key)
+    }
+  }
+  return limited
+}
+
 export async function POST(request: NextRequest) {
+  if (rateLimited(clientIp(request))) {
+    return NextResponse.json(
+      { error: 'Too many submissions. Please try again later.' },
+      { status: 429 }
+    )
+  }
+
   try {
     const body: ContactFormData = await request.json()
 
