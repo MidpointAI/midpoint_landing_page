@@ -220,8 +220,9 @@ function WhatIsMidpointPage() {
             <Check className="w-4 h-4 text-primary" />
           </div>
           <p className="text-base md:text-lg text-foreground/90">
-            <span className="font-medium">Premium Savings</span> — Reduce
-            liability premiums with proper documentation
+            <span className="font-medium">Your agent, at renewal</span> — Clean,
+            verified sub compliance gives them what they need to go after
+            better rates. We don&apos;t promise the savings.
           </p>
         </div>
       </div>
