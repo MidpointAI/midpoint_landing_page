@@ -173,7 +173,7 @@ export const glossaryTerms: GlossaryTerm[] = [
     bullets: [
       "Their insurance pays first, not yours",
       "You receive legal defense if you're named in a claim",
-      "Your loss history stays clean, keeping your premiums lower",
+      "Claims from their work stay off your loss history",
       "You're protected from lawsuits related to the subcontractor's work",
       "You reduce risk transfer gaps that often cause claim disputes",
     ],
@@ -237,9 +237,9 @@ export const faqItems = [
       "A dedicated team plus software manages the work: we turn your signed subcontract into the compliance benchmark, then collect, verify, and monitor every COI and endorsement against that contract.",
   },
   {
-    question: "Can I save money?",
+    question: "Will this lower my premium?",
     answer:
-      "Absolutely. Midpoint's intelligent system uncovers potential premium reductions by analyzing your current insurance coverage. We provide detailed recommendations that can significantly lower your financial burden.",
+      "We don't promise a lower premium. We work with your agent. Clean, verified sub compliance gives them what they need to go after better rates at renewal.",
   },
   {
     question: "Is my data secure?",
@@ -290,7 +290,7 @@ export const downloads: DownloadItem[] = [
   {
     title: "Understanding Midpoint",
     description:
-      "A quick explanation of how Midpoint works and can save builders time and money. See how the team verifies COIs and endorsements against your signed contract.",
+      "A quick explanation of how Midpoint works and takes certificate chasing off the builder's plate. See how the team verifies COIs and endorsements against your signed contract.",
     cta: "View one-pager",
     href: "/one-pager",
     overlay: true,

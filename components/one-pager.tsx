@@ -298,7 +298,7 @@ export default function OnePager() {
                   lineHeight: 1.2
                 }}
               >
-                Helps reduce your liability premiums and showcases you as best in class
+                Equips your agent for renewal and showcases you as best in class
               </p>
             </div>
 

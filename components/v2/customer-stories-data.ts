@@ -45,11 +45,6 @@ export const stats: Stat[] = [
     pending: true, // TODO: name Digital Desert once approved
   },
   {
-    value: "60%",
-    label: "Rate reduction on one builder's trade partner coverage",
-    source: "A Finer Touch Construction",
-  },
-  {
     value: "$300K",
     label: "Claim covered because agreements and certificates were in place",
     source: "Custom home builder",
@@ -60,12 +55,11 @@ export const stats: Stat[] = [
 export const testimonials: Testimonial[] = [
   {
     quote:
-      "Working with Midpoint has been a game-changer for us. Their approach has reduced time spent managing the compliance process as well as dramatically reducing our exposure and insurance premiums.",
+      "Working with Midpoint has been a game-changer for us. Their approach has reduced time spent managing the compliance process as well as dramatically reducing our exposure.",
     name: "Spencer Nield",
     title: "Director of Operations",
     company: "A Finer Touch Construction",
     logo: LOGOS.finerTouch,
-    highlight: "60% rate reduction",
   },
   {
     quote:
@@ -90,12 +84,12 @@ export const testimonials: Testimonial[] = [
 /* ------------------------------------------------------------------------- */
 
 /** The three questions a builder asks before signing. Each story answers one. */
-export type Outcome = "subs-respond" | "audit-and-claims" | "premium";
+export type Outcome = "subs-respond" | "audit-and-claims" | "renewal";
 
 export const OUTCOME_LABEL: Record<Outcome, string> = {
   "subs-respond": "Will my subs actually respond?",
   "audit-and-claims": "Does it hold up in an audit or a claim?",
-  premium: "What happens to my premium?",
+  renewal: "What does my agent take to renewal?",
 };
 
 export interface CustomerStory {
@@ -115,7 +109,8 @@ export interface CustomerStory {
   problem: string;
   action: string;
   result: string;
-  stat: { value: string; label: string };
+  /** Omitted when the story has no result figure of its own. */
+  stat?: { value: string; label: string };
   /** Which `testimonials` entry carries this client's quote. */
   testimonialName: string;
   logo?: Logo;
@@ -128,16 +123,15 @@ export const customerStories: CustomerStory[] = [
     company: "A Finer Touch Construction",
     location: "Arizona", // TODO: confirm city with the client before adding it
     scale: "About 175 trade partners across 8 projects",
-    outcome: "premium",
+    outcome: "renewal",
     hero: true,
-    headline: "The premium followed the paperwork down.",
+    headline: "Their agent got a roster they could take to renewal.",
     problem:
-      "A Finer Touch was already paying for a compliance tool. It tracked certificates, but the team still did the chasing, the reading, and the follow-up on every sub, and their own coverage was priced as if none of that work existed.",
+      "A Finer Touch was already paying for a compliance tool. It tracked certificates, but the team still did the chasing, the reading, and the follow-up on every sub.",
     action:
-      "Midpoint took over collection, verification, and follow-up for every trade partner on every active project, and held each one to the requirements in their signed agreement. When the roster was verified, we worked with their agent so the carrier could see it.",
+      "Midpoint took over collection, verification, and follow-up for every trade partner on every active project, and held each one to the requirements in their signed agreement. We worked with their agent and handed over the verified roster.",
     result:
-      "Trade partner coverage was rated with the verified roster in hand. The rate came down by more than half, and the office stopped spending its week on certificates.",
-    stat: { value: "60%", label: "rate reduction on trade partner coverage" },
+      "Clean, verified sub compliance went to their agent, so they had what they needed to go after better rates at renewal. We don't promise the savings. The office stopped spending its week on certificates.",
     testimonialName: "Spencer Nield",
     logo: LOGOS.finerTouch,
   },

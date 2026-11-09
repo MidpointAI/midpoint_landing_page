@@ -16,13 +16,11 @@ const SECTIONS = [
 
 export const metadata: Metadata = {
   title: "Pricing | Midpoint",
-  description: "A flat rate per subcontractor for builders under 100 subs, and a per-project rate for larger general contractors and commercial outfits. Everything included.",
+  description:
+    "Per-subcontractor pricing for builders under 100 subs, and per-project pricing for larger general contractors and commercial outfits. Ask us for your rate. Everything is included.",
   alternates: { canonical: "/pricing/how-it-works" },
 };
 
-// $100 per sub per year (Andy, Sep 9 2026; was $150) and the $6,000 minimum.
-const PER_SUB = "$100";
-const MINIMUM = "$6,000";
 const THRESHOLD = 100;
 
 const included = [
@@ -54,8 +52,8 @@ const why = [
     body: "Claims arrive late. We keep collecting and verifying coverage for two years after a project closes, so your risk transfer holds when it's tested.",
   },
   {
-    title: "We work with your agent on next year",
-    body: "Verified compliance is worth something to carriers. We coordinate with your agent and the carrier you choose so your own program reflects it at renewal.",
+    title: "We work with your agent",
+    body: "Clean, verified sub compliance gives your agent what they need to go after better rates at renewal. We don't promise those savings.",
   },
 ];
 
@@ -77,12 +75,12 @@ export default function PricingPage() {
         <DividedGrid cols="md:grid-cols-2" frame="rules">
           <div className={`${RULED_CELL} flex flex-col`}>
             <p className="eyebrow-accent mb-3">Per subcontractor</p>
-            <p className="font-mono text-4xl md:text-5xl text-foreground tabular-nums">
-              {PER_SUB}
+            <p className="font-mono text-4xl md:text-5xl text-foreground">
+              Quoted
               <span className="block sm:inline text-base text-muted-foreground sm:ml-2">per sub, per year</span>
             </p>
             <p className="mt-4 text-muted-foreground leading-relaxed measure-column">
-              For builders with fewer than {THRESHOLD} active subcontractors. One rate for every sub with a signed agreement on a current project, confirmed on the first call. Billed annually, {MINIMUM} minimum.
+              For builders with fewer than {THRESHOLD} active subcontractors. One rate for every sub with a signed agreement on a current project. We confirm the rate on the first call and bill annually.
             </p>
             <div className="mt-auto pt-6">
               <Button asChild>
@@ -110,7 +108,7 @@ export default function PricingPage() {
             <div className="mt-auto pt-6">
               <Button asChild>
                 <Link href="/contact">
-                  Request a proposal <ArrowRightIcon />
+                  Get your rate <ArrowRightIcon />
                 </Link>
               </Button>
             </div>
@@ -177,10 +175,12 @@ export default function PricingPage() {
       {/* CTA */}
       <section className="section-rule">
         <div className="container-site section-y">
-          <h2 className="heading-2 text-foreground mb-3">Want a number for your roster or your next project?</h2>
-          <p className="text-muted-foreground mb-6 measure-intro">Tell us how many subs and what you build. You&apos;ll have it on the first call.</p>
+          <h2 className="heading-2 text-foreground mb-3">Want a rate for your roster or your next project?</h2>
+          <p className="text-muted-foreground mb-6 measure-intro">Tell us how many subs and what you build. We&apos;ll quote it on the first call.</p>
           <Button size="lg" asChild>
-            <Link href="/contact">Contact us</Link>
+            <Link href="/contact">
+              Get your rate <ArrowRightIcon />
+            </Link>
           </Button>
           <p className="mt-4 text-sm text-muted-foreground">We reply within one business day.</p>
         </div>
