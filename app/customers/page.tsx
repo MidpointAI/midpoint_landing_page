@@ -88,7 +88,7 @@ function Narrative({ story, compact = false }: { story: CustomerStory; compact?:
 const SECTIONS = [
   { label: "Overview", id: "overview" },
   { label: "Results", id: "results" },
-  { label: "Premium", id: "premium" },
+  { label: "Renewal", id: "renewal" },
   { label: "Subs respond", id: "subs-respond" },
   { label: "Audits and claims", id: "audit-and-claims" },
 ];
@@ -123,11 +123,20 @@ export default function CustomersPage() {
             <h2 className="heading-2 text-foreground mb-8">{hero.headline}</h2>
             <Narrative story={hero} />
           </div>
-          <div className="flex flex-col lg:border-l lg:border-border lg:pl-14">
-            <p className="font-mono text-6xl md:text-7xl text-primary tabular-nums leading-none">{hero.stat.value}</p>
-            <p className="mt-3 text-sm text-muted-foreground max-w-xs">{hero.stat.label}</p>
+          <div className={`flex flex-col lg:border-l lg:border-border lg:pl-14 ${hero.stat ? "" : "lg:justify-center"}`}>
+            {hero.stat ? (
+              <>
+                <p className="font-mono text-6xl md:text-7xl text-primary tabular-nums leading-none">{hero.stat.value}</p>
+                <p className="mt-3 text-sm text-muted-foreground max-w-xs">{hero.stat.label}</p>
+              </>
+            ) : null}
             {heroQuote ? (
-              <TestimonialCard item={heroQuote} showMark={false} showHighlight={false} className="mt-10 pt-8 border-t border-border" />
+              <TestimonialCard
+                item={heroQuote}
+                showMark={false}
+                showHighlight={false}
+                className={hero.stat ? "mt-10 pt-8 border-t border-border" : ""}
+              />
             ) : null}
           </div>
         </article>
@@ -148,10 +157,12 @@ export default function CustomersPage() {
                 <StoryMeta story={story} className="mb-6" />
                 <h2 className="heading-3 text-foreground mb-6">{story.headline}</h2>
                 <Narrative story={story} compact />
-                <div className="mt-8 flex items-baseline gap-3">
-                  <p className="font-mono text-4xl text-primary tabular-nums leading-none">{story.stat.value}</p>
-                  <p className="text-sm text-muted-foreground">{story.stat.label}</p>
-                </div>
+                {story.stat ? (
+                  <div className="mt-8 flex items-baseline gap-3">
+                    <p className="font-mono text-4xl text-primary tabular-nums leading-none">{story.stat.value}</p>
+                    <p className="text-sm text-muted-foreground">{story.stat.label}</p>
+                  </div>
+                ) : null}
                 {quote ? (
                   <TestimonialCard item={quote} showMark={false} showHighlight={false} className="mt-8 pt-6 border-t border-border" />
                 ) : null}
