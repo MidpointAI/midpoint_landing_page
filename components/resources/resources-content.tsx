@@ -948,7 +948,6 @@ function FaqItem({
 
   useEffect(() => {
     if (contentRef.current) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setHeight(isOpen ? contentRef.current.scrollHeight : 0);
     }
   }, [isOpen]);
