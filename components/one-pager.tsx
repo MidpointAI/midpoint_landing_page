@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 // Midpoint Logo using the actual SVG file
 function MidpointLogo({
   width = 272,
@@ -12,9 +14,12 @@ function MidpointLogo({
   const height = (width / 918) * 126;
 
   return (
-    <img
+    <Image
       alt="Midpoint"
       src="/Midpoint-Logo.svg"
+      width={width}
+      height={height}
+      unoptimized
       style={{
         width: `${width}px`,
         height: `${height}px`,
@@ -51,10 +56,12 @@ function COIDocumentStack() {
           zIndex: 1
         }}
       >
-        <img
+        <Image
           alt="Certificate of Insurance"
-          className="w-full h-full object-cover"
+          className="object-cover"
           src="/one-pager/coi-certificate.png"
+          fill
+          sizes="230px"
         />
       </div>
 
@@ -71,10 +78,12 @@ function COIDocumentStack() {
           zIndex: 2
         }}
       >
-        <img
+        <Image
           alt="Certificate of Insurance"
-          className="w-full h-full object-cover"
+          className="object-cover"
           src="/one-pager/coi-certificate.png"
+          fill
+          sizes="230px"
         />
       </div>
 
@@ -90,10 +99,12 @@ function COIDocumentStack() {
           zIndex: 3
         }}
       >
-        <img
+        <Image
           alt="Certificate of Insurance"
-          className="w-full h-full object-cover"
+          className="object-cover"
           src="/one-pager/coi-certificate.png"
+          fill
+          sizes="230px"
         />
       </div>
     </div>
